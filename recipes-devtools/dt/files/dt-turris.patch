@@ -1,0 +1,51 @@
+--- dt.v18.32/common.h	2019-03-11 14:38:35.873070718 +0000
++++ dt.v18.32_orig/common.h	2019-03-11 14:48:52.257169390 +0000
+@@ -169,6 +169,18 @@
+ #define LXF	 "0x%I64x"
+ #define FUF	 LUF 
+ #define FXF	 LXF 
++#elif defined(__GNUC__)
++
++#define QuadIsLongLong
++typedef unsigned long long int	large_t;
++typedef signed long long int	slarge_t;
++typedef volatile large_t	v_large;
++typedef volatile slarge_t	v_slarge;
++#  define LUF   "%llu"
++#  define LDF   "%lld"
++#  define LXF   "%#llx"
++#  define FUF	LUF
++#  define FXF	LXF
+ 
+ #else /* !defined(MACHINE_64BITS) && !defined(__GNUC__) */
+ 
+@@ -283,6 +295,8 @@
+ #endif /* defined(sun) */
+ #endif /* 0 */
+ 
++typedef unsigned long           daddr_t;
++
+ #define ulong64		large_t
+ #define long64		slarge_t
+ 
+--- dt.v18.32/dtunix.c	2013-04-04 13:29:02.000000000 +0000
++++ dt.v18.32_orig/dtunix.c	2019-03-11 14:52:39.579755590 +0000
+@@ -30,6 +30,7 @@
+  *	This module contains *unix OS specific functions.
+  */
+ #include "dt.h"
++#include "paths.h"
+ 
+ /*
+  * SHIT! Another area of incompatability between *nix OS's! :-(
+--- dt.v18.32/dtutil.c	2019-03-11 14:51:24.176217843 +0000
++++ dt.v18.32_orig/dtutil.c	2019-03-11 14:54:29.631084150 +0000
+@@ -53,7 +53,7 @@
+ #if defined(sun)
+ #  define strtoul	strtol
+ #endif /* defined(sun) */
+-
++#  define strtouq       strtoull
+ /*
+  * Modification History:
+  *

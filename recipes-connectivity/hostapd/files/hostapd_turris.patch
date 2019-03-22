@@ -1,0 +1,12 @@
+--- hostapd-2.5/src/crypto/crypto_openssl.c	2015-09-27 19:02:05.000000000 +0000
++++ hostapd-2.5_mod/src/crypto/crypto_openssl.c	2019-03-12 12:38:40.032066497 +0000
+@@ -96,7 +96,8 @@
+ #ifndef CONFIG_FIPS
+ int md4_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
+ {
+-	return openssl_digest_vector(EVP_md4(), num_elem, addr, len, mac);
++	//return openssl_digest_vector(EVP_md4(), num_elem, addr, len, mac);
++	 fprintf(stderr,"##################### We have commented the md4_vector implementation #################\n");
+ }
+ #endif /* CONFIG_FIPS */
+ 
