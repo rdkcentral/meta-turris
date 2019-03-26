@@ -1,0 +1,10 @@
+--- pptp-1.8.0/pqueue.h	2019-03-12 11:40:16.546009234 +0000
++++ pptp-1.8.0_mod/pqueue.h	2019-03-12 11:41:48.305430386 +0000
+@@ -3,6 +3,7 @@
+ 
+ #include <time.h>
+ #include <sys/time.h>
++#include <sys/types.h>
+ 
+ /* wait this many seconds for missing packets before forgetting about them */
+ #define DEFAULT_PACKET_TIMEOUT 0.3

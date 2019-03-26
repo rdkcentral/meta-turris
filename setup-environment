@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+
+unset _RDK_FLAVOR
+
+TOP_DIR=$(pwd)
+export RDK_BSP_LAYER=none
+
+# default BSP layer is meta-marvell for turris-omnia board
+export RDK_BSP_LAYER=meta-turris
+
+source meta-rdk/setup-environment $1
+if [ $? -ne 0 ]; then
+    return 1
+fi
+
+# at this point the current directory should be the build dir
+BUILD_DIR=$(pwd)
+_RDK_FLAVOR="rdkb"
+
+# Add meta-marvell only if not already present.
+if [[ $(grep '^BBLAYERS' conf/bblayers.conf | grep -c 'meta-marvell') -eq 0 ]] && [[ -d  ../meta-marvell ]]
+then
+    cat >> conf/bblayers.conf <<EOF
+BBLAYERS =+ "\${RDKROOT}/meta-marvell"
+EOF
+fi
+
+# Add meta-cmf-restricted only if not already present.
+if [ $(grep '^BBLAYERS' conf/bblayers.conf | grep -c 'meta-cmf-restricted') -eq 0 -a -d  $TOP_DIR/meta-cmf-restricted ]
+then
+    cat >> conf/bblayers.conf <<EOF
+BBLAYERS =+ "\${RDKROOT}/meta-cmf-restricted"
+EOF
+fi
+
+# Add meta-cmf-broadband only if not already present.
+if [ $(grep '^BBLAYERS' conf/bblayers.conf | grep -c 'meta-cmf-broadband[^-]') -eq 0 -a -d  $TOP_DIR/meta-cmf-broadband ]
+then
+    cat >> conf/bblayers.conf <<EOF
+BBLAYERS =+ "\${RDKROOT}/meta-cmf-broadband"
+EOF
+fi
+
+# Add meta-cmf only if not already present.
+if [ $(grep '^BBLAYERS' conf/bblayers.conf | grep -c 'meta-cmf[^-]') -eq 0 -a -d  $TOP_DIR/meta-cmf ]
+then
+    cat >> conf/bblayers.conf <<EOF
+BBLAYERS =+ "\${RDKROOT}/meta-cmf"
+EOF
+fi
+
+BUILD_DIR=$(pwd)
+
+cd ${BUILD_DIR}
+
+# Needed for external_src build.
+export RDK_ROOT_PATH=$(cd .. ; pwd)
+export BB_ENV_EXTRAWHITE="${BB_ENV_EXTRAWHITE} RDK_ROOT_PATH"
+
+# TEMPORARY HACK: patch opensource layers.
+PATCH_DIR=../patches/rdk-oe
+patch_fail=0
+
+# Check that patches actually exist for this branch.
+if [ -n "$(ls -d ${PATCH_DIR}/*/ 2>/dev/null)" ]; then
+    components=$(ls -d ${PATCH_DIR}/*/ | sed "s:${PATCH_DIR}/::" | sed 's:/$::')
+    for component in ${components}; do
+
+        if [ ! -d "../${component}" ]; then
+            echo "Directory not found, patching skipped: ${component}"
+            continue
+        fi
+
+        cd ../${component}
+        git checkout -- .
+        git clean -qdf .
+
+        # bitbake needs to be handled as a special case. Patches are created as
+        # if bitbake were part of oe-core, however it's a separate repo...
+        if [ "${component}" = "openembedded-core" ]; then
+            cd bitbake
+            git checkout -- .
+            git clean -qdf .
+            cd ..
+        fi
+
+        for patchfile in ${PATCH_DIR}/${component}/*.patch; do
+            # Dry-run revert each patch to test whether it's already been applied
+            # Warning: This won't work if the same file is patched twice, assume that never happens (?)
+            if ! patch -s --dry-run --reverse --force -p1 < $patchfile >/dev/null 2>&1
+            then
+                # If the patch couldn't be reverted then apply it now
+                echo "Applying: $patchfile"
+                if ! patch -s -Np1 < $patchfile
+                then
+                    patch_fail=1
+                    echo "WARNING: patch $patchfile failed to apply correctly."
+                fi
+            else
+                echo "Skipping: $patchfile ( patch already applied ? )"
+            fi
+        done
+    done
+fi
+# END TEMPORARY HACK: patch opensource layers.
+
+cd ${BUILD_DIR}
+
+# Create symlink to generated externalsrc auto.conf.
+rm -f conf/auto.conf
+ln -s ${TOP_DIR}/auto.conf conf/auto.conf
+
+if [ $patch_fail -ne 0 ]; then
+    echo "ERROR: At least one patch did not apply correctly!"
+fi
+return $patch_fail

@@ -1,0 +1,29 @@
+--- git/configure.ac	2019-03-12 13:11:06.811881687 +0000
++++ git1/configure.ac	2019-03-12 13:13:25.315022850 +0000
+@@ -316,7 +316,6 @@
+ 
+ AC_CHECK_FUNCS([__secure_getenv secure_getenv])
+ AC_CHECK_DECLS([
+-        memfd_create,
+         gettid,
+         pivot_root,
+         canonicalize_file_name,
+--- git/src/basic/missing_syscall.h	2019-03-12 13:11:06.167885674 +0000
++++ git1/src/basic/missing_syscall.h	2019-03-12 13:14:14.146719924 +0000
+@@ -77,7 +77,7 @@
+ #      warning "__NR_memfd_create unknown for your architecture"
+ #    endif
+ #  endif
+-
++/*
+ static inline int memfd_create(const char *name, unsigned int flags) {
+ #  ifdef __NR_memfd_create
+         return syscall(__NR_memfd_create, name, flags);
+@@ -86,6 +86,7 @@
+         return -1;
+ #  endif
+ }
++*/
+ #endif
+ 
+ /* ======================================================================= */
