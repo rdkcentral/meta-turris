@@ -1,0 +1,768 @@
+From 90ef5b678de5b9aecb2ebe28944e1bb78fc31ea4 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Fri, 18 Dec 2015 23:22:54 +0000
+Subject: [PATCH] add support for http ( host headers/cookie/url) netfilters
+
+repace strnicmp with strncasecmp if kernel is > 4.0
+
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ include/linux/netfilter/xt_httpcookie.h |   9 ++
+ include/linux/netfilter/xt_httphost.h   |  12 ++
+ include/linux/netfilter/xt_httpurl.h    |  12 ++
+ net/netfilter/Kconfig                   |  21 +++
+ net/netfilter/Makefile                  |   3 +
+ net/netfilter/xt_httpcookie.c           | 176 +++++++++++++++++++++++
+ net/netfilter/xt_httphost.c             | 211 ++++++++++++++++++++++++++++
+ net/netfilter/xt_httpurl.c              | 238 ++++++++++++++++++++++++++++++++
+ 9 files changed, 685 insertions(+)
+ create mode 100644 include/linux/netfilter/xt_httpcookie.h
+ create mode 100644 include/linux/netfilter/xt_httphost.h
+ create mode 100644 include/linux/netfilter/xt_httpurl.h
+ create mode 100644 net/netfilter/xt_httpcookie.c
+ create mode 100644 net/netfilter/xt_httphost.c
+ create mode 100644 net/netfilter/xt_httpurl.c
+
+diff --git a/include/linux/netfilter/xt_httpcookie.h b/include/linux/netfilter/xt_httpcookie.h
+new file mode 100644
+index 0000000..14b9fa0
+--- /dev/null
++++ b/include/linux/netfilter/xt_httpcookie.h
+@@ -0,0 +1,9 @@
++#ifndef _XT_HTTPCOOKIE_H
++#define _XT_HTTPCOOKIE_H
++
++struct xt_httpcookie_info
++{
++	u_int8_t block_cookies;
++};
++
++#endif /*_XT_HTTPCOOKIE_H */
+diff --git a/include/linux/netfilter/xt_httphost.h b/include/linux/netfilter/xt_httphost.h
+new file mode 100644
+index 0000000..36c2729
+--- /dev/null
++++ b/include/linux/netfilter/xt_httphost.h
+@@ -0,0 +1,12 @@
++#ifndef _XT_HTTPHOST_H
++#define _XT_HTTPHOST_H
++
++#define XT_HTTPHOST_MAX_HOST_SIZE (128)
++
++struct xt_httphost_info
++{
++	char 	  host[XT_HTTPHOST_MAX_HOST_SIZE];
++	u_int8_t  invert;
++};
++
++#endif /*_XT_HTTPHOST_H */
+diff --git a/include/linux/netfilter/xt_httpurl.h b/include/linux/netfilter/xt_httpurl.h
+new file mode 100644
+index 0000000..278057e
+--- /dev/null
++++ b/include/linux/netfilter/xt_httpurl.h
+@@ -0,0 +1,12 @@
++#ifndef _XT_HTTPURL_H
++#define _XT_HTTPURL_H
++
++struct xt_httpurl_info
++{
++	u_int8_t  match_proxy;
++	u_int8_t  match_java;
++	u_int8_t  match_activex;
++	u_int8_t  invert;
++};
++
++#endif /*_XT_HTTPURL_H */
+diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
+index a0f3e6a3..22c8d4d 100644
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -1184,6 +1184,27 @@ config NETFILTER_XT_MATCH_L2TP
+ 
+ 	To compile it as a module, choose M here. If unsure, say N.
+ 
++config NETFILTER_XT_MATCH_HTTPHOST
++        tristate '"httphost" HTTP Host header match support'
++        depends on NETFILTER_XTABLES
++        help
++          The xt_httphost module allows you to match the Host header
++          of HTTP requests.
++
++config NETFILTER_XT_MATCH_HTTPCOOKIE
++        tristate '"httpcookie" HTTP cookie blocking support'
++        depends on NETFILTER_XTABLES
++        help
++          The xt_httpcookie module allows you to block the contents of the Cookie
++          header from HTTP requests.
++
++config NETFILTER_XT_MATCH_HTTPURL
++        tristate '"httpurl" HTTP URL match support'
++        depends on NETFILTER_XTABLES
++        help
++          The xt_httpurl module allows you to match proxied, Java, or ActiveX
++          HTTP requests.
++
+ config NETFILTER_XT_MATCH_LENGTH
+ 	tristate '"length" match support'
+ 	depends on NETFILTER_ADVANCED
+diff --git a/net/netfilter/Makefile b/net/netfilter/Makefile
+index a87d8b8..c0e675d 100644
+--- a/net/netfilter/Makefile
++++ b/net/netfilter/Makefile
+@@ -125,6 +125,9 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_TRACE) += xt_TRACE.o
+ obj-$(CONFIG_NETFILTER_XT_TARGET_IDLETIMER) += xt_IDLETIMER.o
+ 
+ # matches
++obj-$(CONFIG_NETFILTER_XT_MATCH_HTTPHOST) += xt_httphost.o
++obj-$(CONFIG_NETFILTER_XT_MATCH_HTTPCOOKIE) += xt_httpcookie.o
++obj-$(CONFIG_NETFILTER_XT_MATCH_HTTPURL) += xt_httpurl.o
+ obj-$(CONFIG_NETFILTER_XT_MATCH_ADDRTYPE) += xt_addrtype.o
+ obj-$(CONFIG_NETFILTER_XT_MATCH_BPF) += xt_bpf.o
+ obj-$(CONFIG_NETFILTER_XT_MATCH_CLUSTER) += xt_cluster.o
+diff --git a/net/netfilter/xt_httpcookie.c b/net/netfilter/xt_httpcookie.c
+new file mode 100644
+index 0000000..3f44fa6
+--- /dev/null
++++ b/net/netfilter/xt_httpcookie.c
+@@ -0,0 +1,176 @@
++#include <linux/init.h>
++#include <linux/ip.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/skbuff.h>
++#include <linux/tcp.h>
++#include <linux/netfilter/x_tables.h>
++#include <linux/netfilter/xt_httpcookie.h>
++#include <net/tcp.h>
++
++MODULE_AUTHOR("");
++MODULE_DESCRIPTION("");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("xt_httpcookie");
++MODULE_ALIAS("ipt_httpcookie");
++MODULE_ALIAS("ip6t_httpcookie");
++
++#define PATTERN_FOUND       (1)
++#define PATTERN_NOT_FOUND   (0)
++#define MIN_HTTP_PACKET_SZ  (16)
++
++/* Returns PATTERN_FOUND or PATTERN_NOT_FOUND */
++static int find_pattern(const char *needle,
++                        size_t needle_len,
++                        char terminal,
++                        const char *haystack,
++                        size_t haystack_len,
++                        unsigned int *match_offset,
++                        unsigned int *match_len)
++{
++	size_t i, j, k;
++
++	if (needle_len > haystack_len) {
++		return PATTERN_NOT_FOUND;
++	}
++
++	for (i = 0; i < (haystack_len - needle_len); i++) {
++		if (memcmp(haystack + i, needle, needle_len) != 0) {
++			continue;
++		}
++
++		/* We found the needle, so now we need to look
++		   for the terminal character */
++		*match_offset = i + needle_len;
++		for (j = *match_offset, k = 0; haystack[j] != terminal; j++, k++) {
++			/* Return if the terminal character isn't found */
++	    	if (j > haystack_len) {
++	    		return PATTERN_NOT_FOUND;
++	    	}
++	    }
++
++	    /* We also found the terminal character */
++	    *match_len = k;
++	    return PATTERN_FOUND;
++    }
++
++    return PATTERN_NOT_FOUND;
++}
++
++static bool match(const struct sk_buff *skb,
++                  struct xt_action_param *par)
++{
++	const struct xt_httpcookie_info *info = par->matchinfo;
++	struct tcphdr _tcph, *tcp_header;
++	unsigned int tcp_header_len;
++	unsigned char *data;
++	unsigned int data_len;
++	unsigned int cookie_offset = 0;
++	unsigned int cookie_len = 0;
++
++	/* Ignore non-head fragments */
++	if (par->fragoff != 0) {
++		return 0;
++	}
++
++	tcp_header = skb_header_pointer(skb, par->thoff, sizeof(_tcph), &_tcph);
++	if (tcp_header == NULL) {
++		return 0;
++	}
++
++	tcp_header_len = skb->len - ip_hdr(skb)->ihl * 4;
++	data = (unsigned char *)tcp_header + tcp_header->doff * 4;
++	data_len = skb->len - ip_hdr(skb)->ihl * 4 - tcp_header->doff * 4;
++
++	/* Ignore packets that are too short to be HTTP packets */
++	if (data_len < MIN_HTTP_PACKET_SZ) {
++		return 0;
++	}
++
++	/* Ignore packets that don't represent HTTP methods */
++	if (memcmp(data, "GET ", sizeof("GET ") - 1) != 0 &&
++        memcmp(data, "POST ", sizeof("POST ") - 1) != 0 &&
++        memcmp(data, "HEAD ", sizeof("HEAD ") - 1) != 0)
++	{
++		return 0;
++	}
++
++	/* Ignore packets without a Cookie header */
++	if (find_pattern("Cookie: ",
++	                 sizeof("Cookie: ") - 1,
++	                 '\r',
++	                 data,
++	                 data_len,
++	                 &cookie_offset,
++	                 &cookie_len) == PATTERN_NOT_FOUND)
++	{
++		return 0;
++	}
++
++	/* If cookies are to be blocked, */
++	if (info->block_cookies) {
++		/* Disable the Cookie header by changing the header name */
++		unsigned char *c = data + cookie_offset - (sizeof("Cookie: ") - 1);
++		*c++ = 'X'; // 'C' -> 'X'
++		*c++ = 'x'; // 'o' -> 'x'
++		*c++ = 'x'; // 'o' -> 'x'
++		*c++ = 'x'; // 'k' -> 'x'
++		*c++ = 'x'; // 'i' -> 'x'
++		*c++ = 'x'; // 'e' -> 'x'
++
++		/*
++		 * Recompute the TCP checksum
++		 * Note: You must set the checksum value to 0 prior to recomputing it!
++		 */
++		tcp_header->check = 0;
++		tcp_header->check = tcp_v4_check(tcp_header_len,
++		                                 ip_hdr(skb)->saddr,
++		                                 ip_hdr(skb)->daddr,
++		                                 csum_partial((char *)tcp_header, tcp_header_len, 0));
++	}
++
++	return 1;
++}
++
++static int checkentry(const struct xt_mtchk_param *par)
++{
++	return 0;
++}
++
++static void destroy(const struct xt_mtdtor_param *par)
++{
++}
++
++static struct xt_match xt_httpcookie_match[] = {
++	{
++		.name 		= "httpcookie",
++		.family		= AF_INET,
++		.checkentry	= checkentry,
++		.match 		= match,
++		.destroy 	= destroy,
++		.matchsize	= sizeof(struct xt_httpcookie_info),
++		.me 		= THIS_MODULE
++	},
++	{
++		.name 		= "httpcookie",
++		.family		= AF_INET6,
++		.checkentry	= checkentry,
++		.match 		= match,
++		.destroy 	= destroy,
++		.matchsize	= sizeof(struct xt_httpcookie_info),
++		.me 		= THIS_MODULE
++	},
++};
++
++static int __init xt_httpcookie_init(void)
++{
++	return xt_register_matches(xt_httpcookie_match, ARRAY_SIZE(xt_httpcookie_match));
++}
++
++static void __exit xt_httpcookie_exit(void)
++{
++	xt_unregister_matches(xt_httpcookie_match, ARRAY_SIZE(xt_httpcookie_match));
++}
++
++module_init(xt_httpcookie_init);
++module_exit(xt_httpcookie_exit);
+diff --git a/net/netfilter/xt_httphost.c b/net/netfilter/xt_httphost.c
+new file mode 100644
+index 0000000..8fdd042
+--- /dev/null
++++ b/net/netfilter/xt_httphost.c
+@@ -0,0 +1,211 @@
++#include <linux/init.h>
++#include <linux/ip.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/skbuff.h>
++#include <linux/tcp.h>
++#include <linux/version.h>
++#include <linux/netfilter/x_tables.h>
++#include <linux/netfilter/xt_httphost.h>
++
++MODULE_AUTHOR("");
++MODULE_DESCRIPTION("");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("xt_httphost");
++MODULE_ALIAS("ipt_httphost");
++MODULE_ALIAS("ip6t_httphost");
++
++#define MIN_HTTP_PACKET_SZ  (16)
++#define PATTERN_FOUND       (1)
++#define PATTERN_NOT_FOUND   (0)
++#define HOSTS_DO_MATCH      (1)
++#define HOSTS_DO_NOT_MATCH  (0)
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,0,0)
++#define strnicmp(s1, s2, count) strncasecmp((s1), (s2), (count))
++#endif
++
++/* Returns PATTERN_FOUND or PATTERN_NOT_FOUND */
++static int find_pattern(const char *needle,
++                        size_t needle_len,
++                        char terminal,
++                        const char *haystack,
++                        size_t haystack_len,
++                        unsigned int *match_offset,
++                        unsigned int *match_len)
++{
++	size_t i, j, k;
++
++	if (needle_len > haystack_len) {
++		return PATTERN_NOT_FOUND;
++	}
++
++	for (i = 0; i < (haystack_len - needle_len); i++) {
++		if (memcmp(haystack + i, needle, needle_len) != 0) {
++			continue;
++		}
++
++		/* We found the needle, so now we need to look
++		   for the terminal character */
++		*match_offset = i + needle_len;
++		for (j = *match_offset, k = 0; haystack[j] != terminal; j++, k++) {
++			/* Return if the terminal character isn't found */
++	    	if (j > haystack_len) {
++	    		return PATTERN_NOT_FOUND;
++	    	}
++	    }
++
++	    /* We also found the terminal character */
++	    *match_len = k;
++	    return PATTERN_FOUND;
++    }
++
++    return PATTERN_NOT_FOUND;
++}
++
++/* Returns HOSTS_DO_MATCH or HOSTS_DO_NOT_MATCH */
++static int http_host_cmp(const char *top_level_host,
++                         const char *test_host)
++{
++	unsigned int top_level_host_len;
++	unsigned int test_host_len;
++
++	if (test_host == NULL || top_level_host == NULL) {
++		return HOSTS_DO_NOT_MATCH;
++	}
++
++	top_level_host_len = strlen(top_level_host);
++	test_host_len = strlen(test_host);
++
++	/* If the top level host is longer than the test host,
++	   we can already conclude that they don't match */
++	if (top_level_host_len > test_host_len) {
++		return HOSTS_DO_NOT_MATCH;
++	}
++
++	/* Check whether the hosts are equal */
++	if (strnicmp(test_host, top_level_host, top_level_host_len) == 0) {
++        if(test_host_len == top_level_host_len)
++		    return HOSTS_DO_MATCH;
++	}
++#if 0
++    /* Check whether the test host is a subdomain of the top level host
++	   (the entire top level host string needs to appear at the end of the
++	   test host string, preceded by a '.' */
++	if (test_host_len >= top_level_host_len + 1 &&
++	    test_host[test_host_len - top_level_host_len - 1] == '.' &&
++	    strnicmp(top_level_host,
++	             &test_host[test_host_len - top_level_host_len],
++	             top_level_host_len) == 0)
++	{
++		return HOSTS_DO_MATCH;
++	}
++#endif
++	return HOSTS_DO_NOT_MATCH;
++}
++
++static bool match(const struct sk_buff *skb,
++                  struct xt_action_param *par)
++{
++	const struct xt_httphost_info *info = par->matchinfo;
++	struct tcphdr _tcph, *tcp_header;
++	unsigned char *data;
++	unsigned int data_len;
++	unsigned int host_offset = 0;
++	unsigned int host_len = 0;
++	char host_buf[XT_HTTPHOST_MAX_HOST_SIZE];
++	int does_host_match = 0;
++
++	/* Ignore non-head fragments */
++	if (par->fragoff != 0) {
++		return 0;
++	}
++
++	tcp_header = skb_header_pointer(skb, par->thoff, sizeof(_tcph), &_tcph);
++	if (tcp_header == NULL) {
++		return 0;
++	}
++
++	data = (unsigned char *)tcp_header + tcp_header->doff * 4;
++	data_len = skb->len - ip_hdr(skb)->ihl * 4 - tcp_header->doff * 4;
++
++	/* Ignore packets that are too short to be HTTP packets */
++	if (data_len < MIN_HTTP_PACKET_SZ) {
++		return 0;
++	}
++
++	/* Ignore packets that don't represent HTTP methods */
++	if (memcmp(data, "GET ", sizeof("GET ") - 1) != 0 &&
++        memcmp(data, "POST ", sizeof("POST ") - 1) != 0 &&
++        memcmp(data, "HEAD ", sizeof("HEAD ") - 1) != 0)
++	{
++		return 0;
++	}
++
++	/* Ignore packets without a host header */
++	if (find_pattern("Host: ",
++                     sizeof("Host: ") - 1,
++                     '\r',
++                     data,
++                     data_len,
++                     &host_offset,
++                     &host_len) == PATTERN_NOT_FOUND)
++	{
++		return 0;
++	}
++
++	/* Check the bounds on the length of the host name */
++	if (host_len <= 0 || host_len >= XT_HTTPHOST_MAX_HOST_SIZE - 1) {
++		return 0;
++	}
++
++	strncpy(host_buf, data + host_offset, host_len);
++	*(host_buf + host_len) = 0;
++
++	does_host_match = (http_host_cmp(info->host, host_buf) == HOSTS_DO_MATCH);
++
++	return does_host_match ^ info->invert;
++}
++
++static int checkentry(const struct xt_mtchk_param *par)
++{
++	return 0;
++}
++
++static void destroy(const struct xt_mtdtor_param *par)
++{
++}
++
++static struct xt_match xt_httphost_match[] __read_mostly = {
++	{
++		.name 		= "httphost",
++		.family		= AF_INET,
++		.checkentry	= checkentry,
++		.match 		= match,
++		.destroy 	= destroy,
++		.matchsize	= sizeof(struct xt_httphost_info),
++		.me 		= THIS_MODULE
++	},
++	{
++		.name 		= "httphost",
++		.family		= AF_INET6,
++		.checkentry	= checkentry,
++		.match 		= match,
++		.destroy 	= destroy,
++		.matchsize	= sizeof(struct xt_httphost_info),
++		.me 		= THIS_MODULE
++	},
++};
++
++static int __init xt_httphost_init(void)
++{
++	return xt_register_matches(xt_httphost_match, ARRAY_SIZE(xt_httphost_match));
++}
++
++static void __exit xt_httphost_exit(void)
++{
++	xt_unregister_matches(xt_httphost_match, ARRAY_SIZE(xt_httphost_match));
++}
++
++module_init(xt_httphost_init);
++module_exit(xt_httphost_exit);
+diff --git a/net/netfilter/xt_httpurl.c b/net/netfilter/xt_httpurl.c
+new file mode 100644
+index 0000000..31920e1
+--- /dev/null
++++ b/net/netfilter/xt_httpurl.c
+@@ -0,0 +1,238 @@
++#include <linux/init.h>
++#include <linux/ip.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/skbuff.h>
++#include <linux/tcp.h>
++#include <linux/version.h>
++#include <linux/netfilter/x_tables.h>
++#include <linux/netfilter/xt_httpurl.h>
++
++MODULE_AUTHOR("");
++MODULE_DESCRIPTION("");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("xt_httpurl");
++MODULE_ALIAS("ipt_httpurl");
++MODULE_ALIAS("ip6t_httpurl");
++
++#define MAX_URL_SZ          (256)
++#define MIN_HTTP_PACKET_SZ  (16)
++#define PATTERN_FOUND       (1)
++#define PATTERN_NOT_FOUND   (0)
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,0,0)
++#define strnicmp(s1, s2, count) strncasecmp((s1), (s2), (count))
++#endif
++
++
++/* Returns PATTERN_FOUND or PATTERN_NOT_FOUND */
++static int find_pattern(const char *needle,
++                        size_t needle_len,
++                        char terminal,
++                        const char *haystack,
++                        size_t haystack_len,
++                        unsigned int *match_offset,
++                        unsigned int *match_len)
++{
++	size_t i, j, k;
++
++	if (needle_len > haystack_len) {
++		return PATTERN_NOT_FOUND;
++	}
++
++	for (i = 0; i < (haystack_len - needle_len); i++) {
++		if (memcmp(haystack + i, needle, needle_len) != 0) {
++			continue;
++		}
++
++		/* We found the needle, so now we need to look
++		   for the terminal character */
++		*match_offset = i + needle_len;
++		for (j = *match_offset, k = 0; haystack[j] != terminal; j++, k++) {
++			/* Return if the terminal character isn't found */
++	    	if (j > haystack_len) {
++	    		return PATTERN_NOT_FOUND;
++	    	}
++	    }
++
++	    /* We also found the terminal character */
++	    *match_len = k;
++	    return PATTERN_FOUND;
++    }
++
++    return PATTERN_NOT_FOUND;
++}
++
++static int str_endswith(char *suffix, unsigned int suffix_len,
++                        char *str, unsigned int str_len)
++{
++	if (str_len < suffix_len) {
++		return 0;
++	}
++
++	return (strnicmp(str + str_len - suffix_len, suffix, suffix_len) == 0);
++}
++
++static bool match(const struct sk_buff *skb,
++                  struct xt_action_param *par)
++{
++	const struct xt_httpurl_info *info = par->matchinfo;
++	struct tcphdr _tcph, *tcp_header;
++	unsigned char *data;
++	unsigned int data_len;
++	unsigned int url_offset = 0;
++	unsigned int url_len = 0;
++	int found;
++	int filter_match = 0;
++	int i;
++
++	/* Ignore non-head fragments */
++	if (par->fragoff != 0) {
++		return 0;
++	}
++
++	tcp_header = skb_header_pointer(skb, par->thoff, sizeof(_tcph), &_tcph);
++	if (tcp_header == NULL) {
++		return 0;
++	}
++
++	data = (unsigned char *)tcp_header + tcp_header->doff * 4;
++	data_len = skb->len - ip_hdr(skb)->ihl * 4 - tcp_header->doff * 4;
++
++	/* Ignore packets that are too short to be HTTP packets */
++	if (data_len < MIN_HTTP_PACKET_SZ) {
++		return 0;
++	}
++
++	found = find_pattern("GET ",
++	                     sizeof("GET ") - 1,
++	                     '\r',
++	                     data,
++	                     data_len,
++	                     &url_offset,
++	                     &url_len);
++	if (found == PATTERN_NOT_FOUND) {
++		found = find_pattern("POST ",
++		                     sizeof("POST ") - 1,
++		                     '\r',
++		                     data,
++		                     data_len,
++		                     &url_offset,
++		                     &url_len);
++	}
++	if (found == PATTERN_NOT_FOUND) {
++		found = find_pattern("HEAD ",
++		                     sizeof("HEAD ") - 1,
++		                     '\r',
++		                     data,
++		                     data_len,
++		                     &url_offset,
++		                     &url_len);
++	}
++
++	/* Ignore packets that don't represent HTTP methods */
++	if (found == PATTERN_NOT_FOUND) {
++		return 0;
++	}
++
++	/* Truncate the HTTP version from the end of the URL */
++	url_len -= (sizeof(" HTTP/x.x") - 1);
++
++	/* Check the bounds on the length of the host name */
++	if (url_len <= 0 || url_len > MAX_URL_SZ) {
++		return 0;
++	}
++
++	/* Truncate any parameters from the URL */
++	for (i = 1; i < url_len; i++) {
++		if (data[url_offset + i] == '?') {
++			url_len = i;
++			break;
++		}
++	}
++
++	if (info->match_java) {
++		if (str_endswith(".class", sizeof(".class") - 1, data + url_offset, url_len) ||
++		      str_endswith(".js", sizeof(".js") - 1, data + url_offset, url_len)) {
++			filter_match = 1;
++			goto done;
++		}
++	}
++	if (info->match_activex) {
++		if (str_endswith(".ocx", sizeof(".ocx") - 1, data + url_offset, url_len)) {
++			filter_match = 1;
++			goto done;
++		}
++		if (str_endswith(".cab", sizeof(".cab") - 1, data + url_offset, url_len)) {
++			filter_match = 1;
++			goto done;
++		}
++	}
++	if (info->match_proxy) {
++		unsigned int host_offset = 0;
++		unsigned int host_len = 0;
++
++		found = find_pattern("Host: ",
++		                     sizeof("Host: ") - 1,
++		                     '\r',
++		                     data,
++		                     data_len,
++		                     &host_offset,
++		                     &host_len);
++
++		if (found == PATTERN_NOT_FOUND) {
++			return 0;
++		}
++
++		if (strnicmp(data + url_offset, "http://", sizeof("http://") - 1) == 0) {
++			filter_match = 1;
++			goto done;
++		}
++	}
++
++done:
++	return filter_match ^ info->invert;
++}
++
++static int checkentry(const struct xt_mtchk_param *par)
++{
++	return 0;
++}
++
++static void destroy(const struct xt_mtdtor_param *par)
++{
++}
++
++static struct xt_match xt_httpurl_match[] = {
++	{
++		.name 		= "httpurl",
++		.family		= AF_INET,
++		.checkentry	= checkentry,
++		.match 		= match,
++		.destroy 	= destroy,
++		.matchsize	= sizeof(struct xt_httpurl_info),
++		.me 		= THIS_MODULE
++	},
++	{
++		.name 		= "httpurl",
++		.family		= AF_INET6,
++		.checkentry	= checkentry,
++		.match 		= match,
++		.destroy 	= destroy,
++		.matchsize	= sizeof(struct xt_httpurl_info),
++		.me 		= THIS_MODULE
++	},
++};
++
++static int __init xt_httpurl_init(void)
++{
++	return xt_register_matches(xt_httpurl_match, ARRAY_SIZE(xt_httpurl_match));
++}
++
++static void __exit xt_httpurl_exit(void)
++{
++	xt_unregister_matches(xt_httpurl_match, ARRAY_SIZE(xt_httpurl_match));
++}
++
++module_init(xt_httpurl_init);
++module_exit(xt_httpurl_exit);
+-- 
+2.7.0
+

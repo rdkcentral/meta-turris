@@ -55,6 +55,11 @@ SRC_URI = "${SOC_SRC_URI};branch=${SRCBRANCH}"
 SRCREV = "1357b78ad32c3dfc4933f8613ae3755e7b314eb6"
 
 
+SRC_URI_remove = "file://0001-add-support-for-http-host-headers-cookie-url-netfilt.patch"
+SRC_URI_append = "\
+    file://0001-add-support-for-http-host-headers-cookie-url-netfilt_4.14.patch \
+   "
+
 SRC_URI_append_libc-musl = "\
     file://0001-libc-compat.h-fix-some-issues-arising-from-in6.h.patch \
     file://0002-libc-compat.h-prevent-redefinition-of-struct-ethhdr.patch \
