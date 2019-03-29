@@ -1,6 +1,6 @@
 SUMMARY = "Custom core image package group for marvell boards"
 
-LICENSE = "RDK"
+LICENSE = "MIT"
 
 inherit packagegroup
 
