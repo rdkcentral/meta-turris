@@ -1,0 +1,9 @@
+[Unit]
+Description= WiFi Initialized Path
+
+[Path]
+PathExists=/tmp/wifi_initialized
+Unit=wifi-initialized.target
+
+[Install]
+WantedBy=multi-user.target

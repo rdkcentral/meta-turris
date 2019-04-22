@@ -1,0 +1,9 @@
+[Unit]
+Description=TurrisOmnia WIFI Initialized Path
+
+[Path]
+PathExists=/tmp/wifi_driver_initialized
+Unit=ccspwifiagent.service
+
+[Install]
+WantedBy=multi-user.target

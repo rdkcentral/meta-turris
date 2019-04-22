@@ -1,0 +1,921 @@
+################################################################################
+# This file contains system defaults which will be used
+# if, and only if, the value has not yet been set
+# Both sysevent and syscfg namespace can be set
+#
+# syntax is
+# 1) for syscfg address space
+#    $name=value     Normal
+#    $$name=value    If the default should take precedence over running config.
+# 2) for sysevent address space
+#    @name=value or
+#    @name=value flag  where flag is defined in sysevent.h
+#          TUPLE_FLAG_NONE     = 0x00000000  (no flags)
+#          TUPLE_FLAG_SERIAL   = 0x00000001  (execute registered handlers in serial fashion)
+#          TUPLE_FLAG_EVENT    = 0x00000002  (execute registered handlers upon any set operation)
+#          TUPLE_FLAG_WORM     = 0x00000004  (write once read many)
+#          example @foo=bar 0x00000001
+#    For sysevent address space you can use a syscfg value as the
+#    initial value for the sysevent tuple by prefacing the value by $
+#    eg. @name=$name will use the current value of syscfg <name> as the value
+################################################################################
+
+# Version of the database.
+$$Version=11
+
+#-------------------------------------------------------------------
+#     sysevent namespace
+#-------------------------------------------------------------------
+
+# wan_ifname is the name (as known to the OS) of the wan interface
+@wan_ifname=erouter0
+
+# model_name          - display friendly model name of this device
+@model_name=USGv2 0x00000004
+
+# firmware_version is the current firmware version
+@firmware_version=0.0 0x00000004
+
+# current_wan_ipaddr is the ip address currently assigned to the wan
+@current_wan_ipaddr= 0.0.0.0
+
+@lan-status=stopped
+@wan-status=stopped
+@bridge-status=stopped
+@forwarding-status=stopped
+
+# current_wan_state is the current state of the wan (up/down)
+@current_wan_state=down
+# desired_wan_state is the desired state of the wan (up/down)
+@desired_wan_state=down
+# phylink_wan_state is the current state wan port's physical link (up/down)
+@phylink_wan_state=up
+# ipv4_x_states are used for events internal to the wan but initialize them
+@current_ipv4_wan_state=down
+@current_ipv4_link_state=down
+@desired_ipv4_wan_state=down
+@desired_ipv4_link_state=down
+
+# current hostname is taken from syscfg
+@hostname=$hostname
+
+# current usb device state (inserted/removed)
+#@usb_device_state=removed
+#@usb_device_mount_pt=none
+
+# Wireless radio definitions for ut610n
+#@wl0_radio_type=single    0x00000004
+#@wl0_radio_band=2.4g      0x00000004
+#@wl0_osifname=eth1        0x00000004
+
+#@wl1_radio_type=dual      0x00000004
+#@wl1_radio_band="2.4g 5g" 0x00000004
+#@wl1_osifname=eth2        0x00000004
+
+
+#-------------------------------------------------------------------
+#     syscfg namespace
+#-------------------------------------------------------------------
+
+# hostname            - the name of the home gateway as known to itself
+#    and the home network. The hostname is used to identify the home gateway
+#    during dns lookups.
+#    This may be "" or unset if no hostname is desired, but this will
+#    result in an inability to resolve the home gateway by name to
+#    provide its current lan interface ip address.
+# dont assign hostname. instead let registration assign ssid on a per box basis
+# $hostname=ut610n
+
+# Last eRouter Mode, can be modified by DOCSIS Configure File TLV202
+# 0 - disabled
+# 1 - IPv4
+# 2 - IPv6
+# 3 - IPv4 and IPv6
+$last_erouter_mode=1
+
+# wan_physical_ifname - the name (as known to the OS) of the physical interface
+#    that is used for the wan. This setting is not meant for users to manipulate.
+$$wan_physical_ifname=erouter0
+
+# wan_bridge_ifname - the name (as known to the OS) of the wan interface that is
+#    to be enslaved in the lan bridge when in bridge mode.
+$$wan_bridge_ifname=lbr0
+
+# wan_virtual_ifnum   - this is used only if the wan interface is part of a
+#    virtual lan. This technique can be used to separate the ethernet switch
+#    into a wan port and some lan ports.
+#    If so, the value of wan_virtual_ifnum determines the name of the vlan
+#    ("vlan" contatenated with wan_virtual_ifnum). The wan_physical_ifname
+#    will be part of the resultant virtual lan.
+#    If no vlan is used then the tuple is not required, or may be set to ""
+#    This setting is not meant for users to manipulate.
+#$wan_virtual_ifnum=2
+
+# wan_mtu             - the size of the wan interface's mtu
+#                   0 - means auto-mtu, system will pick appropriate
+#                       default depending on WAN protocol
+$wan_mtu=0
+
+# wan_proto           - describes how the wan interface is provisioned
+#    must be one of: dhcp, static, pppoe, pptp, l2tp, telstra
+$wan_proto=dhcp
+
+# if wan_proto=static then we need to know the values to which to provision
+#    ----------------
+# the wan interface
+#    wan_ipaddr          - desired wan interface ip address
+#    wan_netmask         - desired netmask for the interface
+#    wan_default_gateway - the default gateway to route to
+#    wan_domain          - the name of the wan domain (optional)
+#    nameserver1         - primary DNS nameserver to use, or 0.0.0.0 if none
+#    nameserver2         - secondary DNS nameserver to use, or 0.0.0.0 if none
+#    nameserver3         - tertiary DNS nameserver to use, or 0.0.0.0 if none
+# $wan_ipaddr=0.0.0.0
+# $wan_netmask=255.255.255.0
+# $wan_default_gateway=0.0.0.0
+# $nameserver1=0.0.0.0
+# $nameserver2=0.0.0.0
+# $nameserver3=0.0.0.0
+# wan_domain          - the domain of the wan. The wan_domain is required
+#    by some ISPs in order to define the search order for dns queries.
+#    and thus is sometimes used when setting a static wan provisioning.
+#    This may be "" or unset if no wan_domain setting is required.
+# $wan_domain=
+
+# if wan_proto=pppoe then
+#    ---------------
+# wan_proto_username - the username
+# wan_proto_password - the password
+# wan_proto_remote_name  - an remotename (optional)
+# wan_domain  - the authentication domain (optional)
+# pppoe_service_name - for pppoe an optional service name
+# pppoe_access_concentrator_name - for pppoe an optional ac name
+# ppp_conn_method - describes the connection method
+#    must be either: redial or demand
+# ppp_keepalive_interval - if ppp_conn_method=redial (should be 30-180)
+# ppp_idle_time - if ppp_conn_method=demand (should be 1-9999)
+$wan_proto_username=
+$wan_proto_password=
+$wan_proto_remote_name=
+$pppoe_service_name=
+$pppoe_access_concentrator_name=
+# $ppp_conn_method=demand
+# $ppp_keepalive_interval=180
+# $ppp_idle_time=9999
+
+# if wan_proto=pptp then
+#    ---------------
+# wan_proto_username - the username
+# wan_proto_password - the password
+# wan_proto_remote_name  - an remotename (optional)
+# wan_domain  - the authentication domain (optional)
+# wan_proto_server_address- ip address of the pptp server
+# pptp_address_static- whether or not to use auto or static ip address
+#                      0 or "" means automatic
+#                      1 means static
+# if static then
+#    wan_ipaddr          - desired wan interface ip address
+#    wan_netmask         - desired netmask for the interface
+#    wan_default_gateway - the default gateway to route to
+#    wan_domain          - the name of the wan domain (optional)
+#    nameserver1         - primary DNS nameserver to use, or 0.0.0.0 if none
+#    nameserver2         - secondary DNS nameserver to use, or 0.0.0.0 if none
+#    nameserver3         - tertiary DNS nameserver to use, or 0.0.0.0 if none
+#
+# ppp_conn_method - describes the connection method
+#    must be either: redial or demand
+# ppp_keepalive_interval - if ppp_conn_method=redial (should be 30-180)
+# ppp_idle_time - if ppp_conn_method=demand (should be 1-9999)
+$wan_proto_server_address=
+$wan_domain=
+$pptp_address_static=0
+
+# if wan_proto=l2tp then
+#    -------------
+# wan_proto_username - the username
+# wan_proto_password - the password
+# wan_proto_server_address- ip address of the l2tp server
+# l2tp_address_static- whether or not to use auto or static ip address
+#                      0 or "" means automatic
+#                      1 means static
+# if static then
+#    wan_ipaddr          - desired wan interface ip address
+#    wan_netmask         - desired netmask for the interface
+#    wan_default_gateway - the default gateway to route to
+#    wan_domain          - the name of the wan domain (optional)
+#    nameserver1         - primary DNS nameserver to use, or 0.0.0.0 if none
+#    nameserver2         - secondary DNS nameserver to use, or 0.0.0.0 if none
+#    nameserver3         - tertiary DNS nameserver to use, or 0.0.0.0 if none
+#
+# ppp_conn_method - describes the connection method
+#    must be either: redial or demand
+# ppp_keepalive_interval - if ppp_conn_method=redial (should be 30-180)
+# ppp_idle_time - if ppp_conn_method=demand (should be 1-9999)
+$l2tp_address_static=0
+
+
+# lan_ifname          - the name (as known to the OS) of the lan interface
+#    This setting is not meant for users to manipulate.
+$lan_ifname=brlan0
+
+# lan_ethernet_virtual_ifnums -  a list of vlan nums. This is used if the
+#    ethernet switch has been segmented into wan and lan ports using the
+#    technique described in wan_virtual_ifnum.
+#    This setting is not meant for users to manipulate.
+#$lan_ethernet_virtual_ifnums=1
+
+# lan_ethernet_physical_ifnames - a list of names of ethernet interfaces,
+#    which will be enslaved into the lan bridge (which is known as lan_ifname
+#    as described above)
+#    This setting is not meant for users to manipulate
+$$lan_ethernet_physical_ifnames=eth1
+
+# lan_wl_physical_ifnames - a list of names of 802.11 interfaces, which will
+#    be enslaved into the lan bridge (which is known as lan_ifname as
+#    described above).
+#    This setting is not meant for users to manipulate
+# $lan_wl_physical_ifnames=eth1 eth2
+
+# wireless interface settings
+# ---------------------------
+# for each wireless interface in lan_wl_physical_ifnames you must
+# specify the settings for that interface using the format
+# XXXX_setting, where
+#    XXXX is the interface name, for example eth1
+#    setting is the name of the value to set.
+# For example eth1_wl_ssid
+#    controls the wl_ssid value for eth1
+# a) ssid
+# b) wep
+# wl_wep_enabled is 0 if wep is not enabled and 1 if enabled
+# if wl_wep_enabled then you must specify the wep settings
+# wl_wep_primary_key specifies the primary wep key [0-3]
+# wl_wep_key_X specifies the wep_key for the index X
+# E.g:
+# $wl1_key_1=
+# $wl1_key_2=
+# $wl1_key_3=
+# $wl1_key_4=
+
+
+# WLAN domain: wl0_xxx is for 2.4GHz, wl1_xxx is for 5GHz
+
+# WLAN radio settings
+# $wl_config_mode=manual
+
+# 2.4GHz
+# $wl0_state=up
+# dont assign ssid. instead let registration assign ssid on a per box basis
+# $wl0_ssid=ut610n
+# $wl0_ssid_broadcast=1
+# $wl0_network_mode=11n
+# $wl0_radio_band=auto
+# $wl0_channel=auto
+# $wl0_sideband=lower
+
+# 5GHz
+# $wl1_state=up
+# dont assign ssid. instead let registration assign ssid on a per box basis
+# $wl1_ssid=ut610n_media
+# $wl1_ssid_broadcast=1
+# $wl1_network_mode=11n
+# $wl1_radio_band=auto
+# $wl1_channel=auto
+# $wl1_sideband=lower
+
+# WLAN security settings
+
+# 2.4GHz
+# $wl0_security_mode=disabled
+# $wl0_encryption=
+# $wl0_passphrase=
+# $wl0_tx_key=1
+# $wl0_radius_server=
+# $wl0_radius_port=1812
+# $wl0_shared=0
+# $wl0_encryption=tkip
+# $wl0_key_renewal=3600
+
+# 5GHz
+# $wl1_security_mode=disabled
+# $wl1_encryption=
+# $wl1_passphrase=
+# $wl1_tx_key=1
+# $wl1_radius_server=
+# $wl1_radius_port=1812
+# $wl1_shared=0
+# $wl1_key_renewal=3600
+
+# WLAN MAC filters
+# $wl_access_restriction=disabled
+# $wl_mac_filter=
+
+# Advanced features
+# 2.4GHZ
+# $wl0_ap_isolation=disabled
+# $wl0_frame_burst=enabled
+# $wl0_authentication_type=auto
+# $wl0_basic_rate=default
+# $wl0_transmission_rate=auto
+# $wl0_n_transmission_rate=auto
+# $wl0_transmission_power=high
+# $wl0_cts_protection_mode=auto
+# $wl0_beacon_interval=100
+# $wl0_dtim_interval=1
+# $wl0_fragmentation_threshold=2346
+# $wl0_rts_threshold=2347
+
+# 5GHz
+# $wl1_ap_isolation=disabled
+# $wl1_frame_burst=enabled
+# $wl1_authentication_type=auto
+# $wl1_basic_rate=default
+# $wl1_transmission_rate=auto
+# $wl1_n_transmission_rate=auto
+# $wl1_transmission_power=high
+# $wl1_cts_protection_mode=auto
+# $wl1_beacon_interval=100
+# $wl1_dtim_interval=1
+# $wl1_fragmentation_threshold=2346
+# $wl1_rts_threshold=2347
+
+# Wireless QoS
+# $wl_wmm_support=enabled
+# $wl_no_acknowledgement=disabled
+
+# lan_ipaddr          - the ip address to assign the lan_ifname
+# lan_netmask         - the netmask to assign the lan_ifname
+$lan_ipaddr=10.0.0.1
+$lan_netmask=255.255.255.0
+
+# lan_domain          - the name of the lan side domain
+# -----------
+#   This may be blank or unassigned if no lan domain is desired
+#   however for internal dns lookups it is usually desirable to
+#   have a lan domain
+$lan_domain=utopia.net
+
+$StaticRouteCount=0
+
+# dhcp server
+# ----------
+# dhcp_server_enabled  - if 0 then not enabled, if 1 then enabled
+#    It must be enabled for any dhcp options to take effect
+# dhcp_start           - the starting address for assigning dhcp leases
+#   on the lan side
+#   It is the last octet of the ip address. Eg 100 is 192.168.1.100
+# dhcp_num             - the number of ip addresses that the dhcp server
+#    can give out on the lan side
+# dhcp_lease_time      - the number of minutes (m) or hours (h) that
+#                        a dhcp lease is given to a lan client
+# dhcp_nameserver_enabled, dhcp_nameserver_1, dhcp_nameserver_2, dhcp_nameserver_3 - nameservers to provision to dhcp clients
+# dhcp_wins_server    - wins server to provision to client
+# dhcp_server_propagate_wan_domain - to maintain old (and less good) behavior of using the wan domain
+#                                    for lan clients then ser dhcp_server_propagate_wan_domain to 1
+# dhcp_server_propagate_wan_nameserver - to maintain old (and less good) behavior of using the wan nameservers
+#                                    for lan clients then ser dhcp_server_propagate_wan_nameserver to 1
+# dhcp_server_slow_start - if we are propagating info from wan, and if wan is not yet provisioned, then give dhcp
+#                          clients a short lease in order to give wan a chance to come up
+$dhcp_nameserver_enabled=0
+$dhcp_server_enabled=1
+$dhcp_start=10.0.0.2
+$dhcp_end=10.0.0.253
+$dhcp_num=252
+$dhcp_lease_time=7d
+$dhcp_server_propagate_wan_domain=1
+$dhcp_server_propagate_wan_nameserver=1
+$dhcp_server_slow_start=1
+
+# static dhcp leases
+# ------------------
+#    if you want to have static addresses given to lan hosts by the dhcp server then
+#       dhcp_num_static_host  -  the number of static hosts provisioned
+#       and for each host dhcp_static_host_1 ... dhcp_static_host_x must be
+#          either none (for a hole in the array)
+#          or mac_address,last_octet_of_ip_address,friendly-name, eg. 11:22:33:44:55:66,99,Bob's iMac
+$dhcp_num_static_hosts=0
+
+# static nameservers
+# $nameserver1=
+# $nameserver2=
+# $nameserver3=
+
+# static wins server
+# ------------------
+#$dhcp_wins_server=
+
+# ddns
+# ----
+# ddns_enable          - will set/disable the ddns client
+#    0 is disabled, otherwise it is enabled
+# ddns_service          - the name of the ddns service
+#                         one of:
+#                                null ezip pgpow dhs
+#                                dyndns dyndns-static dyndns-custom
+#                                ods tzo easydns easydns-partner
+#                                gnudip justlinux dyns hn zoneedit
+#                                heipv6tb
+
+# ddns_update_days      - the maximum number of days that we can wait between
+#    ddns updates in order that the server doesnt think we implicitly unregistered
+#    from the ddns service
+# ddns_last_update       - the timestamp when we last registered with the
+#    ddns service.
+# it may be 0 if we never registered
+# ddns_hostname           - the name we are registering as with the ddns service
+# ddns_username/ddns_password -  the credentials for the ddns service
+# ddns_mx                     - string to send as the mail exchange
+# ddns_wildcard               - set your domain to have a wildcard
+# ddns_server	              - override default ip:port of ddns service provider
+# wan_last_ipaddr         - the ip address that was last successfully registered
+#    This should be 0.0.0.0 until we register successfully with the ddns server
+#    This is not meant to be changed by the user
+# with ddns service. It may be 0.0.0.0 if we never successfully registered
+# It may also be unset
+# $wan_last_ipaddr=0.0.0.0
+# ddns_last_update        - the timestamp of when we last updated successfully
+#   with the ddns server
+#   It may be 0 or it may be unset if never registered
+#   This is not meant to be changed by the user
+# ddns_last_update=0
+$ddns_enable=0
+$ddns_update_days=28
+$ddns_last_update=0
+$ddns_enable1=0
+$ddns_enable2=0
+$ddns_service1=dyndns
+$ddns_service2=tzo
+$ddns_username1=admin1
+$ddns_username2=admin2
+$ddns_hostname1=cisco.com
+$ddns_hostname2=cisco.com
+$ddns_password1=admin1
+$ddns_password2=admin2
+# ntp_server is the name of the ntp server we should use
+$ntp_enabled=1
+$ntp_server1=time.nist.gov
+$ntp_server2=nist1-ny.glassey.com
+#$ntp_server3=2.pool.ntp.org
+# dynamic ntp servers
+# if we get ntp_servers from dhcp client then they will be added to sysevent
+#@dhcpc_ntp_server1=
+#@dhcpc_ntp_server2=
+#@dhcpc_ntp_server3=
+
+# TZ is the timezone that we are in. eg GMT+08:00
+# also Daylight Savings time can be added
+# One specification for DST starting on March 8 @ 2 AM and ending on Nov 11 @ 2AM
+# is: March 8 is the 0th day of the 2nd week of the 3rd month, and
+#     Nov 11 is the 0th day of the 1st week of the 11th month
+# thus: DST,M3.2.0/02:00,M11.1.0/02:00
+$TZ=GMT+00:00
+$ntp_cityindex=0
+$auto_dst=1
+$ntp_daylightenable=0
+$ntp_daylightoffset=60
+
+# IGMP Proxy
+$igmpproxy_enabled=1
+
+# MLD Proxy
+$mldproxy_enabled=1
+
+# UPnP InternetGatewayDevice (IGD) settings
+$upnp_igd_enabled=1
+$igd_allow_userconfig=1
+$igd_allow_wandisable=0
+$upnp_igd_advr_expire=1800
+$upnp_igd_advr_ttl=5
+
+# Webserver settings
+#   default admin username & password ("admin" in encrypted form)
+#   http_is_admin_default indicates whether the default password is being used
+$http_admin_user=admin
+$http_admin_password=TSLIIHauhEfGE
+$http_admin_port=80
+$http_admin_is_default=1
+
+# Default settings for WebUI
+$user_count=3
+$user_name_1=mso
+$user_name_2=cusadmin
+$user_name_3=admin
+#$user_password_1=password of the day
+$user_password_1=W2402
+$user_password_2=WebUI
+$user_password_3=password
+$user_insNum_1=1
+$user_insNum_2=2
+$user_insNum_3=3
+
+# User Interface access level
+@lan_ip_webaccess=1
+@cm_ip_webaccess=1
+#@mta_ip_webaccess=
+@rg_ip_webaccess=0
+
+# Access restrictions on management interface
+$mgmt_http_enable=1
+$mgmt_https_enable=0
+$mgmt_wifi_access=1
+
+$mgmt_wan_access=1
+$mgmt_wan_httpaccess=1
+$mgmt_wan_httpsaccess=0
+$mgmt_wan_sshaccess=1
+$mgmt_wan_telnetaccess=0
+$mgmt_wan_httpport=8080
+$mgmt_wan_httpsport=443
+$mgmt_wan_sshport=22
+$mgmt_wan_telnetport=23
+$mgmt_wan_srcany=1
+$mgmt_wan_srcstart_ip=255.255.255.255
+$mgmt_wan_srcend_ip=255.255.255.255
+$mgmt_wan_fwupgrade=0
+$mgmt_lan_telnetaccess=0
+$mgmt_lan_sshaccess=0
+$mgmt_mta_telnetaccess=0
+$mgmt_mta_sshaccess=0
+
+# NAT
+# ---
+# NAT can be explicitly turned off by setting nat_enabled 0
+$nat_enabled=1
+
+# Firewall
+#---------
+# $firewall_enabled= 0|1   1 is enabled, 0 is disabled
+# $GeneralPurposeFirewallRuleCount - the number of general purpose firewall rules
+# $GeneralPurposeFirewallRule_X - where X is a number assigns a firewall rule.
+#                   There can be as many rules as one likes but
+#                   for each rule X must be incremented by 1
+#  A firewall rule is any rule that is acceptable to iptables-restore
+#  You may use shell variables $WAN_IPADDR $LAN_IPADDR $WAN_IFNAME $LAN_IFNAME
+#  in the rule and the runtime values will be inserted
+# eg syscfg set GeneralPurposeFilrewallRule_1 "-A INPUT -p tcp -m tcp -d $WAN_IPADDR --dport 22 -j ACCEPT"
+# $v6firewall_ruleX - where X is a number assigns a firewall rule.
+#                   There can be as many rules as one likes but
+#                   for each rule X must be incremented by 1
+#                   There can be no gaps in the numbering
+#  A ipv6 firewall rule is any rule that is acceptable to ip6tables-restore
+#  You may use shell variables $WAN_IPADDR $LAN_IPADDR $WAN_IFNAME $LAN_IFNAME
+#  in the rule and the runtime values will be inserted
+# eg.
+#$GeneralPurposeFirewallRuleCount=3
+#$GeneralPurposeFirewallRule_1=-A INPUT -p tcp -m tcp -d $WAN_IPADDR --dport 22 -j ACCEPT
+#$GeneralPurposeFirewallRule_2=-A INPUT -p tcp -m tcp -d $WAN_IPADDR --dport 80 -j ACCEPT
+#$GeneralPurposeFirewallRule_3=-A INPUT -p tcp -m tcp -d $WAN_IPADDR --dport 443 -j ACCEPT
+
+# For development only, allow nfs and telnet through eth0
+#$GeneralPurposeFirewallRuleCount=1
+#$GeneralPurposeFirewallRule_1=-A INPUT -i eth0 -j ACCEPT
+#$GeneralPurposeFirewallRule_2=-A INPUT -p tcp -m tcp -d $WAN_IPADDR --dport 80 -j ACCEPT
+
+$firewall_enabled=1
+$firewall_level=Low
+$firewall_levelv6=Low
+
+# Do not block rfc 1918 private addresses on the WAN side
+$block_rfc1918=0
+
+$block_ping=0
+$block_multicast=0
+$block_nat_redirection=1
+$nat_hairping_enable=1
+$block_ident=0
+
+# during development we want to allow ping, rfc 1918 addresses on wan, ssh/http/https from wan
+# no matter what rules are in firewall
+$firewall_development_override=0
+
+$dmz_enabled=0
+
+$block_webproxy=0
+$block_java=0
+$block_activex=0
+$block_cookies=0
+$portscan_enabled=0
+
+$IPSecPassthrough=1
+$PPTPPassthrough=1
+
+$SinglePortForwardCount=0
+$PortRangeForwardCount=0
+$PortRangeTriggerCount=0
+$InternetAccessPolicyCount=0
+$W2LWellKnownFirewallRuleCount=0
+
+# IPv6 Section
+
+# 6to4 tunnels
+# $6to4_enable=  0|1|2  1 is enabled except when WAN is RFC1918, 0 is disabled, 2 is enabled even with WAN in RFC1928
+$6to4_enable=0
+
+# AICCU (www.SixSs.net tunnel broker) = IPv6 over UDP over IPv4
+# $aiccu_enable = 0|1 1 is enabled, 0 is disabled even if $aiccu_user/password are configured
+$aiccu_enable=0
+#$aiccu_user=foo
+#$aiccu_password=T@#dK
+#$aiccu_tunnel=T1234
+#$aiccu_prefix=2001:db8::  # only prefix, no prefix length
+
+# Hurricane Electric tunnels (www.tunnelbroker.net) = IPv6 over IPv4
+# $he_enable = 0|1 1 is enabled, 0 is disabled even if $he_user/password are configured
+$he_enable=0
+#$he_client_ipv6=2001:db8:cafe::2 # IPv6 address of the client tunnel interface
+#$he_user=foo
+#$he_password=T@#dK
+#$he_tunnel=1234
+#$he_server_ipv4=192.0.0.2    # The IPv4 address of the tunnel broker
+#$he_prefix=2001:db8::  # only prefix, no prefix length
+
+# Bridging IPv6
+# $ipv6_bridging_enable = 0|1  1 is enabled, 0 is disabled
+$ipv6_bridging_enable=0
+
+# NDP Proxy for IPv6
+# $ipv6_ndp_proxy_enable = 0|1  1 is enabled, 0 is disabled
+$ipv6_ndp_proxy_enable=0
+
+# DHCPv6 client
+# $dhcpv6c_enable = 0|1|2|3  1 is enabled for PD, 2 is enabled for IA, 3 is enabled for IA and PD, 0 is disabled
+$dhcpv6c_enable=0
+
+# DHCPv6 server
+# $dhcpv6s_enable = 0|1  1 is enabled, 0 is disabled
+$dhcpv6s_enable=0
+
+# 6rd tunnels
+# $6rd_enable=   0|1  1 is enabled, 0 is disabled
+$6rd_enable=0
+# $6rd_zone= the leading part of the IPv6 prefix
+# $6rd_zone_length= the length of the 6RD zone
+# $6rd_common_prefix4= the length of the leading common part of the IPv4 address of all 6RD router
+# $6rd_relay= the IPv4 address of the default 6RD relay
+
+# Static IPv6 configuration
+# $ipv6_static_enable = 0|1
+$ipv6_static_enable=0
+
+# WAN static interface configuration (optional when SLAAC is used)
+#$wan_ipv6addr=2001:db8:cafe:baba::1/64
+#$wan_ipv6_default_gateway=fe80::bad:babe
+# LAN static interface configuration MANDATORY when ipv6_static_enable == 1
+#$lan_ipv6addr=2001:db8:f00::1/64
+
+# router advertisement provisioning on LAN side
+# $router_adv_enable= 0|1
+$router_adv_enable=1
+$router_managed_flag=1
+$router_other_flag=1
+
+# allow wan interface to be provisioned using router advertisement
+$router_adv_provisioning_enable=1
+
+
+# Locale Settings
+$locale=en-us
+
+# Rip
+#----
+# $rip_enabled 1 , 0 is disabled
+# $rip_no_split_horizon 1 , 1 means dont use split horizon
+# $rip_interface_wan 0|1, 0 means disable rip on the wan interface
+# $rip_interface_lan 0|1, 0 means disable rip on the lan interface
+$rip_enabled=0
+$cosa_usgv2_rip00::Version=2
+$cosa_usgv2_rip00::ConnectedMetric=1
+$cosa_usgv2_rip00::DefaultMetric=1
+$cosa_usgv2_rip00::UpdateTime=30
+$cosa_usgv2_rip00::CollectionTime=120
+$cosa_usgv2_rip00::TimoutTime=180
+
+$cosa_usgv2_rip00::If1Enable=1
+$cosa_usgv2_rip00::If1KeyChainName=keychain1
+$cosa_usgv2_rip00::If1Name=erouter0
+$cosa_usgv2_rip00::If1Alias=Ethernet
+$cosa_usgv2_rip00::If1AuthenticateType=3
+$cosa_usgv2_rip00::If1ReceiveEnable=1
+$cosa_usgv2_rip00::If1ReceiveVersion=2
+$cosa_usgv2_rip00::If1SendEnable=1
+$cosa_usgv2_rip00::If1SendVersion=2
+$cosa_usgv2_rip00::If1Neighbor=0
+$cosa_usgv2_rip00::If1KeyID=0
+$cosa_usgv2_rip00::If1Md5KeyValue=
+$cosa_usgv2_rip00::If1SimplePassword=
+
+# RIPNG
+# $ripng_enabled=0
+
+# Logging
+# -------
+# $log_level=[0|1|2]
+#      0 - disabled
+#      1 - default log
+#      2 - extra log
+#      3 - debug log
+# syslog level=1 to 8
+#      1 - Emergency
+#      2 - Alert
+#      3 - Critical
+#      4 - Error
+#      5 - Warning (maps to 0 - disabled)
+#      6 - Notice  (maps to 1 - normal logging)
+#      7 - Info
+#      8 - Debug   (maps to 2 - debug logging)
+# $log_remote=0|<ip-addr>:[port]
+$log_level=2
+$log_remote=0
+
+# Samba usb storage filesystem
+#$samba_server_enabled=0
+
+# Quality of Service
+#------------------
+$qos_enable=1
+
+# NAS Shared Folder
+#------------------
+#$SharedFolderCount=1
+#$SharedFolder_1=sf_1
+#$sf_1::name=Shared
+#$sf_1::folder=Shared
+#$sf_1::drive=/tmp/sda1
+#$sf_1::readonly=0
+
+# Bridge Mode Settings
+#------------------
+$bridge_mode=0
+
+# Wifi Bridge Mode Settings
+#------------------
+$wifi_bridge_mode=0
+
+# MOCA configuration
+# $moca_lof_channel
+#    The last RF channel number on which a node was successfully in the steady state. Channel center frequency = 25 MHz * channel number.
+#    Valid values are 32 to 60. Set to 0 if there is no LOF.
+# $moca_freq_mode
+#    auto - automatic scan
+#    manual - fixed manual mode, use the value in moca_freq_plan
+# $moca_freq_plan
+#    Valid values are 800MHz to 1500MHz (in 25 MHz increments)
+# $moca_constant_tx_power
+#    auto - automatic level
+#    manual - fixed manual mode, use the value in moca_maximum_tx_power
+# $moca_maximum_tx_power
+#    Maximum analog transmit power of the MoCA interface in units of 3dB.
+#    Valid values are 0 (0dB) to 12 (36dB) for current ADI chip.
+# $moca_dig_offset
+#    Maximum digital transmit power of the MoCA interface in units of 1/4dB.
+#    Valid values are -48 (-12dB) to 23 (5.75dB), 0 is recommended.
+# $moca_preferred_nc
+#    Valid values are master, slave, auto and auto_nc.
+# $moca_enable_privacy
+#    Valid values are enable and disable.
+# $moca_password_seed
+#    A string up to 17 characters max.
+
+#------------------
+
+$moca_lof_channel=0
+$moca_freq_mode=auto
+$moca_freq_plan=1150
+$moca_constant_tx_power=auto
+$moca_dig_offset=0
+$moca_preferred_nc=1
+$moca_enable_privacy=0
+$moca_password_seed=99999999988888888
+$moca_enabled=1
+$moca_scan_enabled=0
+$moca_node_taboo_enabled=1
+$moca_node_taboo_mask=eaaefe00
+$moca_mixed_mode=1
+
+# saMocaDevicePower settings
+$moca_pwr_apc_enable=1
+$moca_maximum_tx_power=10
+$moca_phy_rate=235
+$moca_beacon_pwr_level=9
+
+# CCSP Defaults
+$dhcpv6s00::serverenable=1
+$dhcpv6s00::servertype=1
+$dhcpv6s00::poolnumber=1
+$dhcpv6spool00::instancenumber=1
+$dhcpv6spool00::bEnabled=1
+$dhcpv6spool00::Interface=Device.IP.Interface.2.
+$dhcpv6spool00::IANAEnable=1
+#$dhcpv6spool00::IANAManualPrefixes=Device.IP.Interface.1.IPv6Prefix.1.
+$dhcpv6spool00::IANAPrefixes=Device.IP.Interface.1.IPv6Prefix.1.
+$dhcpv6spool00::LeaseTime=604800
+$dhcpv6spool00::PrefixRangeBegin=0:0:0:0001
+$dhcpv6spool00::PrefixRangeEnd=0:0:0:fffe
+$dhcpv6spool00::EUI64Enable=1
+$dhcpv6spool00::RapidEnable=0
+$dhcpv6spool00::UnicastEnable=0
+$dhcpv6spool00::IANAAmount=255
+$dhcpv6spool00::optionnumber=2
+
+$dhcpv6spool0option0::bEnabled=1
+$dhcpv6spool0option0::Tag=23
+$dhcpv6spool0option0::PassthroughClient=Device.DHCPv6.Client.1.
+$dhcpv6spool0option1::bEnabled=1
+$dhcpv6spool0option1::Tag=24
+$dhcpv6spool0option1::PassthroughClient=Device.DHCPv6.Client.1.
+
+$CaptivePortal_Enable=true
+$redirection_flag=true
+
+#CCSP RECOVERY MONITOR
+$ccsp_recovery_enable=1
+
+# CM Diagnostic IP Support (192.168.100.1), also used for inter-processor DBUS
+$$cmdiag_ifname=lan0
+$cmdiag_enabled=1
+$$ecm_wan_ifname=erouter0
+$$emta_wan_ifname=mta0
+
+# Parental Control Defaults
+$managedsites_enabled=0
+$managedservices_enabled=1
+$manageddevices_enabled=0
+$manageddevices_allow_all=0
+$ManagedSiteBlockCount=0
+$ManagedSiteTrustCount=0
+$ManagedServiceBlockCount=0
+$ManagedServiceTrustCount=0
+$ManagedDeviceCount=0
+
+#HS Port Forward Defaults
+$CosaNAT::port_trigger_enabled=1
+$CosaNAT::port_forward_enabled=1
+$CosaNAT::port_hs_forward_enabled=1
+
+#Email Notification Defaults
+$email_notification_sendlogs=0
+$email_notification_firewallbreach=0
+$email_notification_parentalcontrolbreach=0
+$email_notification_alertswarning=0
+$email_notification_enabled=0
+$email_notification_fromaddr=admin@rdkb.dev
+
+# remote logging
+$rlog_enable=0
+$rlog_host=192.168.0.120
+$rlog_port=514
+
+#Firewall log settings
+$FW_LOG_FILE_PATH=/nvram2/log/firewall
+$$FW_LOG_COMPRESSED_FILE_SIZE=10
+
+#SYSTEM log settings
+#$SYS_LOG_FILE_PATH GET FROM SYSLOG CONFIG FILE
+$$SYS_LOG_COMMPRESSED_FILE_SIZE=10
+
+#Event log settings
+#$EVT_LOG_FILE_PATH GET FROM SYSLOG CONFIG FILE
+$$EVT_LOG_COMMPRESSED_FILE_SIZE=10
+
+# mta dsx log enable/disable
+$mta_dsx_log_enable=true
+
+#MoCA extender default parameters
+$MoCAExtRadioInstanceNumber0=1
+$MoCAExtRadioID0=RADIO_2.4GHz
+$MoCAExtRadioEnable0=1
+$MoCAExtRadioMode0=14
+$MoCAExtRadioChannelWidth0=1
+$MoCAExtRadioChannel0=6
+$MoCAExtRadioSecChannel0=3
+$MoCAExtRadioBeaconInterval0=100
+$MoCAExtRadioDTIMInterval0=2
+$MoCAExtRadioGuardInterval0=400
+$MoCAExtRadioCoexistance0=1
+
+$MoCAExtRadioInstanceNumber1=2
+$MoCAExtRadioID1=RADIO_5GHz
+$MoCAExtRadioEnable1=1
+$MoCAExtRadioMode1=9
+$MoCAExtRadioChannelWidth1=2
+$MoCAExtRadioChannel1=40
+$MoCAExtRadioSecChannel1=3
+$MoCAExtRadioBeaconInterval1=100
+$MoCAExtRadioDTIMInterval1=2
+$MoCAExtRadioGuardInterval1=400
+$MoCAExtRadioCoexistance1=1
+
+$MoCAExtSsidWpsEnabled=1
+$MoCAExtSsidWpsPinCode=12345678
+$MoCAExtSsidWpsSsidIndex=10001000
+
+$MoCAExtSsidNum=0
+
+#static ip defaults
+$staticdns_enable=0
+$wan_ipaddr=0.0.0.0
+$wan_netmask=0.0.0.0
+$wan_default_gateway=0.0.0.0
+$nameserver1=0.0.0.0
+$nameserver2=0.0.0.0
+$hostname=RaspberryPi-Gateway
