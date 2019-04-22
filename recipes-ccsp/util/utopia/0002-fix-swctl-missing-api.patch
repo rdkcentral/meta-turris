@@ -1,0 +1,13 @@
+diff --git a/source/service_multinet/Puma6_plat/handle_sw.c b/source/service_multinet/Puma6_plat/handle_sw.c
+index b7020d51..7768fb99 100755
+--- a/source/service_multinet/Puma6_plat/handle_sw.c
++++ b/source/service_multinet/Puma6_plat/handle_sw.c
+@@ -86,6 +86,8 @@ void sw_remove_member(char *from_member, char *to_remove_mem)
+    	strncpy(from_member, l_cTemp, (strlen(l_cTemp)+1));  
+ }
+ 
++INT swctl(const int command, const int port, const int vid, const int membertag, const int vlanmode, const int efm, const char *mac, const char *magic){return 0;}
++
+ //handle_moca is a function for configuring MOCA port
+ void handle_moca(int vlan_id, int *tagged, int add)
+ {
