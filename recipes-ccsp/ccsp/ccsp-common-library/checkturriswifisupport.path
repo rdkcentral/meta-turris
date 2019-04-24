@@ -1,9 +1,0 @@
-[Unit]
-Description=Check Turris Wifi Support Initialized Path
-
-[Path]
-PathExists=/tmp/pam_initialized
-Unit=checkturriswifisupport.service
-
-[Install]
-WantedBy=multi-user.target

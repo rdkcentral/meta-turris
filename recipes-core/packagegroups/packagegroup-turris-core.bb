@@ -45,6 +45,3 @@ RDEPENDS_packagegroup-turris-core = " \
    dt \
     "
 RDEPENDS_packagegroup-turris-core_remove = "dt"
-
-#turris omnia uses dropbear, so removing openssh
-RDEPENDS_packagegroup-turris-core_remove = "openssh"

@@ -1,3 +1,0 @@
-[Unit]
-Description=WiFi Initialization Complete
-Documentation=man:systemd.special(7)

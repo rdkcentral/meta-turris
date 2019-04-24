@@ -1,6 +1,0 @@
-[Unit]
-Description=Check WIFI support on Turris Omnia device
-
-[Service]
-Type=forking
-ExecStart=/bin/sh -c '/usr/ccsp/wifi/checkwifi.sh'
