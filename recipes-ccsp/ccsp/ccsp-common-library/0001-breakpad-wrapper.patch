@@ -1,0 +1,81 @@
+--- a/source/breakpad_wrapper/breakpad_wrapper.cpp
++++ b/source/breakpad_wrapper/breakpad_wrapper.cpp
+@@ -0,0 +1,20 @@
++#include <client/linux/handler/exception_handler.h>
++// called by 'google_breakpad::ExceptionHandler' on every crash
++namespace
++{
++bool breakpadCallback(const google_breakpad::MinidumpDescriptor& descriptor, void* context, bool succeeded)
++{
++  (void) descriptor;
++  (void) context;
++  return succeeded;
++}
++// Instantiate only one 'google_breakpad::ExceptionHandler'
++// - "/opt/minidumps" is canonical path that should be in sync with uploadDumps.sh script
++extern "C" void breakpad_ExceptionHandler()
++{
++  static google_breakpad::ExceptionHandler* excHandler = NULL;
++  delete excHandler;
++  excHandler = new google_breakpad::ExceptionHandler(google_breakpad::MinidumpDescriptor("/opt/minidumps"), NULL, breakpadCallback, NULL, true, -1);
++}
++}
++
+--- a/source/breakpad_wrapper/include/breakpad_wrapper.h
++++ b/source/breakpad_wrapper/include/breakpad_wrapper.h
+@@ -0,0 +1,8 @@
++#ifdef __cplusplus
++extern "C"
++{
++#endif
++void breakpad_ExceptionHandler();
++#ifdef __cplusplus
++}
++#endif
+--- a/source/Makefile.am
++++ b/source/Makefile.am
+@@ -16,4 +16,4 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ ##########################################################################
+-SUBDIRS = cosa debug_api ccsp util_api
++SUBDIRS = cosa debug_api ccsp util_api breakpad_wrapper
+--- a/source/breakpad_wrapper/Makefile.am
++++ b/source/breakpad_wrapper/Makefile.am
+@@ -0,0 +1,8 @@
++AM_CPPFLAGS = -Wall -Werror
++ACLOCAL_AMFLAGS = -I m4
++hardware_platform = i686-linux-gnu
++
++noinst_LTLIBRARIES = libCcspCommonLibrary_breakpad_wrapper.la
++libCcspCommonLibrary_breakpad_wrapper_la_CPPFLAGS = $(CPPFLAGS)
++libCcspCommonLibrary_breakpad_wrapper_la_SOURCES = breakpad_wrapper.cpp
++libCcspCommonLibrary_breakpad_wrapper_la_LDFLAGS = -lbreakpad_client
+--- a/configure.ac
++++ b/configure.ac
+@@ -34,6 +34,7 @@
+ 
+ # Checks for programs.
+ AC_PROG_CC
++AC_PROG_CXX
+ AC_PROG_INSTALL
+ AM_PROG_CC_C_O
+ AM_PROG_LIBTOOL(libtool)
+@@ -112,6 +113,7 @@
+ 	source/cosa/package/Makefile
+ 	source/cosa/Makefile
+ 	source/debug_api/Makefile
++	source/breakpad_wrapper/Makefile
+ 	source/ccsp/components/common/PoamIrepFolder/Makefile
+ 	source/ccsp/components/common/DataModel/dml/components/DslhVarEntity/Makefile
+ 	source/ccsp/components/common/DataModel/dml/components/DslhObjController/Makefile
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -65,6 +65,7 @@
+ 	source/cosa/package/bmc2/components/Bmc2ComTerminal/libCcspCommonLibrary_Bmc2ComTerminal.la \
+ 	source/cosa/package/bmc2/components/Bmc2ComDomain/libCcspCommonLibrary_Bmc2ComDomain.la \
+ 	source/debug_api/libCcspCommonLibrary_debug_api.la \
++	source/breakpad_wrapper/libCcspCommonLibrary_breakpad_wrapper.la \
+ 	source/ccsp/components/common/PoamIrepFolder/libCcspCommonLibrary_PoamIrepFolder.la \
+ 	source/ccsp/components/common/DataModel/dml/components/DslhVarEntity/libCcspCommonLibrary_DslhVarEntity.la \
+ 	source/ccsp/components/common/DataModel/dml/components/DslhObjController/libCcspCommonLibrary_DslhObjController.la \

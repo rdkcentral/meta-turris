@@ -1,0 +1,9 @@
+[Unit]
+Description=WiFi Initialized service
+
+[Service]
+Type=simple
+ExecStart=/bin/echo "Wifi is initialized"
+RemainAfterExit=yes
+
+StandardOutput=syslog
