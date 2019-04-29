@@ -1,0 +1,30 @@
+diff --git a/source/scripts/init/service.d/lan_handler.sh b/source/scripts/init/service.d/lan_handler.sh
+index a417f268..bfba33bf 100755
+--- a/source/scripts/init/service.d/lan_handler.sh
++++ b/source/scripts/init/service.d/lan_handler.sh
+@@ -255,6 +255,25 @@ case "$1" in
+                 #sysevent set desired_moca_link_state down
+             fi
+         fi
++
++        # --------------------------------------------------------------------
++        # Turris Omnia specific change begin
++        # --------------------------------------------------------------------
++
++        PHY_BRIDGE_IFNAME=`syscfg get lan_ifname`
++        PHY_ETH_IFNAMES=`syscfg get lan_ethernet_physical_ifnames`
++        IFS=' ' read -r -a PHY_ETH_IFNAME_ARRAY <<< "$PHY_ETH_IFNAMES"
++        for PHY_ETH_IFNAME in "${PHY_ETH_IFNAME_ARRAY[@]}"
++        do
++            echo "LAN HANDLER : PHY_ETH_IFNAME = $PHY_ETH_IFNAME"
++            ifconfig $PHY_ETH_IFNAME up
++            brctl addif $PHY_BRIDGE_IFNAME $PHY_ETH_IFNAME
++        done
++
++        # --------------------------------------------------------------------
++        # Turris Omnia specific change end
++        # --------------------------------------------------------------------
++
+         echo_t "LAN HANDLER : Triggering RDKB_FIREWALL_RESTART after nfqhandler" 
+         sysevent set firewall-restart 
+         uptime=`cat /proc/uptime | awk '{ print $1 }' | cut -d"." -f1`
