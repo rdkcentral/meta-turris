@@ -1,0 +1,15 @@
+diff --git a/src/core/system.conf b/src/core/system.conf
+index db8b7acd78..7d1ea864e0 100644
+--- a/src/core/system.conf
++++ b/src/core/system.conf
+@@ -23,8 +23,8 @@
+ #CrashReboot=no
+ #CPUAffinity=1 2
+ #JoinControllers=cpu,cpuacct net_cls,net_prio
+-#RuntimeWatchdogSec=0
+-#ShutdownWatchdogSec=10min
++RuntimeWatchdogSec=120
++ShutdownWatchdogSec=10min
+ #CapabilityBoundingSet=
+ #SystemCallArchitectures=
+ #TimerSlackNSec=
