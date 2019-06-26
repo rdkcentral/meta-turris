@@ -1,4 +1,5 @@
 SUMMARY = "Firmware files for ATH10K driver"
+DESCRIPTION = "Firmware only for ath10k from linux-firmware repo taken for installation."
 HOMEPAGE = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware"
 SECTION = "kernel"
 LICENSE = "MIT"
