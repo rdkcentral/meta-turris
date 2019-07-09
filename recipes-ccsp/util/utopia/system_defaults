@@ -918,4 +918,4 @@ $wan_netmask=0.0.0.0
 $wan_default_gateway=0.0.0.0
 $nameserver1=0.0.0.0
 $nameserver2=0.0.0.0
-$hostname=TurrisOmnia-Gateway
+$hostname=TurrisOmnia-GW
