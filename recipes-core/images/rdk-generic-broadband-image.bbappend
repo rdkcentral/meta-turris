@@ -8,6 +8,7 @@ SYSTEMD_TOOLS_remove_libc-musl = "systemd-bootchart"
 
 IMAGE_INSTALL += " packagegroup-turris-core \
     ${SYSTEMD_TOOLS} \
+    linux-firmware-ath10k \
     ccsp-webui \
     network-hotplug \
     php \
@@ -15,6 +16,9 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     bzip2 \
     nmap \
     libpcap \
+    tcpdump \
+    ebtables \
+    iw \
     bc \
     openvswitch \
     "
