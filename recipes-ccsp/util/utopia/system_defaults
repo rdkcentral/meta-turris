@@ -228,7 +228,7 @@ $lan_ifname=brlan0
 #    which will be enslaved into the lan bridge (which is known as lan_ifname
 #    as described above)
 #    This setting is not meant for users to manipulate
-$$lan_ethernet_physical_ifnames=eth1
+$$lan_ethernet_physical_ifnames=lan0 lan1 lan2 lan3 lan4
 
 # lan_wl_physical_ifnames - a list of names of 802.11 interfaces, which will
 #    be enslaved into the lan bridge (which is known as lan_ifname as
