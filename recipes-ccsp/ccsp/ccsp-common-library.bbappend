@@ -9,6 +9,8 @@ CXXFLAGS_append_turris = " \
                               "
 
 SRC_URI += "file://0002-add-ccsp_vendor-header-file.patch"
+SRC_URI += "file://0003-add-dependency-to-pandm.patch"
+SRC_URI += "file://0004-remove-psm-db-reference.patch"
 SRC_URI_append = " \
     file://gwprovapp.conf \
     file://wifiinitialized.service \
