@@ -1,0 +1,25 @@
+diff --git a/source/gw_prov_sm.c b/source/gw_prov_sm.c
+index 76cf208..983d1fa 100644
+--- a/source/gw_prov_sm.c
++++ b/source/gw_prov_sm.c
+@@ -88,7 +88,7 @@ char log_buff[1024];
+ #define NETUTILS_IPv6_GLOBAL_ADDR_LEN     	 128
+ #define ER_NETDEVNAME "erouter0"
+ #define IFNAME_WAN_0    "wan0"
+-#define IFNAME_ETH_0    "eth0"
++#define IFNAME_ETH_0    "eth2"
+ #define TLV202_42_FAVOR_DEPTH 1
+ #define TLV202_42_FAVOR_WIDTH 2
+ 
+@@ -2449,9 +2449,9 @@ static int GWP_act_ProvEntry_callback()
+        return -1;
+     }
+ 
+-    system("ifconfig eth0 down");
++    system("ifconfig eth2 down");
+     memset(command,0,sizeof(command));
+-    sprintf(command, "ip link set eth0 name %s", wanPhyName);
++    sprintf(command, "ip link set eth2 name %s", wanPhyName);
+     printf("****************value of command = %s**********************\n", command);
+     system(command);
+ 
