@@ -1,0 +1,18 @@
+diff --git a/platform_hal.c b/platform_hal.c
+index b963113..5ab99ef 100644
+--- a/platform_hal.c
++++ b/platform_hal.c
+@@ -143,3 +143,13 @@ INT platform_hal_SetDeviceCodeImageValid(BOOLEAN flag)
+ { 
+ 	return RETURN_OK; 
+ }
++
++INT platform_hal_getCMTSMac(CHAR *pValue)
++{
++     if (pValue == NULL)
++     {
++         return RETURN_ERR;
++     }
++    strcpy(pValue,"00:00:00:00:00:00");
++    return RETURN_OK;
++}
