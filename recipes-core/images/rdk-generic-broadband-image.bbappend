@@ -20,7 +20,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     ebtables \
     iw \
     bc \
+    mesh-agent \
     openvswitch \
     "
-#removing openvswitch since it include net/if_packet.h which is not provided by musl(1.1.19)
-IMAGE_INSTALL_remove = "openvswitch"
