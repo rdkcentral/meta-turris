@@ -1,0 +1,14 @@
+diff -Naur 2.5-r0-orig/defconfig 2.5-r0/defconfig
+--- 2.5-r0-orig/defconfig	2019-07-15 11:06:28.150942350 +0000
++++ 2.5-r0/defconfig	2019-07-15 10:58:17.959429890 +0000
+@@ -139,6 +139,9 @@
+ # IEEE 802.11n (High Throughput) support
+ CONFIG_IEEE80211N=y
+ 
++CONFIG_IEEE80211AC=y
++CONFIG_ACS=y
++
+ # Remove debugging code that is printing out debug messages to stdout.
+ # This can be used to reduce the size of the hostapd considerably if debugging
+ # code is not needed.
+File 2.5-r0-orig/pseudo/pseudo.socket is a socket while file 2.5-r0/pseudo/pseudo.socket is a socket

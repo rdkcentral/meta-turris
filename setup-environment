@@ -25,6 +25,22 @@ BBLAYERS =+ "\${RDKROOT}/meta-marvell"
 EOF
 fi
 
+# Add meta-cmf-mesh only if not already present.
+if [[ $(grep '^BBLAYERS' conf/bblayers.conf | grep -c 'meta-cmf-mesh') -eq 0 ]] && [[ -d  ../meta-cmf-mesh ]]
+then
+    cat >> conf/bblayers.conf <<EOF
+BBLAYERS =+ "\${RDKROOT}/meta-cmf-mesh"
+EOF
+fi
+
+# Add meta-rdk-opensync only if not already present.
+if [[ $(grep '^BBLAYERS' conf/bblayers.conf | grep -c 'meta-rdk-opensync') -eq 0 ]] && [[ -d  ../meta-rdk-opensync ]]
+then
+    cat >> conf/bblayers.conf <<EOF
+BBLAYERS =+ "\${RDKROOT}/meta-rdk-opensync"
+EOF
+fi
+
 # Add meta-cmf-restricted only if not already present.
 if [ $(grep '^BBLAYERS' conf/bblayers.conf | grep -c 'meta-cmf-restricted') -eq 0 -a -d  $TOP_DIR/meta-cmf-restricted ]
 then
