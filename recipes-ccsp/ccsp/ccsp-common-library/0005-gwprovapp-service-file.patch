@@ -1,0 +1,12 @@
+diff --git a/systemd_units/gwprovapp.service b/systemd_units/gwprovapp.service
+index 2b91acc1..872a4aa4 100644
+--- a/systemd_units/gwprovapp.service
++++ b/systemd_units/gwprovapp.service
+@@ -18,7 +18,6 @@
+ ##########################################################################
+ [Unit]
+ Description=Gwprovapp service
+-ConditionPathExists=/nvram/secure
+ After=securemount.service
+ 
+ #Note: Requires, Wants, and After are device specific. see gwprovapp.conf

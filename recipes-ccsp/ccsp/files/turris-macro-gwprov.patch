@@ -275,10 +275,19 @@ index 7117be3..a8c154f 100644
      getInterfaceLinkLocalAddress(IFNAME_WAN_0, lladdr);
      
     
-@@ -2311,7 +2311,7 @@ static int GWP_act_ProvEntry_callback()
+@@ -2482,7 +2482,7 @@ static int GWP_act_DocsisInited_callback()
+ **************************************************************************/
+ static int GWP_act_ProvEntry_callback()
  {
-     int i;
-     int sysevent_bridge_mode = 0;
+-#if defined(_PLATFORM_RASPBERRYPI_)
++#if defined(_PLATFORM_RASPBERRYPI_) || defined(_PLATFORM_TURRIS_)
+     int uid = 0;
+     uid = getuid();
+ #endif
+@@ -2491,7 +2491,7 @@ static int GWP_act_ProvEntry_callback()
+ #ifdef MULTILAN_FEATURE
+     macaddr_t macAddr;
+ #endif
 -#if !defined(_PLATFORM_RASPBERRYPI_)
 +#if !defined(_PLATFORM_RASPBERRYPI_) && !defined(_PLATFORM_TURRIS_)
      GWPROV_PRINT(" Entry %s \n", __FUNCTION__);
@@ -310,19 +319,17 @@ index 7117be3..a8c154f 100644
  static int GWP_act_DocsisTftpOk_callback(){
  	GWPROV_PRINT(" Entry %s \n", __FUNCTION__);
      gDocTftpOk = 1;
-@@ -2551,7 +2551,7 @@ int main(int argc, char *argv[])
+@@ -2735,13 +2735,13 @@ int main(int argc, char *argv[])
+ #ifdef MULTILAN_FEATURE
+     char sysevent_cmd[80];
+ #endif
+-#if defined(_PLATFORM_RASPBERRYPI_)
++#if defined(_PLATFORM_RASPBERRYPI_) || defined(_PLATFORM_TURRIS_)
+      int uid = 0;
+      uid = getuid();
+ #endif
      printf("Started gw_prov_utopia\n");
  
- #ifdef MULTILAN_FEATURE
--#if !defined(_PLATFORM_RASPBERRYPI_)
-+#if !defined(_PLATFORM_RASPBERRYPI_) && !defined(_PLATFORM_TURRIS_)
- 
-     #ifdef FEATURE_SUPPORT_RDKLOG
-        setenv("LOG4C_RCPATH","/rdklogger",1);
-@@ -2635,7 +2635,7 @@ int main(int argc, char *argv[])
-     (void) pthread_join(linkstate_tid, NULL);
- #endif
- #else
 -#if !defined(_PLATFORM_RASPBERRYPI_)
 +#if !defined(_PLATFORM_RASPBERRYPI_) && !defined(_PLATFORM_TURRIS_)
  
