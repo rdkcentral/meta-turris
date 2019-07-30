@@ -2,7 +2,6 @@ SRC_URI += "${CMF_GIT_ROOT}/rdkb/devices/raspberrypi/hal;protocol=${CMF_GIT_PROT
 SRCREV = "${AUTOREV}"
 
 do_configure_prepend(){
-    touch /mnt/vol/ralber040/TURRIS/HAL_BUILD/raj.txt
     rm ${S}/wifi_hal.c
     rm ${S}/Makefile.am
     ln -sf ${S}/devices/source/wifi/wifi_hal.c ${S}/wifi_hal.c
