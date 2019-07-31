@@ -1,10 +1,11 @@
 [Unit]
-Description=Hostapd IEEE 802.11 AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
+Description=Hostapd IEEE 802.11n AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
 After=CcspPandMSsp.service
 
 [Service]
 Type=forking
-ExecStart=/usr/sbin/hostapd -B -P /run/hostapd-2G.pid /etc/hostapd-2G.conf
+ExecStartPre=/bin/sh -c '(/lib/rdk/hostapd-init.sh)'
+ExecStart=/usr/sbin/hostapd -B -P /run/hostapd-2G.pid /nvram/hostapd0.conf
 Restart=always
 StartLimitIntervalSec=120
 
