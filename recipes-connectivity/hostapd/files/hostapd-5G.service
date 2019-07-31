@@ -1,13 +1,12 @@
-Unit]
-Description=Hostapd IEEE 802.11ac AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
-After=CcspPandMSsp.service hostapd-2G.service
+[Unit]
+Description=Hostapd IEEE 802.11 AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
+After=CcspPandMSsp.service
 
 [Service]
 Type=forking
-ExecStart=/usr/sbin/hostapd -B -P /run/hostapd-5G.pid /nvram/hostapd1.conf
+ExecStart=/usr/sbin/hostapd -B -P /run/hostapd-5G.pid /etc/hostapd-5G.conf
 Restart=always
 StartLimitIntervalSec=120
 
 [Install]
 WantedBy=multi-user.target
-
