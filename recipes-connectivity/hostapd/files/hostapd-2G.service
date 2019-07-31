@@ -4,7 +4,8 @@ After=CcspPandMSsp.service
 
 [Service]
 Type=forking
-ExecStart=/usr/sbin/hostapd -B -P /run/hostapd-2G.pid /etc/hostapd-2G.conf
+ExecStartPre=/bin/sh -c '(/lib/rdk/hostapd-init.sh)'
+ExecStart=/usr/sbin/hostapd -B -P /run/hostapd-2G.pid /nvram/hostapd0.conf
 Restart=always
 StartLimitIntervalSec=120
 
