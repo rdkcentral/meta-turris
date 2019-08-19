@@ -1,4 +1,4 @@
-SRC_URI += "${CMF_GIT_ROOT}/rdkb/devices/raspberrypi/hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_BRANCH};destsuffix=git/source/wifi/devices;name=wifihal-raspberrypi"
+SRC_URI += "git://github.com/rdkcentral/rdkb-turris-hal;protocol=https;branch=master;destsuffix=git/source/wifi/devices;name=wifihal-turris"
 SRCREV = "${AUTOREV}"
 
 do_configure_prepend(){
