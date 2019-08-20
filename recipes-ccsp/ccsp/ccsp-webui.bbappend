@@ -1,6 +1,13 @@
 require ccsp_common_turris.inc
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+
 EXTRA_OECONF += "PHP_RPATH=no"
+
+SRC_URI_append = " \
+	 file://CcspWebUI.sh \
+	 file://CcspWebUI.service \
+"
 
 do_install_append () {
     install -d ${D}${sysconfdir}
@@ -25,6 +32,13 @@ do_install_append () {
 	sed -i "/setting ConfigureWiFi to true/a echo \"\\\\\$HTTP[\\\\\"host\\\\\"] !~ \\\\\":8080\\\\\" {  \\\\\$HTTP[\\\\\"url\\\\\"] !~ \\\\\"captiveportal.php\\\\\" {  \\\\\$HTTP[\\\\\"referer\\\\\"] == \\\\\"\\\\\" { url.redirect = ( \\\\\".*\\\\\" => \\\\\"http://10.0.0.1/captiveportal.php\\\\\" ) url.redirect-code = 303 }\" >> \$LIGHTTPD_CONF"  ${D}${sysconfdir}/webgui.sh
 	sed -i "/setting ConfigureWiFi to true/a                          sed -i \'\/server.modules              = \(\/a \"mod_rewrite\",' \$LIGHTTPD_CONF" ${D}${sysconfdir}/webgui.sh
 	sed -i "/setting ConfigureWiFi to true/a sed -i \'\/server.modules              = \(\/a \"mod_redirect\",' \$LIGHTTPD_CONF" ${D}${sysconfdir}/webgui.sh
+        sed -i "s/if((!strcmp(\$url, \$Wan_IPv4) || ((inet_pton(\$url)!=\"\") || (inet_pton(\$Wan_IPv6!==\"\"))) &&(inet_pton(\$url) == inet_pton(\$Wan_IPv6)))){/if(!strcmp(\$url, \$Wan_IPv4) || (inet_pton(\$url) == inet_pton(\$Wan_IPv6))){/g" ${D}/usr/www/index.php
+
+	install -m 755 ${WORKDIR}/CcspWebUI.sh ${D}${base_libdir}/rdk/
+	install -m 644 ${WORKDIR}/CcspWebUI.service ${D}${systemd_unitdir}/system/
+        sed -i "/jProgress/a alert(\'DOCSIS Support is not available in RPI Boards\'); die();" ${D}/usr/www/wan_network.php
+        sed -e '/jProgress/ s/^/\/\//' -i ${D}/usr/www/wan_network.php
+        sed -i "s/\$clients_RSSI\[strtoupper(\$Host\[\"\$i\"\]\['PhysAddress'\])\]/\$Host\[\$i\]\['X_CISCO_COM_RSSI'\]/g" ${D}/usr/www/connected_devices_computers.php
 }
 do_install_append_morty () {
     #Locate svg file to load
@@ -34,4 +48,6 @@ do_install_append_morty () {
    sed -i "/password_change.php/a echo '<li class="nav-bootchart"><a role="menuitem"  href="bootchart.php">Bootchart</a></li>';" ${D}/usr/www/includes/nav.php
 }
 
-FILES_${PN} += "${sysconfdir}/php.ini"
+SYSTEMD_SERVICE_${PN} += "CcspWebUI.service"
+FILES_${PN} += "${sysconfdir}/php.ini ${systemd_unitdir}/system/CcspWebUI.service"
+

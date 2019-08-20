@@ -1,0 +1,27 @@
+From 2960b842ce5d51ea6ceb906536e9647b49e5a225 Mon Sep 17 00:00:00 2001
+From: "rajakumaran.a" <rajakumaran.a@lnttechservices.com>
+Date: Thu, 8 Aug 2019 09:48:34 +0000
+Subject: [PATCH] Base
+
+Change-Id: Ib8e64d1a1080385507c365fdc5d0e622afc947b9
+Signed-off-by: rajakumaran.a <rajakumaran.a@lnttechservices.com>
+---
+ source/TR-181/board_sbapi/cosa_ethernet_apis.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/source/TR-181/board_sbapi/cosa_ethernet_apis.c b/source/TR-181/board_sbapi/cosa_ethernet_apis.c
+index 49b0c11..4a5f2c6 100644
+--- a/source/TR-181/board_sbapi/cosa_ethernet_apis.c
++++ b/source/TR-181/board_sbapi/cosa_ethernet_apis.c
+@@ -278,7 +278,7 @@ CosaDmlEthWanSetEnable
+         BOOL                       bEnable
+     )
+ {
+-#if (defined (_COSA_BCM_ARM_) && !defined(_CBR_PRODUCT_REQ_) && !defined(_PLATFORM_RASPBERRYPI_))
++#if (defined (_COSA_BCM_ARM_) && !defined(_CBR_PRODUCT_REQ_) && !defined(_PLATFORM_RASPBERRYPI_) && !defined(_PLATFORM_TURRIS_))
+         BOOL bGetStatus = FALSE;
+         CcspHalExtSw_getEthWanEnable(&bGetStatus);
+ 	if (bEnable != bGetStatus)
+-- 
+2.16.2
+

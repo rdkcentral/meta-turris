@@ -13,7 +13,6 @@ SRC_URI += "file://0003-add-dependency-to-pandm.patch"
 SRC_URI += "file://0004-remove-psm-db-reference.patch"
 SRC_URI += "file://0005-gwprovapp-service-file.patch"
 SRC_URI_append = " \
-    file://gwprovapp.conf \
     file://wifiinitialized.service \
     file://checkturriswifisupport.service \
     file://wifiinitialized.path \
@@ -54,7 +53,7 @@ do_install_append(){
     install -D -m 0644 ${S}/systemd_units/CcspTr069PaSsp.service ${D}${systemd_unitdir}/system/CcspTr069PaSsp.service
     install -D -m 0644 ${S}/systemd_units/snmpSubAgent.service ${D}${systemd_unitdir}/system/snmpSubAgent.service
     install -D -m 0644 ${S}/systemd_units/snmpSubAgent.service ${D}${systemd_unitdir}/system/snmpSubAgent.service
-    install -D -m 0644 ${S}/systemd_units/gwprovapp.service ${D}${systemd_unitdir}/system/gwprovapp.service
+    install -D -m 0644 ${S}/systemd_units/CcspEthAgent.service ${D}${systemd_unitdir}/system/CcspEthAgent.service
 
     #rfc service file
     install -D -m 0644 ${S}/systemd_units/rfc.service ${D}${systemd_unitdir}/system/rfc.service
@@ -71,8 +70,6 @@ do_install_append(){
     install -D -m 0644 ${S}/systemd_units/crResetDetect.service ${D}${systemd_unitdir}/system/crResetDetect.service
     install -D -m 0644 ${S}/systemd_units/crResetDetect.path ${D}${systemd_unitdir}/system/crResetDetect.path
     install -D -m 0644 ${S}/systemd_units/logagent.service ${D}${systemd_unitdir}/system/logagent.service
-    install -d ${D}${systemd_unitdir}/system/gwprovapp.service.d
-    install -D -m 0644 ${WORKDIR}/gwprovapp.conf ${D}${systemd_unitdir}/system/gwprovapp.service.d/gwprovapp.conf
 
     # Install wrapper for breakpad (disabled to support External Source build)
     #install -d ${D}${includedir}/ccsp
@@ -88,6 +85,9 @@ do_install_append(){
     sed -i '/ExecStartPre/ a\ExecStartPre=-/bin/cp /etc/rfc.properties /nvram/' ${D}${systemd_unitdir}/system/rfc.service
     #reduce sleep time to 12 sconds
     sed -i 's/300/12/g' ${D}${systemd_unitdir}/system/rfc.service
+   
+    #change for turris omnia
+    sed -i 's/PIDFile/#&/' ${D}${systemd_unitdir}/system/CcspPandMSsp.service 
 }
 
 SYSTEMD_SERVICE_${PN} += "ccspwifiagent.service"
@@ -99,7 +99,7 @@ SYSTEMD_SERVICE_${PN} += "CcspTandDSsp.service"
 SYSTEMD_SERVICE_${PN} += "CcspLMLite.service"
 SYSTEMD_SERVICE_${PN} += "CcspTr069PaSsp.service"
 SYSTEMD_SERVICE_${PN} += "snmpSubAgent.service"
-SYSTEMD_SERVICE_${PN} += "gwprovapp.service"
+SYSTEMD_SERVICE_${PN} += "CcspEthAgent.service"
 SYSTEMD_SERVICE_${PN} += "wifiinitialized.service"
 SYSTEMD_SERVICE_${PN} += "checkturriswifisupport.service"
 SYSTEMD_SERVICE_${PN} += "wifiinitialized.path"
@@ -126,8 +126,7 @@ FILES_${PN}_append = " \
     ${systemd_unitdir}/system/CcspLMLite.service \
     ${systemd_unitdir}/system/CcspTr069PaSsp.service \
     ${systemd_unitdir}/system/snmpSubAgent.service \
-    ${systemd_unitdir}/system/gwprovapp.service \
-    ${systemd_unitdir}/system/gwprovapp.service.d/* \
+    ${systemd_unitdir}/system/CcspEthAgent.service \
     ${systemd_unitdir}/system/wifiinitialized.service \
     ${systemd_unitdir}/system/checkturriswifisupport.service \
     ${systemd_unitdir}/system/wifiinitialized.path \

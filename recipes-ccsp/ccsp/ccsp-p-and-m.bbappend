@@ -3,6 +3,7 @@ require ccsp_common_turris.inc
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += " file://pandm-turris-macro.patch"
 SRC_URI += " file://set-pnm-status-for-turris.patch"
+SRC_URI += " file://0001-Ethwan-support.patch"
 
 
 DEPENDS_append = " utopia curl "
@@ -87,6 +88,10 @@ do_install_append(){
     sed -i "/dibbler-server start/a if [ -f /nvram/reverted ] ; then" ${D}/etc/restart_services.sh
     sed -i "/dibbler-server start/a LIGHTTPD_CONF=/var/lighttpd.conf" ${D}/etc/restart_services.sh
     sed -i "/dibbler-server start/a #captiveportal redirection" ${D}/etc/restart_services.sh
+
+########## ETHWAN Support
+   sed -i "s/www.comcast.net/www.google.com/g" ${D}/etc/partners_defaults.json
+   sed -i "s/\"Device.DeviceInfo.X_RDKCENTRAL-COM_Syndication.RDKB_UIBranding.AllowEthernetWAN\"\ :\ \"false\"\ \,/\"Device.DeviceInfo.X_RDKCENTRAL-COM_Syndication.RDKB_UIBranding.AllowEthernetWAN\" : \"true\" ,/g" ${D}/etc/partners_defaults.json
 
 }
 
