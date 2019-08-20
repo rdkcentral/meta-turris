@@ -1,14 +1,14 @@
-From 006b66dc0d48630ada3d87eac1dc8439b0d39a59 Mon Sep 17 00:00:00 2001
+From 593b9c3be0494e63bfd10a75118e6840959b281a Mon Sep 17 00:00:00 2001
 From: "rajakumaran.a" <rajakumaran.a@lnttechservices.com>
-Date: Tue, 20 Aug 2019 06:36:46 +0000
-Subject: [PATCH] gwprovapp-ethwan
+Date: Tue, 20 Aug 2019 13:19:25 +0000
+Subject: [PATCH] gwprovapp
 
 Signed-off-by: rajakumaran.a <rajakumaran.a@lnttechservices.com>
 ---
  configure.ac               |  1 +
  source/Makefile.am         |  9 +++++++--
- source/gw_prov_ethwan_sm.c | 36 ++++++++++++++++++------------------
- 3 files changed, 26 insertions(+), 20 deletions(-)
+ source/gw_prov_ethwan_sm.c | 46 +++++++++++++++++++++++++++-------------------
+ 3 files changed, 35 insertions(+), 21 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
 index dc8da86..12be8aa 100755
@@ -45,7 +45,7 @@ index a81d948..2e31a7d 100755
  else
  gw_prov_ethwan_LDFLAGS = -lsysevent -lsyscfg -lhal_msomgmt -lccsp_common -lhal_ethsw
 diff --git a/source/gw_prov_ethwan_sm.c b/source/gw_prov_ethwan_sm.c
-index ec8a36c..7ece09e 100644
+index ec8a36c..21b7971 100644
 --- a/source/gw_prov_ethwan_sm.c
 +++ b/source/gw_prov_ethwan_sm.c
 @@ -53,7 +53,7 @@
@@ -153,7 +153,7 @@ index ec8a36c..7ece09e 100644
  				       system("/bin/sh /etc/webgui.sh");
  #else
  				        startWebUIProcess();
-@@ -971,7 +971,7 @@ static void *GWPEthWan_sysevent_handler(void *data)
+@@ -971,12 +971,15 @@ static void *GWPEthWan_sysevent_handler(void *data)
      GWPROVETHWANLOG("Exiting from %s\n",__FUNCTION__);
  }
  
@@ -162,7 +162,15 @@ index ec8a36c..7ece09e 100644
  static int GWP_act_ProvEntry_callback()
  {
      GWPROVETHWANLOG( "Entering into %s\n",__FUNCTION__);
-@@ -998,7 +998,7 @@ static int GWP_act_ProvEntry_callback()
+ 
+     system("mkdir -p /nvram");
++#if defined(_PLATFORM_TURRIS_)
++    system("mount /dev/mmcblk0p6 /nvram");
++#endif
+     system("rm -f /nvram/dnsmasq.leases");
+     system("syslogd -f /etc/syslog.conf");
+ 
+@@ -998,7 +1001,7 @@ static int GWP_act_ProvEntry_callback()
       * Invoking board specific configuration script to set the board related
       * syscfg parameters.
       */
@@ -171,7 +179,23 @@ index ec8a36c..7ece09e 100644
      system("/usr/bin/apply_board_defaults.sh");
  #endif
      char command[50];
-@@ -1336,7 +1336,7 @@ static void daemonize(void)
+@@ -1017,9 +1020,14 @@ static int GWP_act_ProvEntry_callback()
+        return -1;
+     }
+ 
+-    system("ifconfig eth0 down");
+     memset(command,0,sizeof(command));
++#if defined(_PLATFORM_TURRIS_)
++    system("ifconfig eth2 down");
++    sprintf(command, "ip link set eth2 name %s", wanPhyName);
++#else
++    system("ifconfig eth0 down");
+     sprintf(command, "ip link set eth0 name %s", wanPhyName);
++#endif
+     printf("****************value of command = %s**********************\n", command);
+     system(command);
+ 
+@@ -1336,7 +1344,7 @@ static void daemonize(void)
  
  static void LAN_start() {
          GWPROVETHWANLOG("Utopia starting lan...\n");
@@ -180,7 +204,7 @@ index ec8a36c..7ece09e 100644
  	int bridge_mode = 0;
          bridge_mode = GWPETHWAN_SysCfgGetInt("bridge_mode");
          if(bridge_mode == 0)  // start the router mode set-up
-@@ -1398,7 +1398,7 @@ int main(int argc, char *argv[])
+@@ -1398,7 +1406,7 @@ int main(int argc, char *argv[])
  
  
   			GWP_act_ProvEntry_callback();
@@ -189,7 +213,7 @@ index ec8a36c..7ece09e 100644
  	        CcspHalEthSwInit();
  #endif
              if (GWP_ETHWAN_Init() != 0)
-@@ -1420,7 +1420,7 @@ int main(int argc, char *argv[])
+@@ -1420,7 +1428,7 @@ int main(int argc, char *argv[])
  	obj->pGWP_act_EthWanLinkDown =  GWP_EthWanLinkDown_callback;
  	obj->pGWP_act_EthWanLinkUP =  GWP_EthWanLinkUp_callback;
  	GWPROVETHWANLOG("GWP_ETHWAN Creating RegisterEthWan Handler\n");
@@ -198,7 +222,7 @@ index ec8a36c..7ece09e 100644
  	GWP_RegisterEthWan_Callback ( obj );
  #endif
  	GWPROVETHWANLOG("GWP_ETHWAN Creating RegisterEthWan Handler over\n");
-@@ -1461,7 +1461,7 @@ int main(int argc, char *argv[])
+@@ -1461,7 +1469,7 @@ int main(int argc, char *argv[])
  
              GWPROVETHWANLOG(" Creating Event Handler\n");
  
