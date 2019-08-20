@@ -7,7 +7,7 @@ index 192724d5..fe49033f 100644
  Description=CcspPandMSsp service
  
 -After=PsmSsp.service
-+After=gwprovapp.service PsmSsp.service
++After=gwprovethwan.service PsmSsp.service
  
  [Service]
  Type=forking

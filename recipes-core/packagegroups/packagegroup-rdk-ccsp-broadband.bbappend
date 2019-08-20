@@ -20,5 +20,5 @@ RDEPENDS_packagegroup-rdk-ccsp-broadband_append = "\
 #TODO: need to revisit if it breaks functionality. removing since it depends on ucresolv
 #RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "parodus"
 
-GWPROVAPP = "ccsp-gwprovapp"
+GWPROVAPP = "ccsp-gwprovapp-ethwan"
 

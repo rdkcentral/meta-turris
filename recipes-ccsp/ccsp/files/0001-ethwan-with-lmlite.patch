@@ -1,0 +1,25 @@
+From 66cb586183eb0aac48b0f4965a706fc50b20f337 Mon Sep 17 00:00:00 2001
+From: "rajakumaran.a" <rajakumaran.a@lnttechservices.com>
+Date: Thu, 8 Aug 2019 09:58:17 +0000
+Subject: [PATCH] Base
+
+Signed-off-by: rajakumaran.a <rajakumaran.a@lnttechservices.com>
+---
+ source/lm/lm_main.c    | 2 +-
+ source/lm/lm_wrapper.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/source/lm/lm_main.c b/source/lm/lm_main.c
+index b9aa8fb..5f4f04d 100644
+--- a/source/lm/lm_main.c
++++ b/source/lm/lm_main.c
+@@ -2250,7 +2250,7 @@ void Hosts_StatSyncThreadFunc()
+         }
+         else
+         {
+-#if !defined(_PLATFORM_RASPBERRYPI_)
++#if !defined(_PLATFORM_RASPBERRYPI_) && !defined(_PLATFORM_TURRIS_)
+             if(bridgemode)
+             {
+                 Send_Eth_Host_Sync_Req(); 
+
