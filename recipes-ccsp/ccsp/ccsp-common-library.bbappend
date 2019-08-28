@@ -8,7 +8,7 @@ CXXFLAGS_append_turris = " \
                                 -std=c++11 \
                               "
 
-SRC_URI += "file://0002-add-ccsp_vendor-header-file.patch"
+SRC_URI += "file://ccsp_vendor.h"
 SRC_URI += "file://0003-add-dependency-to-pandm.patch"
 SRC_URI += "file://0004-remove-psm-db-reference.patch"
 SRC_URI += "file://0005-gwprovapp-service-file.patch"
@@ -76,7 +76,7 @@ do_install_append(){
     #install -m 644 ${S}/source/breakpad_wrapper/include/breakpad_wrapper.h ${D}${includedir}/ccsp
 
     # Install "vendor information"
-    install -m 0644 ${S}/ccsp_vendor.h ${D}${includedir}/ccsp
+    install -m 0644 ${WORKDIR}/ccsp_vendor.h ${D}${includedir}/ccsp
 
     sed -i -- 's/NotifyAccess=.*/#NotifyAccess=main/g' ${D}${systemd_unitdir}/system/CcspCrSsp.service
     sed -i -- 's/notify.*/forking/g' ${D}${systemd_unitdir}/system/CcspCrSsp.service
