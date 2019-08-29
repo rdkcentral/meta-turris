@@ -12,7 +12,6 @@ SRC_URI_append = " \
 SRC_URI += "file://posix-gwprovapp.patch"
 #This patch will add dummy swctl api which is originally given by brcm for XB3.
 SRC_URI += "file://0002-fix-swctl-missing-api.patch"
-SRC_URI += "file://0004-add-utopia-inited.patch"
 SRC_URI += "file://0005-utopia-firewall-for-turris.patch"
 
 
@@ -109,6 +108,10 @@ do_install_append() {
     sed -i -e "s/ifconfig wan0/ifconfig erouter0/g" ${D}/etc/utopia/service.d/service_sshd.sh
     sed -i -e "s/dropbear -E -s -b \/etc\/sshbanner.txt/dropbear -R -E /g" ${D}/etc/utopia/service.d/service_sshd.sh
     sed -i -e "/dropbear -R -E  -a -r/s/$/ -B/" ${D}${sysconfdir}/utopia/service.d/service_sshd.sh
+    
+    echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "touch -f /tmp/utopia_inited" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+
 }
 
 FILES_${PN} += " \
