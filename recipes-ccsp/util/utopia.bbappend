@@ -82,6 +82,7 @@ do_install_append() {
     ln -sf /usr/bin/02_lanHandler ${D}${sysconfdir}/utopia/registration.d/02_lanHandler
     ln -sf /usr/bin/02_multinet ${D}${sysconfdir}/utopia/registration.d/02_multinet
     ln -sf /usr/bin/02_wan ${D}${sysconfdir}/utopia/registration.d/02_wan
+    ln -sf /usr/bin/02_lan ${D}${sysconfdir}/utopia/registration.d/02_lan
     ln -sf /usr/bin/15_ccsphs ${D}${sysconfdir}/utopia/registration.d/15_ccsphs
     ln -sf /usr/bin/15_ddnsclient ${D}${sysconfdir}/utopia/registration.d/15_ddnsclient
     ln -sf /usr/bin/15_dhcp_server ${D}${sysconfdir}/utopia/registration.d/15_dhcp_server
@@ -108,7 +109,10 @@ do_install_append() {
     sed -i -e "s/ifconfig wan0/ifconfig erouter0/g" ${D}/etc/utopia/service.d/service_sshd.sh
     sed -i -e "s/dropbear -E -s -b \/etc\/sshbanner.txt/dropbear -R -E /g" ${D}/etc/utopia/service.d/service_sshd.sh
     sed -i -e "/dropbear -R -E  -a -r/s/$/ -B/" ${D}${sysconfdir}/utopia/service.d/service_sshd.sh
-    
+
+    #MSG_QUEUE  files are not present in turris
+    sed -i '/TOT_MSG_MAX=\$/ s/^/#/g'  ${D}${sysconfdir}/utopia/utopia_init.sh    
+
     echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "touch -f /tmp/utopia_inited" >> ${D}${sysconfdir}/utopia/utopia_init.sh
 
