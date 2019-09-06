@@ -11,7 +11,6 @@ CXXFLAGS_append_turris = " \
 SRC_URI += "file://ccsp_vendor.h"
 SRC_URI += "file://0003-add-dependency-to-pandm.patch"
 SRC_URI += "file://0004-remove-psm-db-reference.patch"
-SRC_URI += "file://0005-gwprovapp-service-file.patch"
 SRC_URI_append = " \
     file://wifiinitialized.service \
     file://checkturriswifisupport.service \
