@@ -1,0 +1,42 @@
+From dce50626d05c9e148e77e08a2216d81992cf2c85 Mon Sep 17 00:00:00 2001
+From: Mateusz Bajorski <mbajorski@plume.com>
+Date: Thu, 11 Jul 2019 11:48:17 +0000
+Subject: [PATCH 1/2] BM: Fix compilation errors. Cannot compare bool with
+ constant int
+
+---
+ src/bm/src/bm_client.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/bm/src/bm_client.c b/src/bm/src/bm_client.c
+index 6250b14..eb4a4b2 100644
+--- a/src/bm/src/bm_client.c
++++ b/src/bm/src/bm_client.c
+@@ -376,7 +376,7 @@ bm_client_update_pair(bm_client_t *client, bm_pair_t *pair)
+             }
+ 
+             // Blocked band
+-            if( !bsal_client_update( pair->bsal, blocked_band, (uint8_t *)&macaddr, &cli_conf ) < 0 ) {
++            if( bsal_client_update( pair->bsal, blocked_band, (uint8_t *)&macaddr, &cli_conf ) < 0 ) {
+                 LOGE( "Failed to update client '%s' for BSAL:%s",
+                         client->mac_addr, pair->ifcfg[blocked_band].ifname );
+                 return false;
+@@ -402,13 +402,13 @@ bm_client_update_pair(bm_client_t *client, bm_pair_t *pair)
+                 return false;
+             }
+ 
+-            if( !bsal_client_update( pair->bsal, BSAL_BAND_24G, (uint8_t *)&macaddr, &cli_conf ) < 0 ) {
++            if( bsal_client_update( pair->bsal, BSAL_BAND_24G, (uint8_t *)&macaddr, &cli_conf ) < 0 ) {
+                 LOGE( "Failed to update client '%s' for BSAL:%s",
+                         client->mac_addr, pair->ifcfg[BSAL_BAND_24G].ifname );
+                 return false;
+             }
+ 
+-            if( !bsal_client_update( pair->bsal, BSAL_BAND_5G, (uint8_t *)&macaddr, &cli_conf ) < 0 ) {
++            if( bsal_client_update( pair->bsal, BSAL_BAND_5G, (uint8_t *)&macaddr, &cli_conf ) < 0 ) {
+                 LOGE( "Failed to update client '%s' for BSAL:%s",
+                         client->mac_addr, pair->ifcfg[BSAL_BAND_5G].ifname );
+                 return false;
+-- 
+1.9.1
+

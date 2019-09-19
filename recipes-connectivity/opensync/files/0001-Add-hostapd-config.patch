@@ -1,0 +1,115 @@
+From ca91f2dcf9e0338af0bf2e1b5cc1ba51c5a589c7 Mon Sep 17 00:00:00 2001
+From: Mateusz Bajorski <mbajorski@plume.com>
+Date: Tue, 30 Jul 2019 09:51:26 +0000
+Subject: [PATCH] Add-hostapd-config
+
+---
+ rootfs/model/omnia/usr/plume/etc/hostapd-2G-1.conf | 44 ++++++++++++++++++++++
+ rootfs/model/omnia/usr/plume/etc/hostapd-2G.conf   | 44 ++++++++++++++++++++++
+ 2 files changed, 88 insertions(+)
+ create mode 100644 rootfs/model/omnia/usr/plume/etc/hostapd-2G-1.conf
+ create mode 100644 rootfs/model/omnia/usr/plume/etc/hostapd-2G.conf
+
+diff --git a/rootfs/model/omnia/usr/plume/etc/hostapd-2G-1.conf b/rootfs/model/omnia/usr/plume/etc/hostapd-2G-1.conf
+new file mode 100644
+index 0000000..417a52d
+--- /dev/null
++++ b/rootfs/model/omnia/usr/plume/etc/hostapd-2G-1.conf
+@@ -0,0 +1,44 @@
++driver=nl80211
++logger_syslog=127
++logger_syslog_level=2
++logger_stdout=127
++logger_stdout_level=2
++country_code=US
++ieee80211d=1
++hw_mode=g
++beacon_int=100
++channel=11
++
++ieee80211n=1
++#ht_coex=0
++ht_capab=[SHORT-GI-20][SHORT-GI-40][TX-STBC][RX-STBC1][DSSS_CCK-40]
++
++interface=wlan1
++ctrl_interface=/var/run/hostapd
++ap_isolate=1
++bss_load_update_period=60
++#chan_util_avg_period=600
++disassoc_low_ack=1
++preamble=1
++wmm_enabled=1
++ignore_broadcast_ssid=0
++uapsd_advertisement_enabled=1
++auth_algs=1
++wpa=0
++ssid=TurrisOmnia2G
++bridge=br-home
++bssid=04:f0:21:31:86:9a
++
++#bss=wlan0-1
++#ctrl_interface=/var/run/hostapd
++#bss_load_update_period=60
++##chan_util_avg_period=600
++#disassoc_low_ack=1
++#preamble=1
++#wmm_enabled=1
++#ignore_broadcast_ssid=0
++#uapsd_advertisement_enabled=1
++#auth_algs=1
++#wpa=0
++#ssid=TurrisOmnia2G
++#bssid=06:f0:21:31:86:9a
+diff --git a/rootfs/model/omnia/usr/plume/etc/hostapd-2G.conf b/rootfs/model/omnia/usr/plume/etc/hostapd-2G.conf
+new file mode 100644
+index 0000000..56ec589
+--- /dev/null
++++ b/rootfs/model/omnia/usr/plume/etc/hostapd-2G.conf
+@@ -0,0 +1,44 @@
++driver=nl80211
++logger_syslog=127
++logger_syslog_level=2
++logger_stdout=127
++logger_stdout_level=2
++country_code=US
++ieee80211d=1
++hw_mode=g
++beacon_int=100
++channel=11
++
++ieee80211n=1
++#ht_coex=0
++ht_capab=[SHORT-GI-20][SHORT-GI-40][TX-STBC][RX-STBC1][DSSS_CCK-40]
++
++interface=wlan0
++ctrl_interface=/var/run/hostapd
++ap_isolate=1
++bss_load_update_period=60
++#chan_util_avg_period=600
++disassoc_low_ack=1
++preamble=1
++wmm_enabled=1
++ignore_broadcast_ssid=0
++uapsd_advertisement_enabled=1
++auth_algs=1
++wpa=0
++ssid=TurrisOmnia2G
++bridge=br-home
++bssid=04:f0:21:31:86:9a
++
++#bss=wlan0-1
++#ctrl_interface=/var/run/hostapd
++#bss_load_update_period=60
++##chan_util_avg_period=600
++#disassoc_low_ack=1
++#preamble=1
++#wmm_enabled=1
++#ignore_broadcast_ssid=0
++#uapsd_advertisement_enabled=1
++#auth_algs=1
++#wpa=0
++#ssid=TurrisOmnia2G
++#bssid=06:f0:21:31:86:9a
+-- 
+1.9.1
+
