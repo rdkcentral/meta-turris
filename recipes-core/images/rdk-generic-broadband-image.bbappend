@@ -21,5 +21,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     iw \
     bc \
     mesh-agent \
+    opensync \
     openvswitch \
     "
