@@ -14,6 +14,11 @@ then
         sed -i "/^bssid=/c\bssid=${MAC}"  /nvram/hostapd1.conf
 fi
 
+if [ ! -f /nvram/bw_file.txt ]
+then
+	cp /etc/bw_file.txt /nvram/bw_file.txt
+fi
+
 brctl addbr brlan0
 exit 0
 
