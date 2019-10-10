@@ -1,8 +1,5 @@
 require ccsp_common_turris.inc
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += "file://0001-gwprovapp-ethwan.patch"
-
 DEPENDS_remove = " ruli"    
 
 export PLATFORM_TURRIS_ENABLED="yes"

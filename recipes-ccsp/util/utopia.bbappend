@@ -12,7 +12,6 @@ SRC_URI_append = " \
 SRC_URI += "file://posix-gwprovapp.patch"
 #This patch will add dummy swctl api which is originally given by brcm for XB3.
 SRC_URI += "file://0002-fix-swctl-missing-api.patch"
-SRC_URI += "file://0005-utopia-firewall-for-turris.patch"
 
 
 do_install_append() {
