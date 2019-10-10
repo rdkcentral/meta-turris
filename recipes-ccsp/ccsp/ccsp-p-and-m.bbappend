@@ -1,11 +1,5 @@
 require ccsp_common_turris.inc
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += " file://pandm-turris-macro.patch"
-SRC_URI += " file://set-pnm-status-for-turris.patch"
-SRC_URI += " file://0001-Ethwan-support.patch"
-
-
 DEPENDS_append = " utopia curl "
 
 CFLAGS_append = " \

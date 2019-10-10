@@ -6,9 +6,6 @@ SRCREV_FORMAT .= "_rdkbturris"
 
 inherit systemd
 
-SRCREV_remove = "3b98889c03932c394c88ae2bc6dead3ac0212509"
-SRCREV = "13dc7361aff68e4db54fb217d3eb5956ea2faa3e"
-
 EXTRA_OECMAKE += "-DBUILD_RASPBERRYPI=ON "
 
 LDFLAGS_remove_morty = " -lpthread"
