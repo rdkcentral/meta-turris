@@ -8,10 +8,8 @@ CXXFLAGS_append_turris = " \
                                 -std=c++11 \
                               "
 
-SRC_URI += "file://ccsp_vendor.h"
-SRC_URI += "file://0003-add-dependency-to-pandm.patch"
-SRC_URI += "file://0004-remove-psm-db-reference.patch"
 SRC_URI_append = " \
+    file://ccsp_vendor.h \
     file://wifiinitialized.service \
     file://checkturriswifisupport.service \
     file://wifiinitialized.path \
@@ -19,6 +17,20 @@ SRC_URI_append = " \
     file://checkturriswifisupport.path \
     file://wifi-initialized.target \
 "
+
+SRC_URI += "file://0003-add-dependency-to-pandm.patch;apply=no"
+SRC_URI += "file://0004-remove-psm-db-reference.patch;apply=no"
+
+# we need to patch to code for Turris
+do_rpi_patches() {
+    cd ${S}
+    if [ ! -e patch_applied ]; then
+        patch -p1 < ${WORKDIR}/0003-add-dependency-to-pandm.patch
+        patch -p1 < ${WORKDIR}/0004-remove-psm-db-reference.patch
+        touch patch_applied
+    fi
+}
+addtask rpi_patches after do_unpack before do_compile
 
 do_install_append(){
     # Config files and scripts
