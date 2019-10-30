@@ -7,7 +7,7 @@ export PLATFORM_TURRIS_ENABLED="yes"
 inherit systemd
 
 do_compile_append () { 
-	cp ${WORKDIR}/build/source/gw_prov_ethwan	${S}/source
+	cp ${B}/source/gw_prov_ethwan	${S}/source
 }
 
 do_install_append () {
