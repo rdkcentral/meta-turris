@@ -6,10 +6,6 @@ export PLATFORM_TURRIS_ENABLED="yes"
 
 inherit systemd
 
-do_compile_append () { 
-	cp ${B}/source/gw_prov_ethwan	${S}/source
-}
-
 do_install_append () {
 	install -d ${D}${systemd_unitdir}/system
 	install -m 0644 ${S}/service/gwprovethwan.service ${D}${systemd_unitdir}/system

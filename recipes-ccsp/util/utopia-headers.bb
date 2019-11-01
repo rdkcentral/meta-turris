@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=baa21dec03307f641a150889224a157f"
 SRC_URI = "${CMF_GIT_ROOT}/rdkb/components/opensource/ccsp/Utopia;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_BRANCH};name=Utopia"
 
 SRCREV_Utopia = "${AUTOREV}"
-PV = "${RDK_RELEASE}+git${SRCPV}"
+PV = "${RDK_RELEASE}"
 
 S = "${WORKDIR}/git"
 
