@@ -8,8 +8,6 @@ inherit systemd
 
 EXTRA_OECMAKE += "-DBUILD_RASPBERRYPI=ON "
 
-LDFLAGS_remove_morty = " -lpthread"
-
 do_install_append_broadband () {
     install -d ${D}${systemd_unitdir}/system
     install -d ${D}${base_libdir_native}/rdk
