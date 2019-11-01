@@ -4,15 +4,27 @@ DEPENDS_append = " kernel-autoconf utopia-headers"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI_append = " \
-    file://0001-fix-lan-handler-for-turris.patch \
-    file://0003-remove-autoconf.patch \
+    file://0001-fix-lan-handler-for-turris.patch;apply=no \
+    file://0003-remove-autoconf.patch;apply=no \
     file://system_defaults \
 "
 
-SRC_URI += "file://posix-gwprovapp.patch"
+SRC_URI += "file://posix-gwprovapp.patch;apply=no"
 #This patch will add dummy swctl api which is originally given by brcm for XB3.
-SRC_URI += "file://0002-fix-swctl-missing-api.patch"
+SRC_URI += "file://0002-fix-swctl-missing-api.patch;apply=no"
 
+# we need to patch to code for Turris
+do_rpi_patches() {
+    cd ${S}
+    if [ ! -e patch_applied ]; then
+        patch -p1 < ${WORKDIR}/0001-fix-lan-handler-for-turris.patch
+        patch -p1 < ${WORKDIR}/0003-remove-autoconf.patch
+        patch -p1 < ${WORKDIR}/posix-gwprovapp.patch
+        patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
+        touch patch_applied
+    fi
+}
+addtask rpi_patches after do_unpack before do_compile
 
 do_install_append() {
 
