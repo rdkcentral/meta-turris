@@ -16,8 +16,6 @@ do_rpi_patches() {
 }
 addtask rpi_patches after do_unpack before do_compile
 
-DEPENDS_remove = " ruli"
-
 export PLATFORM_TURRIS_ENABLED="yes"
 
 FILES_${PN} += " \

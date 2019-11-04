@@ -1,7 +1,5 @@
 require ccsp_common_turris.inc
 
-DEPENDS_remove = " ruli"    
-
 export PLATFORM_TURRIS_ENABLED="yes"
 
 inherit systemd
