@@ -26,6 +26,20 @@ then
 fi
 ip link set br-home address `cat /sys/class/net/wlan0/address`
 
+#Work around for Ethernet connected clients
+brctl addif brlan0 lan0
+brctl addif brlan0 lan1
+brctl addif brlan0 lan2
+brctl addif brlan0 lan3
+brctl addif brlan0 lan4
+
+ifconfig eth1 up
+ifconfig lan0 up
+ifconfig lan1 up
+ifconfig lan2 up
+ifconfig lan3 up
+ifconfig lan4 up
+
 MAC=`cat /sys/class/net/wlan0/address`
 iw dev wlan0 interface add wlan12 type __ap addr "00:`echo $MAC | cut -d ':' -f2,3,4,5,6 --output-delimiter=':'`"
 
