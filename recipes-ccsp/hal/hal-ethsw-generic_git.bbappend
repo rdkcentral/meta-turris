@@ -1,4 +1,4 @@
-SRC_URI += "${RDKCENTRAL_GITHUB_ROOT}/rdkb-turris-hal;protocol=${RDKCENTRAL_GITHUB_PROTOCOL};branch=${RDKCENTRAL_GITHUB_BRANCH};destsuffix=git/source/ethsw/devices;name=ethswhal-turris"
+SRC_URI += "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};destsuffix=git/source/ethsw/devices;name=ethswhal-turris"
 
 SRCREV_ethswhal-turris = "${AUTOREV}"
 
