@@ -7,11 +7,16 @@ SRC_URI[md5sum] = "c843b0c21354a0cf8f2f8fdad5293770"
 SRC_URI[sha256sum] = "d4cef396cb7e6ef4c4a82a789eaa9e2479c1cdce22c4c797ebb712be5a1fd56c"
 
 SRCREV = "1357b78ad32c3dfc4933f8613ae3755e7b314eb6"
-
+SRC_URI += "file://402-ath_regd_optional.patch \
+	    file://regdb.patch \
+           "
 SRC_URI += "${@bb.utils.contains('TUNE_FEATURES', 'bigendian', 'file://big-endian.cfg',  '', d)}"
 
 SRC_URI_append_clearfog = " \
     file://iptables.cfg \
+"
+SRC_URI += " \
+    file://ath-reg.cfg \
 "
 
 DEPENDS += " u-boot"
