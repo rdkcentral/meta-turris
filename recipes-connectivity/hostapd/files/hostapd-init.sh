@@ -43,14 +43,14 @@ ifconfig lan4 up
 
 MAC=`cat /sys/class/net/wlan0/address`
 BH_2G_INF=wlan12
-iw dev wlan0 interface add BH_2G_INF type __ap addr "00:`echo $MAC | cut -d ':' -f2,3,4,5,6 --output-delimiter=':'`"
-ip link set BH_2G_INF mtu 1600
-ip a add 169.254.0.1/24 broadcast 169.254.0.255 dev BH_2G_INF
+iw dev wlan0 interface add $BH_2G_INF type __ap addr "00:`echo $MAC | cut -d ':' -f2,3,4,5,6 --output-delimiter=':'`"
+ip link set $BH_2G_INF mtu 1600
+ip a add 169.254.0.1/24 broadcast 169.254.0.255 dev $BH_2G_INF
 
 MAC=`cat /sys/class/net/wlan1/address`
 BH_5G_INF=wlan13
-iw dev wlan1 interface add BH_5G_INF type __ap addr "00:`echo $MAC | cut -d ':' -f2,3,4,5,6 --output-delimiter=':'`"
-ip link set BH_5G_INF mtu 1600
-ip a add 169.254.1.1/24 broadcast 169.254.1.255 dev BH_5G_INF
+iw dev wlan1 interface add $BH_5G_INF type __ap addr "00:`echo $MAC | cut -d ':' -f2,3,4,5,6 --output-delimiter=':'`"
+ip link set $BH_5G_INF mtu 1600
+ip a add 169.254.1.1/24 broadcast 169.254.1.255 dev $BH_5G_INF
 
 exit 0
