@@ -7,6 +7,7 @@ Type=forking
 ExecStartPre=/bin/sh -c '(/lib/rdk/hostapd-init.sh)'
 ExecStart=/usr/sbin/hostapd -B -P /run/hostapd.pid /nvram/hostapd0.conf /nvram/hostapd1.conf
 Restart=always
+RestartSec=2
 
 [Install]
 WantedBy=multi-user.target
