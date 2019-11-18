@@ -1,12 +1,34 @@
+From b37d0291fd518f7db14f4432cb522846a0896a5f Mon Sep 17 00:00:00 2001
+From: Jenkins Slave <jenkins@code.rdkcentral.com>
+Date: Mon, 12 Nov 2018 14:29:46 +0000
+Subject: [PATCH] Refresh of the patch originally added by:
+
+  d46de29 RDKCMF-3935 Modify gwprovapp state machine for Raspberry Pi events
+  d9a1ea9 RDKCMF-3919: RDK-B on RPI: update Utopia lan_handler sh patch
+  3ab4cf5 RDKCMF-3804 - Initial check-in for RDK-B on Raspberry Pi 2 and 3
+
+Since the previous version of the patch did not contain any diff
+context, it was being applied at a fixed offset in lan_handler.sh.
+That fixed offset has become incorrect as lan_handler.sh has been
+updated.
+
+Unfortunately none of the commits which previously added or updated
+the patch give any indication of what the patch does or why it's
+needed.
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ source/scripts/init/service.d/lan_handler.sh | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
 diff --git a/source/scripts/init/service.d/lan_handler.sh b/source/scripts/init/service.d/lan_handler.sh
-index a417f268..bfba33bf 100755
+index ede6e02..016e7ef 100755
 --- a/source/scripts/init/service.d/lan_handler.sh
 +++ b/source/scripts/init/service.d/lan_handler.sh
-@@ -255,6 +255,25 @@ case "$1" in
-                 #sysevent set desired_moca_link_state down
-             fi
+@@ -266,6 +266,24 @@ case "$1" in
+             sysevent set multinet-up 9
          fi
-+
+ 
 +        # --------------------------------------------------------------------
 +        # Turris Omnia specific change begin
 +        # --------------------------------------------------------------------
@@ -28,3 +50,6 @@ index a417f268..bfba33bf 100755
          echo_t "LAN HANDLER : Triggering RDKB_FIREWALL_RESTART after nfqhandler" 
          sysevent set firewall-restart 
          uptime=`cat /proc/uptime | awk '{ print $1 }' | cut -d"." -f1`
+-- 
+2.22.0
+
