@@ -1,5 +1,8 @@
 #!/bin/sh
 
+mkdir -p /nvram
+mount /dev/mmcblk0p6 /nvram
+
 if [ ! -f /nvram/hostapd0.conf ]
 then
 	cp /etc/hostapd-2G.conf /nvram/hostapd0.conf
