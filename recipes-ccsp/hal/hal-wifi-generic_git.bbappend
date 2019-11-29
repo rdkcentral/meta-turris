@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI = "git://git@github.com/rdkcentral/rdkb-turris-hal.git;protocol=ssh;branch=turris-rdk-next;name=wifihal"
+SRC_URI = "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal.git;protocol=${CMF_GIT_PROTOCOL};branch=turris-rdk-next;name=wifihal"
 
 SRCREV = "${AUTOREV}"
 
