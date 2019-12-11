@@ -99,6 +99,9 @@ do_install_append(){
    
     #change for turris omnia
     sed -i 's/PIDFile/#&/' ${D}${systemd_unitdir}/system/CcspPandMSsp.service 
+
+    #Work-around, till Turris macro is merged
+    sed -i 's/PIDFile/#&/' ${D}/${systemd_unitdir}/system/ccspwifiagent.service
 }
 
 SYSTEMD_SERVICE_${PN} += "ccspwifiagent.service"
