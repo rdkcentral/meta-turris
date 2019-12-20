@@ -20,32 +20,56 @@
 mkdir -p /nvram
 mount /dev/mmcblk0p6 /nvram
 
+#2.4GHz Virtual Access Points
+iw dev wlan0 interface add wlan2 type __ap
+ip addr add 169.254.2.1/24 dev wlan2
+ifconfig wlan2 mtu 1600
+
+#5GHz Virtual Access Points
+iw dev wlan1 interface add wlan3 type __ap
+ip addr add 169.254.3.1/24 dev wlan3
+ifconfig wlan3 mtu 1600
+
+#iw dev wlan0 interface add wlan4 type __ap
+#iw dev wlan1 interface add wlan5 type __ap
+
+WIFI0_MAC=`cat /sys/class/net/wlan0/address`
+WIFI1_MAC=`cat /sys/class/net/wlan1/address`
+
 if [ ! -f /nvram/hostapd0.conf ]
 then
 	cp /etc/hostapd-2G.conf /nvram/hostapd0.conf
-	cp /etc/hostapd-5G.conf /nvram/hostapd1.conf
-
-	#Change the bssid for wlan0
-	MAC=`cat /sys/class/net/wlan0/address`
-	sed -i "/^bssid=/c\bssid=${MAC}"  /nvram/hostapd0.conf
-
-	#Change the bssid for wlan1
-	MAC=`cat /sys/class/net/wlan1/address`
-	sed -i "/^bssid=/c\bssid=${MAC}"  /nvram/hostapd1.conf
+	#Set bssid for wlan0
+	sed -i "/^bssid=/c\bssid=${WIFI0_MAC}"  /nvram/hostapd0.conf
 fi
 
+if [ ! -f /nvram/hostapd1.conf ]
+then
+	cp /etc/hostapd-5G.conf /nvram/hostapd1.conf
+	#Set bssid for wlan1
+	sed -i "/^bssid=/c\bssid=${WIFI1_MAC}"  /nvram/hostapd1.conf
+fi
+
+if [ ! -f /nvram/hostapd2.conf ]
+then
+    cp /etc/hostapd-bhaul2G.conf /nvram/hostapd2.conf
+	#Set bssid for wlan2
+	sed -i "/^bssid=/c\bssid=`echo ${WIFI0_MAC}| cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:00" /nvram/hostapd2.conf
+fi
+
+if [ ! -f /nvram/hostapd3.conf ]
+then
+    cp /etc/hostapd-bhaul5G.conf /nvram/hostapd3.conf
+	#Set bssid for wlan3
+	sed -i "/^bssid=/c\bssid=`echo ${WIFI0_MAC}| cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:00" /nvram/hostapd2.conf
+fi
+
+#Setting brlan0 bridge
 if [ ! -f /sys/class/net/brlan0 ]
 then
-	brctl addbr brlan0
+    brctl addbr brlan0
+    ip link set brlan0 address `cat /sys/class/net/eth1/address`
 fi
-ip link set brlan0 address `cat /sys/class/net/eth1/address`
-
-if [ ! -f /sys/class/net/br-home ]
-then
-	brctl addbr br-home
-fi
-ip link set br-home address `cat /sys/class/net/wlan0/address`
-ip a add 192.168.1.1/24 broadcast 192.168.1.255 dev br-home
 
 #Work around for Ethernet connected clients
 brctl addif brlan0 lan0
@@ -60,17 +84,5 @@ ifconfig lan1 up
 ifconfig lan2 up
 ifconfig lan3 up
 ifconfig lan4 up
-
-MAC=`cat /sys/class/net/wlan0/address`
-BH_2G_INF=wlan12
-iw dev wlan0 interface add $BH_2G_INF type __ap addr "00:`echo $MAC | cut -d ':' -f2,3,4,5,6 --output-delimiter=':'`"
-ip link set $BH_2G_INF mtu 1600
-ip a add 169.254.0.1/24 broadcast 169.254.0.255 dev $BH_2G_INF
-
-MAC=`cat /sys/class/net/wlan1/address`
-BH_5G_INF=wlan13
-iw dev wlan1 interface add $BH_5G_INF type __ap addr "00:`echo $MAC | cut -d ':' -f2,3,4,5,6 --output-delimiter=':'`"
-ip link set $BH_5G_INF mtu 1600
-ip a add 169.254.1.1/24 broadcast 169.254.1.255 dev $BH_5G_INF
 
 exit 0
