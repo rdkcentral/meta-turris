@@ -2,8 +2,7 @@ SUMMARY = "Marvell RFS"
 
 inherit rdk-image
 
-#IMAGE_FEATURES += "broadband"
-#IMAGE_ROOTFS_SIZE = "8192"
+IMAGE_FEATURES_remove = "read-only-rootfs"
 
 IMAGE_INSTALL_append = " \
     packagegroup-turris-core \
