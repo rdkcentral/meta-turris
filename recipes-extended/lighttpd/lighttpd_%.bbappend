@@ -8,3 +8,5 @@ do_install_append() {
     install -d ${D}${sysconfdir}
     install -m 0644 ${WORKDIR}/${LIGHTTPDCONF} ${D}${sysconfdir}/lighttpd.conf
 }
+
+FILES_${PN} += "/usr/lib/mod_fastcgi.so"
