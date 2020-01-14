@@ -2,7 +2,7 @@ SRC_URI += "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal;protocol=${CMF_GIT_PRO
 
 SRCREV = "${AUTOREV}"
 
-DEPENDS += "halinterface libnl"
+DEPENDS += " halinterface libnl libev wpa-supplicant"
 
 do_configure_prepend(){
     rm ${S}/wifi_hal.c
@@ -14,4 +14,4 @@ do_configure_prepend(){
 }
 
 CFLAGS_append = " -I=${includedir}/ccsp -I=${includedir}/libnl3"
-LDFLAGS_append = " -lnl-nf-3 -lnl-route-3 -lnl-3 -lnl-xfrm-3 -lnl-genl-3"
+LDFLAGS_append = " -lnl-nf-3 -lnl-route-3 -lnl-3 -lnl-xfrm-3 -lnl-genl-3 -lev -lwpa_client"
