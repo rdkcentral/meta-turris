@@ -27,6 +27,7 @@ RDEPENDS_packagegroup-turris-core = " \
    e2fsprogs \
    fftw \
    hostapd \
+   wpa-supplicant \
    iproute2 \
    libpcap \
    nfs-utils \

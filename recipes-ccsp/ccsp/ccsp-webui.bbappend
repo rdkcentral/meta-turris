@@ -14,6 +14,8 @@ do_install_append () {
     install -m 755 ${S}/../Styles/xb3/config/php.ini ${D}${sysconfdir}
 
     # delete wan0 reference for TurrisOmnia
+    sed -i "/wan0:80/a  echo \"This interface is not available in Turris\""  ${D}${sysconfdir}/webgui.sh
+    sed -i "/wan0:443/a  echo \"This interface is not available in Turris\""  ${D}${sysconfdir}/webgui.sh
     sed -i '/wan0/d' ${D}${sysconfdir}/webgui.sh
 
     #delete server.pem reference for TurrisOmnia
