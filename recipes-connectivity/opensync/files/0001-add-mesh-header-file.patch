@@ -1,0 +1,322 @@
+diff --git a/src/lib/wifihal/inc/mesh/meshsync_msgs.h b/src/lib/wifihal/inc/mesh/meshsync_msgs.h
+new file mode 100644
+index 0000000..03d5c6a
+--- /dev/null
++++ b/src/lib/wifihal/inc/mesh/meshsync_msgs.h
+@@ -0,0 +1,316 @@
++/*
++ * If not stated otherwise in this file or this component's Licenses.txt file the
++ * following copyright and licenses apply:
++ *
++ * Copyright 2018 RDK Management
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ * http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++*/
++
++/*
++ * meshcfg.h
++ *
++ */
++
++#ifndef MESHCFG_H_
++#define MESHCFG_H_
++
++#include <sys/types.h>
++#include <inttypes.h>
++
++#define MAX_SSID_LEN         65
++#define MAX_PASS_LEN         65
++#define MAX_MODE_LEN         25
++#define MAX_SUBNET_LEN       25
++#define MAX_IP_LEN           64
++#define MAX_URL_LEN          256
++#define MAX_TXRATE_LEN       256
++#define MAX_CHANNEL_MODE_LEN 32
++#define MAX_MAC_ADDR_LEN     18
++#define MAX_HOSTNAME_LEN     256
++
++#if defined(ENABLE_MESH_SOCKETS)
++/**************************************************************************/
++/*      Unix Domain Socket Name                                           */
++/**************************************************************************/
++#define MESH_SOCKET_PATH_NAME   "\0/tmp/mesh-socket-queue" // MeshAgent Server message socket
++#else
++/**************************************************************************/
++/*      Posix Message Queue Names                                         */
++/**************************************************************************/
++#define MESH_SERVER_QUEUE_NAME   "/mqueue-mesh-server" // Message traffic from Mesh Application Layer to RDKB
++#define MESH_CLIENT_QUEUE_NAME   "/mqueue-mesh-client" // Message traffic from RDKB to Mesh Application Layer
++#endif
++
++#define MAX_FINGERPRINT_LEN 512
++/**************************************************************************/
++/*      Mesh sync message types                                         */
++/**************************************************************************/
++typedef enum {
++    MESH_WIFI_RESET,
++    MESH_WIFI_RADIO_CHANNEL,
++    MESH_WIFI_RADIO_CHANNEL_MODE,
++    MESH_WIFI_SSID_NAME,
++    MESH_WIFI_SSID_ADVERTISE,
++    MESH_WIFI_AP_SECURITY,
++    MESH_WIFI_AP_KICK_ASSOC_DEVICE,
++    MESH_WIFI_AP_KICK_ALL_ASSOC_DEVICES,
++    MESH_WIFI_AP_ADD_ACL_DEVICE,
++    MESH_WIFI_AP_DEL_ACL_DEVICE,
++    MESH_WIFI_MAC_ADDR_CONTROL_MODE,
++    MESH_SUBNET_CHANGE,
++    MESH_URL_CHANGE,
++    MESH_WIFI_STATUS,
++    MESH_WIFI_ENABLE,
++    MESH_STATE_CHANGE,
++    MESH_WIFI_TXRATE,
++    MESH_CLIENT_CONNECT,
++    MESH_DHCP_RESYNC_LEASES,
++    MESH_DHCP_ADD_LEASE,
++    MESH_DHCP_REMOVE_LEASE,
++    MESH_DHCP_UPDATE_LEASE,
++    MESH_WIFI_RADIO_CHANNEL_BW,
++    MESH_SYNC_MSG_TOTAL
++} eMeshSyncType;
++
++/**
++ * Mesh States
++ */
++typedef enum {
++    MESH_STATE_FULL = 0,
++    MESH_STATE_MONITOR,
++    MESH_STATE_WIFI_RESET,
++    MESH_STATE_TOTAL
++} eMeshStateType;
++
++/**
++ * Mesh Status states
++ */
++typedef enum {
++    MESH_WIFI_STATUS_OFF = 0,
++    MESH_WIFI_STATUS_INIT,
++    MESH_WIFI_STATUS_MONITOR,
++    MESH_WIFI_STATUS_FULL,
++    MESH_WIFI_STATUS_TOTAL
++} eMeshWifiStatusType;
++
++/**
++ * Mesh Connected Client Interfaces
++ */
++typedef enum {
++    MESH_IFACE_NONE = 0,
++    MESH_IFACE_ETHERNET,
++    MESH_IFACE_MOCA,
++    MESH_IFACE_WIFI,
++    MESH_IFACE_OTHER,
++    MESH_IFACE_TOTAL
++} eMeshIfaceType;
++
++/**
++ * Mesh Sync Wifi Reset/Init message
++ */
++typedef struct _MeshWifiReset {
++    uint8_t reset; // boolean dummy value for structure set to true.
++} MeshWifiReset;
++
++/**
++ * Mesh Sync Wifi SSID name change message
++ */
++typedef struct _MeshWifiSSIDName {
++    uint32_t  index;                    // index [0-15]
++    char      ssid[MAX_SSID_LEN];       // SSID
++} MeshWifiSSIDName;
++
++/**
++ * Mesh Sync Wifi SSID Advertise change message
++ */
++typedef struct _MeshWifiSSIDAdvertise {
++    uint32_t  index;                    // index [0-15]
++    uint8_t   enable;                   // boolean enable
++} MeshWifiSSIDAdvertise;
++
++/**
++ * Mesh Sync Wifi Radio channel change
++ */
++typedef struct _MeshWifiRadioChannel {
++    uint32_t index;                // Radio index
++    uint32_t channel;              // Channel
++} MeshWifiRadioChannel;
++
++/**
++ * Mesh Sync Wifi Radio channel mode change
++ */
++typedef struct _MeshWifiRadioChannelMode {
++    uint32_t index;                             // Radio index
++    char     channelMode[MAX_CHANNEL_MODE_LEN]; // ChannelMode
++    uint8_t  gOnlyFlag;            // Is this g only?
++    uint8_t  nOnlyFlag;            // Is this n only?
++    uint8_t  acOnlyFlag;           // Is this ac only?
++} MeshWifiRadioChannelMode;
++
++
++/**
++ * Mesh Sync Wifi configuration change message
++ */
++typedef struct _MeshWifiAPSecurity {
++    uint32_t  index;                    // AP index [0-15]
++    char      passphrase[MAX_PASS_LEN]; // AP Passphrase
++    char      secMode[MAX_MODE_LEN];    // Security mode
++    char      encryptMode[MAX_MODE_LEN];    // Encryption mode
++} MeshWifiAPSecurity;
++
++
++/**
++ * Mesh Sync Wifi Kick AP Associated Device based on device mac
++ */
++typedef struct _MeshWifiAPKickAssocDevice {
++    uint32_t  index;                    // AP index [0-15]
++    char      mac[MAX_MAC_ADDR_LEN];    // Mac Address
++} MeshWifiAPKickAssocDevice;
++
++/**
++ * Mesh Sync Wifi Kick All AP Associated Devices
++ */
++typedef struct _MeshWifiAPKickAllAssocDevices {
++    uint32_t  index;                    // AP index [0-15]
++} MeshWifiAPKickAllAssocDevices;
++
++
++/**
++ * Mesh Sync Wifi AP Add Acl Device
++ */
++typedef struct _MeshWifiAPAddAclDevice {
++    uint32_t  index;                    // AP index [0-15]
++    char      mac[MAX_MAC_ADDR_LEN];    // Mac Address
++} MeshWifiAPAddAclDevice;
++
++
++/**
++ * Mesh Sync Wifi AP Delete Acl Device
++ */
++typedef struct _MeshWifiAPDelAclDevice {
++    uint32_t  index;                    // AP index [0-15]
++    char      mac[MAX_MAC_ADDR_LEN];    // Mac Address
++} MeshWifiAPDelAclDevice;
++
++/**
++ * Mesh Sync Wifi Mac Address Control Mode
++ */
++typedef struct _MeshWifiMacAddrControlMode {
++    uint32_t  index;                        // AP index [0-15]
++    uint8_t   isEnabled;   // Filter Enabled bool
++    uint8_t   isBlacklist; // blacklist=1; whitelist=0
++} MeshWifiMacAddrControlMode;
++
++
++/**
++ * Mesh Sync Subnet configuration change message
++ */
++typedef struct _MeshSubnetChange {
++    char gwIP[MAX_IP_LEN];   // GW IP value
++    char netmask[MAX_SUBNET_LEN];   // Subnet value
++} MeshSubnetChange;
++
++/**
++ * Mesh Sync URL configuration change message
++ */
++typedef struct _MeshUrlChange {
++    char url[MAX_URL_LEN];  // url
++} MeshUrlChange;
++
++/**
++ * Mesh Network Status message
++ */
++typedef struct _MeshWifiStatus {
++    eMeshWifiStatusType status; // Status of mesh network
++} MeshWifiStatus;
++
++/**
++ * Mesh State message
++ */
++typedef struct _MeshStateChange {
++    eMeshStateType state; // State of mesh network
++} MeshStateChange;
++
++/**
++ * Mesh WiFi TxRate
++ */
++typedef struct _MeshWifiTxRate {
++    uint32_t  index;                        // AP index [0-15]
++    char      basicRates[MAX_TXRATE_LEN];   // Basic Rates
++    char      opRates   [MAX_TXRATE_LEN];   // Operational Rates
++} MeshWifiTxRate;
++
++/**
++ * Mesh Client Connect
++ */
++typedef struct _MeshClientConnect {
++    eMeshIfaceType  iface;                  // Interface
++    char            mac[MAX_MAC_ADDR_LEN];  // MAC address
++    char            host[MAX_HOSTNAME_LEN];  // Hostname
++    uint8_t         isConnected;            // true=connected; false=offline/disconnected
++} MeshClientConnect;
++
++/**
++ * DHCP lease notification
++ */
++typedef struct _MeshWifiDhcpLease {
++    char        mac[MAX_MAC_ADDR_LEN];
++    char        ipaddr[MAX_IP_LEN];
++    char        hostname[MAX_HOSTNAME_LEN];
++    char        fingerprint[MAX_FINGERPRINT_LEN];
++} MeshWifiDhcpLease;
++
++/**
++ * Channel Bandwidth change notification
++ */
++typedef struct _MeshWifiRadioChannelBw {
++    int index;
++    int bw;
++} MeshWifiRadioChannelBw;
++
++/**
++ * Mesh Sync message
++ */
++typedef struct _MeshSync {
++    eMeshSyncType msgType;
++
++    union {
++        MeshWifiReset                   wifiReset;
++        MeshWifiRadioChannel            wifiRadioChannel;
++        MeshWifiRadioChannelMode        wifiRadioChannelMode;
++        MeshWifiSSIDName                wifiSSIDName;
++        MeshWifiSSIDAdvertise           wifiSSIDAdvertise;
++        MeshWifiAPSecurity              wifiAPSecurity;
++        MeshWifiAPKickAssocDevice       wifiAPKickAssocDevice;
++        MeshWifiAPKickAllAssocDevices   wifiAPKickAllAssocDevices;
++        MeshWifiAPAddAclDevice          wifiAPAddAclDevice;
++        MeshWifiAPDelAclDevice          wifiAPDelAclDevice;
++        MeshWifiMacAddrControlMode      wifiMacAddrControlMode;
++        MeshSubnetChange                subnet;
++        MeshUrlChange                   url;
++        MeshWifiStatus                  wifiStatus;
++        MeshStateChange                 meshState;
++        MeshWifiTxRate                  wifiTxRate;
++        MeshClientConnect               meshConnect;
++        MeshWifiDhcpLease               meshLease;
++        MeshWifiRadioChannelBw          wifiRadioChannelBw; 
++    } data;
++} MeshSync;
++
++typedef struct _LeaseNotify {
++    MeshWifiDhcpLease        lease;
++    eMeshSyncType msgType;
++} LeaseNotify;
++
++#endif /* MESHCFG_H_ */
