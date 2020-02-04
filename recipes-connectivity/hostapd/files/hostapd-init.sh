@@ -20,12 +20,12 @@
 mkdir -p /nvram
 mount /dev/mmcblk0p6 /nvram
 
-#2.4GHz Virtual Access Points
+#2.4GHz Virtual Access Points for backhaul connection
 iw dev wlan0 interface add wlan2 type __ap
 ip addr add 169.254.2.1/24 dev wlan2
 ifconfig wlan2 mtu 1600
 
-#5GHz Virtual Access Points
+#5GHz Virtual Access Points for backhaul connection
 iw dev wlan1 interface add wlan3 type __ap
 ip addr add 169.254.3.1/24 dev wlan3
 ifconfig wlan3 mtu 1600
