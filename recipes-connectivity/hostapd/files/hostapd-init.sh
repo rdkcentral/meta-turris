@@ -20,47 +20,55 @@
 mkdir -p /nvram
 mount /dev/mmcblk0p6 /nvram
 
+#Renaming wireless inteface names from wlan* to wifi*
+ifconfig wlan0 down
+ifconfig wlan1 down
+ip link set wlan0 name wifi0
+ip link set wlan1 name wifi1
+ifconfig wifi0 up
+ifconfig wifi1 up
+
 #2.4GHz Virtual Access Points for backhaul connection
-iw dev wlan0 interface add wlan2 type __ap
-ip addr add 169.254.2.1/24 dev wlan2
-ifconfig wlan2 mtu 1600
+iw dev wifi0 interface add wifi2 type __ap
+ip addr add 169.254.2.1/24 dev wifi2
+ifconfig wifi2 mtu 1600
 
 #5GHz Virtual Access Points for backhaul connection
-iw dev wlan1 interface add wlan3 type __ap
-ip addr add 169.254.3.1/24 dev wlan3
-ifconfig wlan3 mtu 1600
+iw dev wifi1 interface add wifi3 type __ap
+ip addr add 169.254.3.1/24 dev wifi3
+ifconfig wifi3 mtu 1600
 
-#iw dev wlan0 interface add wlan4 type __ap
-#iw dev wlan1 interface add wlan5 type __ap
+#iw dev wifi0 interface add wifi4 type __ap
+#iw dev wifi1 interface add wifi5 type __ap
 
-WIFI0_MAC=`cat /sys/class/net/wlan0/address`
-WIFI1_MAC=`cat /sys/class/net/wlan1/address`
+WIFI0_MAC=`cat /sys/class/net/wifi0/address`
+WIFI1_MAC=`cat /sys/class/net/wifi1/address`
 
 if [ ! -f /nvram/hostapd0.conf ]
 then
 	cp /etc/hostapd-2G.conf /nvram/hostapd0.conf
-	#Set bssid for wlan0
+	#Set bssid for wifi0
 	sed -i "/^bssid=/c\bssid=${WIFI0_MAC}"  /nvram/hostapd0.conf
 fi
 
 if [ ! -f /nvram/hostapd1.conf ]
 then
 	cp /etc/hostapd-5G.conf /nvram/hostapd1.conf
-	#Set bssid for wlan1
+	#Set bssid for wifi1
 	sed -i "/^bssid=/c\bssid=${WIFI1_MAC}"  /nvram/hostapd1.conf
 fi
 
 if [ ! -f /nvram/hostapd2.conf ]
 then
     cp /etc/hostapd-bhaul2G.conf /nvram/hostapd2.conf
-	#Set bssid for wlan2
+	#Set bssid for wifi2
 	sed -i "/^bssid=/c\bssid=`echo $WIFI0_MAC | cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:00" /nvram/hostapd2.conf
 fi
 
 if [ ! -f /nvram/hostapd3.conf ]
 then
     cp /etc/hostapd-bhaul5G.conf /nvram/hostapd3.conf
-	#Set bssid for wlan3
+	#Set bssid for wifi3
 	sed -i "/^bssid=/c\bssid=`echo $WIFI1_MAC | cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:00" /nvram/hostapd3.conf
 fi
 
