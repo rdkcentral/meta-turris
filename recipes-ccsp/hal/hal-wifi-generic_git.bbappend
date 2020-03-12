@@ -1,8 +1,9 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};destsuffix=git/source/wifi/devices;name=wifihal-turris"
 
 SRCREV = "${AUTOREV}"
 
-DEPENDS += " halinterface libnl libev wpa-supplicant"
+DEPENDS += "halinterface libnl libev hostapd wpa-supplicant"
 
 do_configure_prepend(){
     rm ${S}/wifi_hal.c

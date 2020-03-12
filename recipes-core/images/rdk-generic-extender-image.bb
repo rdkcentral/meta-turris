@@ -10,7 +10,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     rdk-logger \
     ${SYSTEMD_TOOLS} \
     linux-firmware-ath10k \
-    network-hotplug \
     php \
     libmcrypt \
     bzip2 \
@@ -26,6 +25,7 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     libcap \
     bridge-utils \
     strace \
+    wpa-supplicant \
     "
 
 SYSTEMD_TOOLS = "systemd-analyze systemd-bootchart"

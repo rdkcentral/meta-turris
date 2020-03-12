@@ -20,6 +20,9 @@ SRC_URI = " \
     file://hostapd-init.sh \
 "
 
+SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://c89daaeca4ee90c8bc158e37acb1b679c823d7ab.patch', '', d)}"
+SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://nl80211-relax-bridge-setup.patch', '', d)}"
+
 SRC_URI[md5sum] = "f188fc53a495fe7af3b6d77d3c31dee8"
 SRC_URI[sha256sum] = "881d7d6a90b2428479288d64233151448f8990ab4958e0ecaca7eeb3c9db2bd7"
 
@@ -46,6 +49,10 @@ do_install() {
          install -d ${D}${sbindir} ${D}${sysconfdir} ${D}${systemd_unitdir}/system/ ${D}${base_libdir}/rdk
          install -m 0755 ${B}/hostapd ${D}${sbindir}
          install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
+         if [ ${MACHINE} == "turris-extender" ]; then
+             sed -i 's/bridge=brlan0/bridge=br-home/' ${WORKDIR}/hostapd-2G.conf
+             sed -i 's/bridge=brlan0/bridge=br-home/' ${WORKDIR}/hostapd-5G.conf
+         fi
          install -m 0644 ${WORKDIR}/hostapd-2G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-bhaul2G.conf ${D}${sysconfdir}

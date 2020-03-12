@@ -1,0 +1,89 @@
+diff --git a/Makefile.am b/Makefile.am
+index ff1f94b..a36ad8a 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -475,26 +475,26 @@ dist-docs:
+ 	VERSION=$(VERSION) MAKE='$(MAKE)' $(srcdir)/build-aux/dist-docs $(srcdir) $(docs)
+ .PHONY: dist-docs
+ 
+-include Documentation/automake.mk
++#include Documentation/automake.mk
+ include m4/automake.mk
+ include lib/automake.mk
+ include ofproto/automake.mk
+ include utilities/automake.mk
+-include tests/automake.mk
++#include tests/automake.mk
+ include include/automake.mk
+-include third-party/automake.mk
+-include debian/automake.mk
++#include third-party/automake.mk
++#include debian/automake.mk
+ include ipsec/automake.mk
+ include vswitchd/automake.mk
+ include ovsdb/automake.mk
+-include rhel/automake.mk
+-include xenserver/automake.mk
+-include python/automake.mk
+-include tutorial/automake.mk
+-include vtep/automake.mk
+-include datapath-windows/automake.mk
+-include datapath-windows/include/automake.mk
+-include windows/automake.mk
+-include ovn/automake.mk
+-include selinux/automake.mk
+-include build-aux/automake.mk
++#include rhel/automake.mk
++#include xenserver/automake.mk
++#include python/automake.mk
++#include tutorial/automake.mk
++#include vtep/automake.mk
++#include datapath-windows/automake.mk
++#include datapath-windows/include/automake.mk
++#include windows/automake.mk
++#include ovn/automake.mk
++#include selinux/automake.mk
++#include build-aux/automake.mk
+diff --git a/include/automake.mk b/include/automake.mk
+index 3f3ed1c..2b64519 100644
+--- a/include/automake.mk
++++ b/include/automake.mk
+@@ -6,7 +6,7 @@ include/odp-netlink.h: datapath/linux/compat/include/linux/openvswitch.h \
+ EXTRA_DIST += build-aux/extract-odp-netlink-h
+ CLEANFILES += include/odp-netlink.h
+ 
+-include include/ovn/automake.mk
++#include include/ovn/automake.mk
+ include include/openflow/automake.mk
+ include include/openvswitch/automake.mk
+ include include/sparse/automake.mk
+diff --git a/utilities/automake.mk b/utilities/automake.mk
+index a5bb27e..662b16f 100644
+--- a/utilities/automake.mk
++++ b/utilities/automake.mk
+@@ -4,19 +4,6 @@ bin_PROGRAMS += \
+ 	utilities/ovs-dpctl \
+ 	utilities/ovs-ofctl \
+ 	utilities/ovs-vsctl
+-bin_SCRIPTS += utilities/ovs-docker \
+-	utilities/ovs-pki \
+-	utilities/ovs-pcap \
+-	utilities/ovs-tcpdump \
+-	utilities/ovs-tcpundump
+-if HAVE_PYTHON2
+-bin_SCRIPTS += \
+-	utilities/ovs-dpctl-top \
+-	utilities/ovs-l3ping \
+-	utilities/ovs-parse-backtrace \
+-	utilities/ovs-test \
+-	utilities/ovs-vlan-test
+-endif
+ scripts_SCRIPTS += \
+ 	utilities/ovs-check-dead-ifs \
+ 	utilities/ovs-ctl \
+@@ -153,4 +140,4 @@ FLAKE8_PYFILES += utilities/ovs-pcap.in \
+ 	utilities/ovs-tcpdump.in \
+ 	utilities/ovs-pipegen.py
+ 
+-include utilities/bugtool/automake.mk
++#include utilities/bugtool/automake.mk
