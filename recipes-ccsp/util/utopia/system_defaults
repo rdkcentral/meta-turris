@@ -109,7 +109,7 @@ $$Version=11
 # 1 - IPv4
 # 2 - IPv6
 # 3 - IPv4 and IPv6
-$last_erouter_mode=1
+$last_erouter_mode=3
 
 # wan_physical_ifname - the name (as known to the OS) of the physical interface
 #    that is used for the wan. This setting is not meant for users to manipulate.
@@ -937,3 +937,5 @@ $wan_default_gateway=0.0.0.0
 $nameserver1=0.0.0.0
 $nameserver2=0.0.0.0
 $hostname=TurrisOmnia-GW
+
+$IPv6subPrefix=true
