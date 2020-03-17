@@ -1,0 +1,14 @@
+[Unit]
+Description=WPA supplicant daemon
+After=CcspPandMSsp.service
+
+[Service]
+Type=simple
+PIDFile=/var/run/wpa_supplicant-global.pid
+ExecStart=/usr/sbin/wpa_supplicant -g/var/run/wpa_supplicant-global -P /var/run/wpa_supplicant-global.pid 
+Restart=always
+StartLimitIntervalSec=120
+
+[Install]
+WantedBy=multi-user.target
+
