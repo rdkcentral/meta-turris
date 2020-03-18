@@ -1,0 +1,70 @@
+diff --git a/wifi_hal.h b/wifi_hal.h
+index e26f428..8666823 100644
+--- a/wifi_hal.h
++++ b/wifi_hal.h
+@@ -9262,6 +9262,65 @@ INT wifi_getRadioChannels(INT radioIndex, wifi_channelMap_t *output_map, INT out
+ 
+ INT wifi_chan_eventRegister(wifi_chan_eventCB_t event_cb);
+ 
++
++/* DRAFT FOR CLIENT API */
++
++
++/* APPROACH 2 */
++typedef struct {
++	CHAR ssid[33];
++	CHAR bssid[17];
++	CHAR passphrase[65];
++} wifi_staNetwork_t;
++
++INT wifi_getSTANetworks(INT apIndex, wifi_staNetwork_t **out_staNetworks_array, INT out_array_size, BOOL *out_scan_cur_freq);
++
++INT wifi_setSTANetworks(INT apIndex, wifi_staNetwork_t **staNetworks_array, INT array_size, BOOL scan_cur_freq);
++
++INT wifi_delSTANetworks(INT apIndex);
++
++/* APPROACH 1*/
++typedef enum wifi_sta_network_flags {
++	WIFI_STA_NET_F_OPEN,
++	WIFI_STA_NET_F_PSK1,
++	WIFI_STA_NET_F_PSK2,WIFI_STA_NET_F_PSK_FT,
++	WIFI_STA_NET_F_AES,
++	WIFI_STA_NET_F_TKIP,
++	WIFI_STA_NET_F_4ADDR_MULTI_AP, /* future: easymesh's wds */
++	WIFI_STA_NET_F_OWE, /* future: opportunistic wireless encryption */
++	WIFI_STA_NET_F_SAE, /* future: wpa3 */
++} wifi_sta_network_flags_t;
++
++typedef struct wifi_sta_network {
++	char bridge[16]; /* valid for 4addr_multi_ap */
++	char ssid[32];
++	char psk[64];
++	char bssid[6]; /* 00:00:00:00:00:00 means any */
++	size_t ssid_len;
++	size_t psk_len;
++	unsigned long flags; /* enum wifi_sta_network_flags */
++} wifi_sta_network_t;
++
++typedef struct wifi_sta_network_state {
++	struct wifi_sta_network desired_network;
++	char current_bssid[6]; /* 00:00:00:00:00:00 means disconnected */
++	int last_deauth_reason;
++	int last_disassoc_reason;
++} wifi_sta_network_state_t;
++
++typedef void (*wifi_sta_network_cb)(INT radioIndex, void *ctx);
++INT wifi_setStaNetwork(INT radioIndex, const wifi_sta_network_t *network);
++INT wifi_setStaNetworkSetEventCallback(INT radioIndex, wifi_sta_network_cb *cb, void *ctx);
++INT wifi_getStaNetworkState(INT radioIndex, wifi_sta_network_state_t *state);
++INT wifi_getStaNetworkCapabilities(INT radioIndex, INT *flags);
++
++/* notdefined approach */
++INT wifi_getSTANumberOfEntries(ULONG *output);
++INT wifi_getSTARadioIndex(INT ssidIndex, INT *radioIndex);
++INT wifi_getSTAName(INT apIndex, CHAR *output_string);
++INT wifi_getSTABSSID(INT ssidIndex, CHAR *output_string);
++INT wifi_getSTAMAC(INT ssidIndex, CHAR *output_string);
++
+ #else
+ #error "! __WIFI_HAL_H__"
+ #endif
