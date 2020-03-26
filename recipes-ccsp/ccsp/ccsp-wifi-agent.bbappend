@@ -5,11 +5,16 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 LDFLAGS += " \
 	-lutopiautil \
 	   "
+#work around for wifi restart_flag=false, for meshagent synchroniztaion
+do_configure_prepend() {
+sed -i '/wlanRestart == TRUE/!{p;d;};n;a #if defined(ENABLE_FEATURE_MESHWIFI)\n if ((sWiFiDmlSsidStoredCfg[wlanIndex].SSID, sWiFiDmlSsidRunningCfg[wlanIndex].SSID) != 0)\n {\n char arg[256] = {0};\n snprintf(arg, sizeof(arg), "RDK|%d|%s",wlanIndex,sWiFiDmlSsidStoredCfg[wlanIndex].SSID);\n char * const cmd[] = {"/usr/bin/sysevent", "set", "wifi_SSIDName", arg, NULL};\n execvp_wrapper(cmd);\n }\n #endif\n'  ${S}/source/TR-181/sbapi/cosa_wifi_apis.c
+}
 	
 SRC_URI_append = " \
     file://wifiTelemetrySetup.sh \
     file://checkwifi.sh \
     file://radio_param_def.cfg \
+    file://synclease.sh \
 "
 do_install_append(){
     install -m 777 ${D}/usr/bin/CcspWifiSsp -t ${D}/usr/ccsp/wifi/
@@ -17,6 +22,7 @@ do_install_append(){
     install -m 777 ${WORKDIR}/wifiTelemetrySetup.sh ${D}/usr/ccsp/wifi/
     install -m 777 ${WORKDIR}/checkwifi.sh ${D}/usr/ccsp/wifi/
     install -m 777 ${WORKDIR}/radio_param_def.cfg ${D}/usr/ccsp/wifi/
+    install -m 777 ${WORKDIR}/synclease.sh ${D}/usr/ccsp/wifi/
 }
 
 FILES_${PN} += " \
@@ -25,4 +31,5 @@ FILES_${PN} += " \
     ${prefix}/ccsp/wifi/wifiTelemetrySetup.sh \
     ${prefix}/ccsp/wifi/checkwifi.sh \
     ${prefix}/ccsp/wifi/radio_param_def.cfg \
+    ${prefix}/ccsp/wifi/synclease.sh \
 "
