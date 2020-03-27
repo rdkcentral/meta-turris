@@ -13,3 +13,4 @@ VENDOR_URI = "git://git@github.com/rdkcentral/opensync-vendor-rdk-turris.git;pro
 DEPENDS_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'mesh-agent', '', d)}"
 
 RDK_CFLAGS += " -D_PLATFORM_TURRIS_"
+
