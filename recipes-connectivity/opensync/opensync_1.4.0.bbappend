@@ -11,6 +11,7 @@ PLATFORM_URI += "file://MeshAgentSync.patch;patchdir=${WORKDIR}/git/platform/rdk
 VENDOR_URI = "git://git@github.com/rdkcentral/opensync-vendor-rdk-turris.git;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};name=vendor;destsuffix=git/vendor/turris"
 
 DEPENDS_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'mesh-agent', '', d)}"
+DEPENDS_append = " rdk-logger"
 
 RDK_CFLAGS += " -D_PLATFORM_TURRIS_"
 
