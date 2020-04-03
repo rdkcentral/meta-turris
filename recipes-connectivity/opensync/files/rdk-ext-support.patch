@@ -1,0 +1,329 @@
+diff --git a/ovsdb/inet.json b/ovsdb/inet.json
+index af2994e..4adb651 100644
+--- a/ovsdb/inet.json
++++ b/ovsdb/inet.json
+@@ -19,6 +19,32 @@
+             "if_type": "bridge",
+             "enabled": true
+        }
++    },
++    {
++        "op":"insert",
++        "table":"Wifi_Inet_Config",
++        "row": {
++            "if_name": "bhaul-sta-24",
++            "ip_assign_scheme": "dhcp",
++            "mtu": 1600,
++            "if_type": "vif",
++            "enabled" : true,
++            "network" : true,
++            "NAT": false
++        }
++    },
++    {
++        "op":"insert",
++        "table":"Wifi_Inet_Config",
++        "row": {
++            "if_name": "bhaul-sta-50",
++            "ip_assign_scheme": "dhcp",
++            "mtu": 1600,
++            "if_type": "vif",
++            "enabled" : true,
++            "network" : true,
++            "NAT": false
++        }
+     }
+ ]
+ 
+diff --git a/rootfs/model/omnia/usr/plume/bin/udhcpc.sh b/rootfs/model/omnia/usr/plume/bin/udhcpc.sh
+new file mode 100755
+index 0000000..9545d52
+--- /dev/null
++++ b/rootfs/model/omnia/usr/plume/bin/udhcpc.sh
+@@ -0,0 +1,92 @@
++#!/bin/sh
++[ -z "$1" ] && echo "Error: should be run by udhcpc" && exit 1
++
++OPTS_FILE=/var/run/udhcpc_$interface.opts
++
++set_classless_routes() {
++	local max=128
++	local type
++	while [ -n "$1" -a -n "$2" -a $max -gt 0 ]; do
++		[ ${1##*/} -eq 32 ] && type=host || type=net
++		echo "udhcpc: adding route for $type $1 via $2"
++		route add -$type "$1" gw "$2" dev "$interface"
++		max=$(($max-1))
++		shift 2
++	done
++}
++
++print_opts()
++{
++    [ -n "$router" ]    && echo "gateway=$router"
++    [ -n "$timesrv" ]   && echo "timesrv=$timesrv"
++    [ -n "$namesrv" ]   && echo "namesrv=$namesrv"
++    [ -n "$dns" ]       && echo "dns=$dns"
++    [ -n "$logsrv" ]    && echo "logsrv=$logsrv"
++    [ -n "$cookiesrv" ] && echo "cookiesrv=$cookiesrv"
++    [ -n "$lprsrv" ]    && echo "lprsrv=$lprsrv"
++    [ -n "$hostname" ]  && echo "hostname=$hostname"
++    [ -n "$domain" ]    && echo "domain=$domain"
++    [ -n "$swapsrv" ]   && echo "swapsrv=$swapsrv"
++    [ -n "$ntpsrv" ]    && echo "ntpsrv=$ntpsrv"
++    [ -n "$lease" ]     && echo "lease=$lease"
++    # vendorspec may contain all sorts of binary characters, convert it to base64
++    [ -n "$vendorspec" ] && echo "vendorspec=$(echo $vendorspec | base64)"
++}
++
++setup_interface() {
++	echo "udhcpc: ifconfig $interface $ip netmask ${subnet:-255.255.255.0} broadcast ${broadcast:-+}"
++	ifconfig $interface $ip netmask ${subnet:-255.255.255.0} broadcast ${broadcast:-+}
++
++	[ -n "$router" ] && [ "$router" != "0.0.0.0" ] && [ "$router" != "255.255.255.255" ] && {
++		echo "udhcpc: setting default routers: $router"
++
++		local valid_gw=""
++		for i in $router ; do
++			route add default gw $i dev $interface
++			valid_gw="${valid_gw:+$valid_gw|}$i"
++		done
++		eval $(route -n | awk '
++			/^0.0.0.0         ('$valid_gw')\W/ {next}
++			/^0.0.0.0/ {print "route del -net "$1" gw "$2";"}
++		')
++	}
++	# CIDR STATIC ROUTES (rfc3442)
++	[ -n "$staticroutes" ] && set_classless_routes $staticroutes
++	[ -n "$msstaticroutes" ] && set_classless_routes $msstaticroutes
++
++    #Fill resolv.conf file
++    [ -n "$dns" ]  && {
++           echo "nameserver $dns" > /etc/resolv.conf
++    }
++    #
++    # Save the options list
++    #
++    print_opts > $OPTS_FILE
++}
++
++applied=
++case "$1" in
++	deconfig)
++		ifconfig "$interface" 0.0.0.0
++        rm -f "$OPTS_FILE"
++	;;
++	renew)
++		setup_interface update
++	;;
++	bound)
++		setup_interface ifup
++	;;
++esac
++
++# custom scripts
++for x in /usr/plume/scripts/udhcpc.d/[0-9]*
++do
++	[ ! -x "$x" ] && continue
++	# Execute custom scripts
++	"$x" "$1"
++done
++
++# user rules
++[ -f /etc/udhcpc.user ] && . /etc/udhcpc.user
++
++exit 0
+diff --git a/rootfs/model/omnia/usr/plume/scripts/platform.funcs b/rootfs/model/omnia/usr/plume/scripts/platform.funcs
+new file mode 100644
+index 0000000..b117af4
+--- /dev/null
++++ b/rootfs/model/omnia/usr/plume/scripts/platform.funcs
+@@ -0,0 +1,139 @@
++# Platform functions -- Default Skeleton
++
++platform_prereq_check() {
++    # Check to see if prerequisites are met.  Won't start managers if 1 is returned
++    return 0
++}
++
++platform_start() {
++    # Called just before starting managers
++    # === Start Network interfaces ===
++
++    # == WAN ==
++    ovs-vsctl add-br br-wan
++    #ovs-vsctl add-port br-wan eth2 enable connecting via wan ethernet port
++    ifconfig eth2 up
++    ip link add link eth2 name eth2.4 type vlan id 4
++    ifconfig eth2.4 up
++
++
++    # == LAN ==
++    ovs-vsctl add-br br-home
++    ovs-vsctl add-port br-home lan0
++    ovs-vsctl add-port br-home lan1
++    ovs-vsctl add-port br-home lan2
++    ovs-vsctl add-port br-home lan3
++    ovs-vsctl add-port br-home lan4
++
++    ifconfig eth1 up
++    ifconfig lan0 up
++    ifconfig lan1 up
++    ifconfig lan2 up
++    ifconfig lan3 up
++    ifconfig lan4 up
++
++    # create patch interfaces between wan and home
++    ovs-vsctl -- add-port br-home patch-h2w -- set interface patch-h2w type=patch options:peer=patch-w2h -- add-port br-wan patch-w2h -- set interface patch-w2h type=patch options:peer=patch-h2w
++    # == VAPs ==
++    
++    # home-ap-24
++    iw dev wlan0 interface add wifi0 type __ap
++    ovs-vsctl add-port br-home wifi0
++    
++    # home-ap-50
++    iw dev wlan1 interface add wifi1 type __ap
++    ovs-vsctl add-port br-home wifi1
++
++    # bhaul-ap-24
++    iw dev wlan0 interface add wifi2 type __ap
++    
++    # bhaul-ap-50
++    iw dev wlan1 interface add wifi3 type __ap
++
++    # onboard-ap-24
++    iw dev wlan0 interface add wifi4 type __ap
++
++    # onboard-ap-50
++    iw dev wlan1 interface add wifi5 type __ap
++
++    # == STA ==
++
++    # bhaul-sta-24
++    iw dev wlan0 interface add bhaul-sta-24 type managed
++
++    # bhaul-sta-50
++    iw dev wlan1 interface add bhaul-sta-50 type managed
++
++    #ip addr add 169.254.3.1/24 dev wifi3
++    ifconfig wifi3 mtu 1600
++
++    #ip addr add 169.254.2.1/24 dev wifi2
++    ifconfig wifi2 mtu 1600
++
++
++    # start hostapd
++    
++    # To be removed
++    touch /tmp/hostapd-acl0
++    touch /tmp/hostapd-acl1
++    touch /tmp/hostapd-acl2
++    touch /tmp/hostapd-acl3
++    
++    # Connect client interfaces
++
++    wpa_cli -g/var/run/wpa_supplicant-global interface_add bhaul-sta-24 "" nl80211 /var/run/wpa_supplicant
++    wpa_cli -g/var/run/wpa_supplicant-global interface_add bhaul-sta-50 "" nl80211 /var/run/wpa_supplicant
++
++    id=$(wpa_cli -ibhaul-sta-50 add_network)
++    wpa_cli -ibhaul-sta-50 set_network $id ssid '"opensync.onboard"'
++    wpa_cli -ibhaul-sta-50 set_network $id key_mgmt WPA-PSK
++    wpa_cli -ibhaul-sta-50 set_network $id psk '"7eCyoqETHiJzKBBALPFP9X8mVy4dwCga"'
++    wpa_cli -ibhaul-sta-50 set_network $id scan_ssid 1
++    wpa_cli -ibhaul-sta-50 enable_network 0
++
++    id=$(wpa_cli -ibhaul-sta-24 add_network)
++    wpa_cli -ibhaul-sta-24 set_network $id ssid '"opensync.onboard"'
++    wpa_cli -ibhaul-sta-24 set_network $id key_mgmt WPA-PSK
++    wpa_cli -ibhaul-sta-24 set_network $id psk '"7eCyoqETHiJzKBBALPFP9X8mVy4dwCga"'
++    wpa_cli -ibhaul-sta-24 set_network $id scan_ssid 1
++    wpa_cli -ibhaul-sta-24 enable_network 0
++
++    get_running_cmd='ip link show|grep bhaul-sta |grep -v NO-CARRIER | awk -F ": " "{print \$2}" | head -n1'
++    while [ "$(bash -c "$get_running_cmd")" == "" ]
++    do
++        echo "Waiting for STA to connect"
++        sleep 0.1
++    done
++
++    interface="$(bash -c "$get_running_cmd")"
++
++    echo "Got Running interface $interface"
++
++    echo "Temporary workaround: Disable second interface"
++    if [ "$interface" == "bhaul-sta-24" ];then
++        wpa_cli -g/var/run/wpa_supplicant-global interface_remove bhaul-sta-50
++        hostapd_configs=(0 2)
++    else
++        wpa_cli -g/var/run/wpa_supplicant-global interface_remove bhaul-sta-24
++        hostapd_configs=(1 3)
++    fi
++
++    channel=$(iw dev $interface info |grep channel |awk '{print $2}')
++    echo "Copy channel $channel to hostapd configs $hostapd_configs"
++    for i in ${hostapd_configs[@]};do
++         sed -i "s/^channel=.*/channel=$channel/" /nvram/hostapd$i.conf
++    done
++
++
++    hostapd_cli -i global raw ADD bss_config=wifi0:/nvram/hostapd0.conf
++    hostapd_cli -i global raw ADD bss_config=wifi1:/nvram/hostapd1.conf
++    hostapd_cli -i global raw ADD bss_config=wifi2:/nvram/hostapd2.conf
++    hostapd_cli -i global raw ADD bss_config=wifi3:/nvram/hostapd3.conf
++
++    return 0
++}
++
++platform_stop() {
++    # Called after stopping managers
++    return 0
++}
+diff --git a/src/lib/target/src/map.c b/src/lib/target/src/map.c
+index 55af881..fa535f9 100644
+--- a/src/lib/target/src/map.c
++++ b/src/lib/target/src/map.c
+@@ -20,10 +20,12 @@ typedef struct
+ 
+ static ifmap_t  ifmap[] = {
+ //    idx   cloud-ifname     dev-ifname  bridge    gre-br            vlan     description
+-    { 1,    "bhaul-ap-24",   "wifi2",    "brlan0", "wifi2", 0 },  // 2G Backhaul
+-    { 1,    "bhaul-ap-50",   "wifi3",    "brlan0", "wifi3",  0 },  // 5G Backhaul
+-    { 2,    "home-ap-24",    "wifi0",    "brlan0",  NULL,            0 },  // 2G User SSID
+-    { 2,    "home-ap-50",    "wifi1",    "brlan0",  NULL,            0 },  // 5G User SSID
++    { 0,    "bhaul-sta-24",   "bhaul-sta-24",    "br-wan", "bhaul-sta-24", 0 },  // 2G Backhaul
++    { 0,    "bhaul-sta-50",   "bhaul-sta-50",    "br-wan", "bhaul-sta-50", 0 },  // 2G Backhaul
++    { 1,    "bhaul-ap-24",   "wifi2",    "br-home", "wifi2", 0 },  // 2G Backhaul
++    { 1,    "bhaul-ap-50",   "wifi3",    "br-home", "wifi3",  0 },  // 5G Backhaul
++    { 2,    "home-ap-24",    "wifi0",    "br-home",  NULL,            0 },  // 2G User SSID
++    { 2,    "home-ap-50",    "wifi1",    "br-home",  NULL,            0 },  // 5G User SSID
+     { 0,    NULL,            NULL,        NULL,     NULL,            0 }
+ };
+ 
+diff --git a/src/lib/target/src/target.c b/src/lib/target/src/target.c
+index de884b5..59c1b59 100644
+--- a/src/lib/target/src/target.c
++++ b/src/lib/target/src/target.c
+@@ -5,3 +5,23 @@ const char* target_tls_privkey_filename(void)
+ {
+     return "/usr/plume/etc/certs/client_dec.key";
+ }
++
++bool target_device_connectivity_check(const char *ifname,
++                                      target_connectivity_check_t *cstate,
++                                      target_connectivity_check_option_t opts)
++{
++    cstate->ntp_state = true;
++    cstate->link_state = true;
++    cstate->router_state = true;
++    cstate->internet_state = true;
++    return true;
++}
++
++int target_device_capabilities_get()
++{
++#if defined(CONFIG_RDK_EXTENDER)
++    return TARGET_EXTENDER_TYPE;
++#else
++    return 0;
++#endif
++}

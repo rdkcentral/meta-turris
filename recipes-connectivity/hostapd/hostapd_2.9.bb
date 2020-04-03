@@ -52,6 +52,8 @@ do_install() {
          if [ ${MACHINE} == "turris-extender" ]; then
              sed -i 's/bridge=brlan0/bridge=br-home/' ${WORKDIR}/hostapd-2G.conf
              sed -i 's/bridge=brlan0/bridge=br-home/' ${WORKDIR}/hostapd-5G.conf
+             sed -i '/^After=CcspPandMSsp.service/d' ${WORKDIR}/hostapd.service
+             sed -i '/^ExecStart=/c\ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid' ${WORKDIR}hostapd.service
          fi
          install -m 0644 ${WORKDIR}/hostapd-2G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-5G.conf ${D}${sysconfdir}
