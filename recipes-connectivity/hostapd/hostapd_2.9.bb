@@ -49,12 +49,22 @@ do_install() {
          install -d ${D}${sbindir} ${D}${sysconfdir} ${D}${systemd_unitdir}/system/ ${D}${base_libdir}/rdk
          install -m 0755 ${B}/hostapd ${D}${sbindir}
          install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
-         if [ ${MACHINE} == "turris-extender" ]; then
-             sed -i 's/bridge=brlan0/bridge=br-home/' ${WORKDIR}/hostapd-2G.conf
-             sed -i 's/bridge=brlan0/bridge=br-home/' ${WORKDIR}/hostapd-5G.conf
-             sed -i '/^After=CcspPandMSsp.service/d' ${WORKDIR}/hostapd.service
-             sed -i '/^ExecStart=/c\ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid' ${WORKDIR}hostapd.service
-         fi
+         install -m 0644 ${WORKDIR}/hostapd-2G.conf ${D}${sysconfdir}
+         install -m 0644 ${WORKDIR}/hostapd-5G.conf ${D}${sysconfdir}
+         install -m 0644 ${WORKDIR}/hostapd-bhaul2G.conf ${D}${sysconfdir}
+         install -m 0644 ${WORKDIR}/hostapd-bhaul5G.conf ${D}${sysconfdir}
+         install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
+         install -m 0755 ${WORKDIR}/hostapd-init.sh ${D}${base_libdir}/rdk
+}
+
+do_install_turris-extender() {
+         install -d ${D}${sbindir} ${D}${sysconfdir} ${D}${systemd_unitdir}/system/ ${D}${base_libdir}/rdk
+         install -m 0755 ${B}/hostapd ${D}${sbindir}
+         install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
+         sed -i 's/bridge=brlan0/bridge=br-home/' ${WORKDIR}/hostapd-2G.conf
+         sed -i 's/bridge=brlan0/bridge=br-home/' ${WORKDIR}/hostapd-5G.conf
+         sed -i '/^After=CcspPandMSsp.service/d' ${WORKDIR}/hostapd.service
+         sed -i '/^ExecStart=/c\ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid' ${WORKDIR}/hostapd.service
          install -m 0644 ${WORKDIR}/hostapd-2G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-bhaul2G.conf ${D}${sysconfdir}
