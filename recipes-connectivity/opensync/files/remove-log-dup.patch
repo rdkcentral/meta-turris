@@ -1,0 +1,20 @@
+Index: rdk/rootfs/common/usr/plume/scripts/managers.init
+===================================================================
+--- rdk.orig/rootfs/common/usr/plume/scripts/managers.init	2020-01-27 15:26:13.921034680 +0000
++++ rdk/rootfs/common/usr/plume/scripts/managers.init	2020-01-27 15:27:04.707089802 +0000
+@@ -133,15 +133,6 @@
+ 
+     echo "Starting OpenSync managers"
+     start-stop-daemon -c ${RUN_USER} -S -b -x ${PLUME_BIN_DIR}/dm
+-    sleep 10
+-    managers="DM WM SM CM LM BM QM OM FSM"
+-    ${PLUME_OVSH} d AW_Debug
+-    for m in $managers
+-    do
+-        ${PLUME_OVSH} i AW_Debug name:=$m log_severity:=CRIT
+-    done
+-    sleep 3
+-    ${PLUME_OVSH} i AW_Debug name:=NM log_severity:=CRIT
+ }
+ 
+ plume_stop() {
