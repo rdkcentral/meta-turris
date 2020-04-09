@@ -1,4 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += "file://systemd-turris.patch"
-SRC_URI += "file://systemd-set-wdt.patch"
-SRC_URI += "file://systemd-strerror_r-handling.patch"
+SRC_URI_append_extender = " \
+    file://systemd-turris.patch \
+"
+SRC_URI_append = " \
+    file://systemd-set-wdt.patch \
+    file://systemd-strerror_r-handling.patch \
+    "

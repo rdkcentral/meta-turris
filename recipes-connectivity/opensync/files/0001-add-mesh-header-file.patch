@@ -1,8 +1,8 @@
-diff --git a/src/lib/wifihal/inc/mesh/meshsync_msgs.h b/src/lib/wifihal/inc/mesh/meshsync_msgs.h
+diff --git a/src/lib/target/inc/mesh/meshsync_msgs.h b/src/lib/target/inc/mesh/meshsync_msgs.h
 new file mode 100644
 index 0000000..03d5c6a
 --- /dev/null
-+++ b/src/lib/wifihal/inc/mesh/meshsync_msgs.h
++++ b/src/lib/target/inc/mesh/meshsync_msgs.h
 @@ -0,0 +1,316 @@
 +/*
 + * If not stated otherwise in this file or this component's Licenses.txt file the
