@@ -27,8 +27,6 @@ do_install_append(){
     install -m 755 ${S}/arch/intel_usg/boards/arm_shared/scripts/restart_services.sh ${D}/etc/restart_services.sh
     install -m 755 ${S}/arch/intel_usg/boards/arm_shared/scripts/whitelist.sh ${D}/usr/ccsp/pam/whitelist.sh
     install -m 755 ${S}/arch/intel_usg/boards/arm_shared/scripts/moca_status.sh ${D}/usr/ccsp/pam/moca_status.sh
-    #advsec_migrate_psm_to_syscfg.sh available in ./git/scripts/
-    install -m 755 ${S}/scripts/advsec_migrate_psm_to_syscfg.sh ${D}/usr/ccsp/pam/advsec_migrate_psm_to_syscfg.sh
     install -m 777 ${D}/usr/bin/CcspPandMSsp -t ${D}/usr/ccsp/pam/
 
     install -d ${D}/fss/gw/usr/sbin
