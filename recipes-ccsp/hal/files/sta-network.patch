@@ -1,8 +1,18 @@
+From c2397904c8de6f2ef9cf3165d8a82549172eaa1b Mon Sep 17 00:00:00 2001
+From: Simon Chung <simon.c.chung@accenture.com>
+Date: Thu, 16 Apr 2020 10:10:38 +0100
+Subject: [PATCH] sta-network
+
+Change-Id: I2b5b88a1bafbba0b7a9fdc12aac1c61ec6a1fc20
+---
+ wifi_hal.h | 59 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
+
 diff --git a/wifi_hal.h b/wifi_hal.h
-index e26f428..8666823 100644
+index 2dae88d..855c57f 100644
 --- a/wifi_hal.h
 +++ b/wifi_hal.h
-@@ -9262,6 +9262,65 @@ INT wifi_getRadioChannels(INT radioIndex, wifi_channelMap_t *output_map, INT out
+@@ -9269,4 +9269,63 @@ INT wifi_getRadioChannels(INT radioIndex, wifi_channelMap_t *output_map, INT out
  
  INT wifi_chan_eventRegister(wifi_chan_eventCB_t event_cb);
  
@@ -65,6 +75,7 @@ index e26f428..8666823 100644
 +INT wifi_getSTABSSID(INT ssidIndex, CHAR *output_string);
 +INT wifi_getSTAMAC(INT ssidIndex, CHAR *output_string);
 +
- #else
- #error "! __WIFI_HAL_H__"
  #endif
+-- 
+2.22.0
+
