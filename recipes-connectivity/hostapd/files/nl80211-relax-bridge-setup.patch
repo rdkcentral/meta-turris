@@ -1,0 +1,17 @@
+diff --git a/src/drivers/driver_nl80211.c b/src/drivers/driver_nl80211.c
+index 96fd0aadd..77dbf94b5 100644
+--- a/src/drivers/driver_nl80211.c
++++ b/src/drivers/driver_nl80211.c
+@@ -6923,10 +6923,10 @@ static int i802_check_bridge(struct wpa_driver_nl80211_data *drv,
+ 	wpa_printf(MSG_DEBUG, "nl80211: Adding interface %s into bridge %s",
+ 		   ifname, brname);
+ 	if (linux_br_add_if(drv->global->ioctl_sock, brname, ifname) < 0) {
+-		wpa_printf(MSG_ERROR, "nl80211: Failed to add interface %s "
++		wpa_printf(MSG_WARNING, "nl80211: Failed to add interface %s "
+ 			   "into bridge %s: %s",
+ 			   ifname, brname, strerror(errno));
+-		return -1;
++		return 0;
+ 	}
+ 	bss->added_if_into_bridge = 1;
+ 
