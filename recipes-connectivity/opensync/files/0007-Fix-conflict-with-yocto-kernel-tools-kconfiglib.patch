@@ -1,0 +1,34 @@
+From 86dead9762bc0a252b388497058edd9e630e239a Mon Sep 17 00:00:00 2001
+From: Mateusz Bajorski <mbajorski@plume.com>
+Date: Mon, 2 Mar 2020 14:24:20 +0100
+Subject: [PATCH 7/7] Fix conflict with yocto-kernel-tools kconfiglib
+
+---
+ build/kconfig.mk | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/build/kconfig.mk b/build/kconfig.mk
+index 89588e3..1dc2570 100644
+--- a/build/kconfig.mk
++++ b/build/kconfig.mk
+@@ -95,7 +95,7 @@ $(KCONFIG_WORK): $(KCONFIG)
+ 	@echo "$(call COLOR_GREEN,Generating kconfig file and headers: $(KCONFIG_WORK))"
+ 	$(Q)mkdir -p "$(KWORKDIR)"
+ 	$(Q)kconfig/diffconfig --unminimize  --config "$(KCONFIG)" --out "$(KCONFIG_WORK)" kconfig/Kconfig
+-	$(Q)KCONFIG_CONFIG="$(KCONFIG_WORK)" genconfig kconfig/Kconfig --header-path "$(KCONFIG_WORK).h"
++	$(Q)KCONFIG_CONFIG="$(KCONFIG_WORK)" python3 -mgenconfig kconfig/Kconfig --header-path "$(KCONFIG_WORK).h"
+ 
+ .PHONY: _kconfig_target_check
+ _kconfig_target_check:
+@@ -109,7 +109,7 @@ _kconfig_update:
+ 
+ .PHONY: _menuconfig
+ _menuconfig: $(KCONFIG_WORK)
+-	$(Q)KCONFIG_CONFIG="$(KCONFIG_WORK)" menuconfig kconfig/Kconfig
++	$(Q)KCONFIG_CONFIG="$(KCONFIG_WORK)" python3 -mmenuconfig kconfig/Kconfig
+ 
+ .PHONY: menuconfig
+ menuconfig: _kconfig_target_check _menuconfig _kconfig_update
+-- 
+2.25.1
+

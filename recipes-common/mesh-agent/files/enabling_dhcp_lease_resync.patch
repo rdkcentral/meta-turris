@@ -1,0 +1,54 @@
+From cc64f3a69d13feda1b9f07b8f572080436d7560b Mon Sep 17 00:00:00 2001
+From: "rajakumaran.a" <rajakumaran.a@lnttechservices.com>
+Date: Thu, 2 Apr 2020 10:09:05 +0000
+Subject: [PATCH] Mesh dns lease update
+
+Signed-off-by: rajakumaran.a <rajakumaran.a@lnttechservices.com>
+Change-Id: Ib098c6d444b75d15120b2224ff46869b0e436c2f
+---
+ source/MeshAgentSsp/cosa_mesh_apis.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/source/MeshAgentSsp/cosa_mesh_apis.c b/source/MeshAgentSsp/cosa_mesh_apis.c
+index d985992..9fcbfe2 100644
+--- a/source/MeshAgentSsp/cosa_mesh_apis.c
++++ b/source/MeshAgentSsp/cosa_mesh_apis.c
+@@ -1920,7 +1920,9 @@ static void *Mesh_sysevent_handler(void *data)
+     async_id_t mesh_enable_asyncid;
+     async_id_t mesh_url_asyncid;
+     async_id_t wifi_txRate_asyncid;
+-
++#ifdef _PLATFORM_TURRIS_
++    async_id_t lease_resync_asyncid;
++#endif
+     sysevent_set_options(sysevent_fd,     sysevent_token, meshSyncMsgArr[MESH_WIFI_RESET].sysStr,                     TUPLE_FLAG_EVENT);
+     sysevent_setnotification(sysevent_fd, sysevent_token, meshSyncMsgArr[MESH_WIFI_RESET].sysStr,                     &wifi_init_asyncid);
+     sysevent_set_options(sysevent_fd,     sysevent_token, meshSyncMsgArr[MESH_WIFI_SSID_NAME].sysStr,                 TUPLE_FLAG_EVENT);
+@@ -1961,6 +1963,10 @@ static void *Mesh_sysevent_handler(void *data)
+     sysevent_set_options(sysevent_fd,     sysevent_token, meshSyncMsgArr[MESH_WIFI_TXRATE].sysStr,                   TUPLE_FLAG_EVENT);
+     sysevent_setnotification(sysevent_fd, sysevent_token, meshSyncMsgArr[MESH_WIFI_TXRATE].sysStr,                   &wifi_txRate_asyncid);
+ 
++#ifdef _PLATFORM_TURRIS_
++    sysevent_set_options(sysevent_fd,     sysevent_token, meshSyncMsgArr[MESH_DHCP_RESYNC_LEASES].sysStr,                   TUPLE_FLAG_EVENT);
++    sysevent_setnotification(sysevent_fd, sysevent_token, meshSyncMsgArr[MESH_DHCP_RESYNC_LEASES].sysStr,                   &lease_resync_asyncid);
++#endif
+ 
+     for (;;)
+     {
+@@ -2944,6 +2950,13 @@ static void *Mesh_sysevent_handler(void *data)
+                     }
+                 }
+             }
++#ifdef _PLATFORM_TURRIS_
++ 		    else if (strcmp(name, meshSyncMsgArr[MESH_DHCP_RESYNC_LEASES].sysStr)==0)
++            {
++                //This will handle sending lease information to plume for every new connection, without restarting the MeshAgent
++                Mesh_sendDhcpLeaseSync();
++            }
++#endif
+             else
+             {
+                 MeshWarning("undefined event %s \n",name);
+-- 
+2.24.0
+

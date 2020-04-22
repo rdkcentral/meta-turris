@@ -1,0 +1,563 @@
+diff --git a/kconfig/Kconfig.platform b/kconfig/Kconfig.platform
+new file mode 100644
+index 0000000..4a045b2
+--- /dev/null
++++ b/kconfig/Kconfig.platform
+@@ -0,0 +1,15 @@
++menuconfig PLATFORM_IS_RDK
++    bool "RDK"
++    help
++        Support for RDK-based platforms
++
++
++if PLATFORM_IS_RDK
++
++config RDK_EXTENDER
++    bool "RDK Extender device (EXPERIMENTAL)"
++    default n
++
++
++endif
++
+diff --git a/src/lib/osn/override.mk b/src/lib/osn/override.mk
+index bf128b7..ff210ed 100644
+--- a/src/lib/osn/override.mk
++++ b/src/lib/osn/override.mk
+@@ -33,11 +33,22 @@ UNIT_EXPORT_CFLAGS := -I$(UNIT_PATH)/inc
+ UNIT_SRC := src/osn_inet.c
+ UNIT_SRC += src/osn_types.c
+ 
++#if extender
++ifeq ($(CONFIG_RDK_EXTENDER),y)
++UNIT_SRC += src/osn_dnsmasq.c
++UNIT_SRC += src/osn_udhcpc.c
++UNIT_SRC += src/osn_route.c
++endif
++
+ UNIT_SRC_DIR := $(OVERRIDE_DIR)/src
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/osn_upnpd.c
++
++ifneq ($(CONFIG_RDK_EXTENDER),y)
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/osn_dhcpc.c
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/osn_route.c
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/osn_dhcps.c
++endif
++
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/osn_dhcps6.c
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/osn_odhcp6c.c
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/osn_inet6.c
+diff --git a/src/lib/osn/src/osn_dhcps.c b/src/lib/osn/src/osn_dhcps.c
+index d183172..f2885fd 100644
+--- a/src/lib/osn/src/osn_dhcps.c
++++ b/src/lib/osn/src/osn_dhcps.c
+@@ -284,11 +284,13 @@ static bool dhcp_server_init(osn_dhcp_server_t *self, const char *ifname)
+         return false;
+     }
+ 
++#ifndef CONFIG_RDK_EXTENDER
+     if (!sync_init(SYNC_MGR_NM))
+     {
+         LOGE("Cannot init sync manager for NM");
+         return false;
+     }
++#endif
+ 
+     /* Initialize this instance */
+     memset(self, 0 ,sizeof(*self));
+diff --git a/src/lib/osync_hal/src/inet.c b/src/lib/osync_hal/src/inet.c
+index b221667..580ff83 100644
+--- a/src/lib/osync_hal/src/inet.c
++++ b/src/lib/osync_hal/src/inet.c
+@@ -304,7 +304,11 @@ osync_hal_return_t osync_hal_inet_add_to_bridge(
+ 
+     memset(cmd, 0, sizeof(cmd));
+ 
++#ifdef CONFIG_RDK_EXTENDER
++    snprintf(cmd, sizeof(cmd), "ovs-vsctl add-port %s %s", br_name, if_name);
++#else
+     snprintf(cmd, sizeof(cmd), "brctl addif %s %s", br_name, if_name);
++#endif
+     LOGD("%s: Adding to bridge with \"%s\"", if_name, cmd);
+     rc = system(cmd);
+     if (!WIFEXITED(rc) || WEXITSTATUS(rc) != 0)
+diff --git a/src/lib/target/inc/target_internal.h b/src/lib/target/inc/target_internal.h
+index 1608b03..61f0f06 100644
+--- a/src/lib/target/inc/target_internal.h
++++ b/src/lib/target/inc/target_internal.h
+@@ -35,7 +35,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "osync_hal.h"
+ #include "osn_dhcp.h"
+ 
++#if !defined(CONFIG_RDK_EXTENDER)
+ #include <mesh/meshsync_msgs.h>  // needed only by sync_send_security_change()
++#endif
+ 
+ #ifndef __WIFI_HAL_H__
+ #include "ccsp/wifi_hal.h"
+@@ -182,12 +184,15 @@ bool                 sync_init(sync_mgr_t mgr);
+ bool                 sync_cleanup(void);
+ bool                 sync_send_ssid_change(INT ssid_index, const char *ssid_ifname,
+                                     const char *new_ssid);
++#if !defined(CONFIG_RDK_EXTENDER)
+ bool                 sync_send_security_change(INT ssid_index, const char *ssid_ifname,
+                                     MeshWifiAPSecurity *sec);
++#endif
+ bool                 sync_send_status(radio_cloud_mode_t mode);
+ 
+ bool                 vif_state_update(INT ssidIndex);
+ bool                 vif_state_get(INT ssidIndex, struct schema_Wifi_VIF_State *vstate);
++bool                 vif_state_sta_get(INT ssidIndex, struct schema_Wifi_VIF_State *vstate);
+ bool                 vif_copy_to_config(INT ssidIndex, struct schema_Wifi_VIF_State *vstate,
+                                         struct schema_Wifi_VIF_Config *vconf);
+ struct               target_radio_ops;
+diff --git a/src/lib/target/override.mk b/src/lib/target/override.mk
+index 8c37835..369d2a5 100644
+--- a/src/lib/target/override.mk
++++ b/src/lib/target/override.mk
+@@ -44,7 +44,11 @@ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/radio.c
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/vif.c
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/stats.c
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/log.c
++
++ifneq ($(CONFIG_RDK_EXTENDER),y)
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/sync.c
++endif
++
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/maclearn.c
+ UNIT_SRC_TOP += $(UNIT_SRC_DIR)/bsal.c
+ 
+@@ -53,6 +57,8 @@ UNIT_CFLAGS  += -DENABLE_MESH_SOCKETS
+ 
+ UNIT_DEPS    := $(PLATFORM_DIR)/src/lib/devinfo
+ UNIT_DEPS    += $(PLATFORM_DIR)/src/lib/osync_hal
++
++#UNIT_DEPS    += src/lib/kconfig
+ UNIT_DEPS    += src/lib/evsched
+ UNIT_DEPS    += src/lib/schema
+ UNIT_DEPS    += src/lib/const
+@@ -66,6 +72,7 @@ endif
+ 
+ UNIT_LDFLAGS := $(SDK_LIB_DIR)  -lhal_wifi -lrt
+ UNIT_CFLAGS += -DCONTROLLER_ADDR="\"$(shell echo -n $(CONTROLLER_ADDR))\""
++UNIT_CFLAGS += -include "$(KCONFIG_WORK).h" 
+ 
+ UNIT_EXPORT_CFLAGS  := $(UNIT_CFLAGS)
+ UNIT_EXPORT_LDFLAGS := $(UNIT_LDFLAGS)
+diff --git a/src/lib/target/src/radio.c b/src/lib/target/src/radio.c
+index 9bedd00..33a2032 100644
+--- a/src/lib/target/src/radio.c
++++ b/src/lib/target/src/radio.c
+@@ -72,6 +72,7 @@ static c_item_t map_country_str[] =
+ {
+     C_ITEM_STR_STR("826",                       "UK"),  // ISO 3166-1
+     C_ITEM_STR_STR("840",                       "US"),
++    C_ITEM_STR_STR("705",                       "SI"),  // (non-standard)
+     C_ITEM_STR_STR("841",                       "US"),  // (non-standard)
+ };
+ 
+@@ -620,6 +621,62 @@ bool target_radio_config_init2()
+             g_rops.op_vconf(&vconfig, rconfig.if_name);
+             g_rops.op_vstate(&vstate);
+         }
++#ifdef CONFIG_RDK_EXTENDER
++        /* CLIENT-API */
++        ret = wifi_getSTANumberOfEntries(&snum);
++        if (ret != RETURN_OK)
++        {
++            LOGE("%s: failed to get SSID count", __func__);
++            return false;
++        }
++
++        for (s = 0; s < snum; s++)
++        {
++            memset(ssid_ifname, 0, sizeof(ssid_ifname));
++            ret = wifi_getSTAName(s, ssid_ifname);
++            if (ret != RETURN_OK)
++            {
++                LOGW("%s: failed to get STA name for index %lu. Skipping.\n", __func__, s);
++                continue;
++            }
++            // Filter SSID's that we don't have mappings for
++            if (!target_unmap_ifname_exists(ssid_ifname))
++            {
++                LOGW("%s: STA %s not in map. Skipping.\n", __func__, ssid_ifname);
++                continue;
++            }
++
++            ret = wifi_getSTARadioIndex(s, &ssid_radio_idx);
++            if (ret != RETURN_OK)
++            {
++                LOGW("Cannot get radio index for SSID %lu", s);
++                continue;
++            }
++
++            if ((ULONG)ssid_radio_idx != r)
++            {
++                continue;
++            }
++
++            LOGI("Found STA index %lu: %s", s, ssid_ifname);
++            if (!vif_state_sta_get(s, &vstate))
++            {
++                LOGE("%s: cannot get vif state for STA index %lu", __func__, s);
++                continue;
++            }
++            if (!vif_copy_to_config(s, &vstate, &vconfig))
++            {
++                LOGE("%s: cannot copy VIF state to config for STA index %lu", __func__, s);
++                continue;
++            }
++            g_rops.op_vconf(&vconfig, rconfig.if_name);
++            g_rops.op_vstate(&vstate);
++
++
++        }
++
++        /* END CLIENT-API */
++#endif
+ 
+     }
+ 
+@@ -807,6 +864,9 @@ bool
+ radio_cloud_mode_set(radio_cloud_mode_t mode)
+ {
+     radio_cloud_mode = mode;
+-
++#ifdef CONFIG_RDK_EXTENDER
++    return true;
++#else
+     return sync_send_status(radio_cloud_mode);
++#endif
+ }
+diff --git a/src/lib/target/src/sync.c b/src/lib/target/src/sync.c
+index 5b4337d..b8dfc17 100644
+--- a/src/lib/target/src/sync.c
++++ b/src/lib/target/src/sync.c
+@@ -43,7 +43,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <sys/socket.h>
+ #include <sys/un.h>
+ 
++#ifndef CONFIG_RDK_EXTENDER
+ #include <mesh/meshsync_msgs.h>  // this file is included by vendor
++#endif
+ 
+ #include "os.h"
+ #include "log.h"
+@@ -146,6 +148,7 @@ static char* sync_iface_name(int iface_type)
+     return tmp;
+ }
+ 
++#ifndef CONFIG_RDK_EXTENDER
+ static int wiifhal_sync_iface_mltype(int iface_type)
+ {
+     c_item_t            *citem;
+@@ -157,7 +160,7 @@ static int wiifhal_sync_iface_mltype(int iface_type)
+ 
+     return -1;
+ }
+-
++#endif
+ static void sync_process_msg(MeshSync *mp)
+ {
+     radio_cloud_mode_t              cloud_mode;
+diff --git a/src/lib/target/src/target.c b/src/lib/target/src/target.c
+index ffaaf6a..ef20eda 100644
+--- a/src/lib/target/src/target.c
++++ b/src/lib/target/src/target.c
+@@ -281,12 +281,13 @@ bool target_init(target_init_opt_t opt, struct ev_loop *loop)
+                         "(Failed to initialize EVSCHED)");
+                 return -1;
+             }
+-
++            #ifndef CONFIG_RDK_EXTENDER
+             if (!sync_init(SYNC_MGR_WM))
+             {
+                 // It reports the error
+                 return false;
+             }
++            #endif
+             if (!set_deauth_and_scan_filter_flags())
+             {
+                 LOGE("Failed to set csa_deauth and scan filter flags");
+@@ -296,11 +297,13 @@ bool target_init(target_init_opt_t opt, struct ev_loop *loop)
+             break;
+ 
+         case TARGET_INIT_MGR_CM:
++            #ifndef CONFIG_RDK_EXTENDER
+             if (!sync_init(SYNC_MGR_CM))
+             {
+                 // It reports the error
+                 return false;
+             }
++            #endif
+             break;
+ 
+         case TARGET_INIT_MGR_BM:
+@@ -323,7 +326,9 @@ bool target_close(target_init_opt_t opt, struct ev_loop *loop)
+     switch (opt)
+     {
+         case TARGET_INIT_MGR_WM:
++            #ifndef CONFIG_RDK_EXTENDER
+             sync_cleanup();
++            #endif
+             /* fall through */
+ 
+         case TARGET_INIT_MGR_SM:
+diff --git a/src/lib/target/src/vif.c b/src/lib/target/src/vif.c
+index aaecbf9..a987aa3 100644
+--- a/src/lib/target/src/vif.c
++++ b/src/lib/target/src/vif.c
+@@ -262,7 +262,8 @@ static bool acl_apply(
+ 
+     return true;
+ }
+-
++//FIXME: is this needed only for mesh something?
++#if !defined(CONFIG_RDK_EXTENDER) 
+ static const char* security_conf_find_by_key(
+         const struct schema_Wifi_VIF_Config *vconf,
+         char *key)
+@@ -279,6 +280,7 @@ static const char* security_conf_find_by_key(
+ 
+     return NULL;
+ }
++#endif
+ 
+ static bool security_to_state(
+         INT ssid_index,
+@@ -449,7 +451,7 @@ static bool security_to_state(
+     vstate->security_len = n;
+     return true;
+ }
+-
++#if !defined(CONFIG_RDK_EXTENDER)
+ static bool security_to_syncmsg(
+         const struct schema_Wifi_VIF_Config *vconf,
+         MeshWifiAPSecurity *dest)
+@@ -527,7 +529,7 @@ static bool security_to_syncmsg(
+ 
+     return true;
+ }
+-
++#endif
+ static bool vif_is_enabled(INT ssid_index)
+ {
+     BOOL        enabled = false;
+@@ -602,10 +604,177 @@ bool vif_copy_to_config(
+         STRSCPY(vconf->mac_list[i], vstate->mac_list[i]);
+     }
+     vconf->mac_list_len = vstate->mac_list_len;
++    /* CLIENT-API */
++    SCHEMA_SET_STR(vconf->parent, vstate->parent);
++    LOGT("vconf->parent = %s", vconf->parent);
++    SCHEMA_SET_INT(vconf->uapsd_enable, vstate->uapsd_enable);
++    LOGT("vconf->uapsd_enable = %d", vconf->uapsd_enable);
++
+ 
+     return true;
+ }
+ 
++#if defined(CONFIG_RDK_EXTENDER)
++/* CLIENT-API */
++
++bool vif_state_sta_get(INT ssidIndex, struct schema_Wifi_VIF_State *vstate)
++{
++    CHAR                            buf[WIFIHAL_MAX_BUFFER];
++    INT                             ret;
++    char                            ssid_ifname[128];
++    hw_mode_t                       min_hw_mode;
++    INT                             radio_idx;
++    char                            band[128];
++    BOOL                            gOnly, nOnly, acOnly;
++    char                            *str;
++    ULONG                           lval;
++    int                             n = 0;
++
++    memset(vstate, 0, sizeof(*vstate));
++    schema_Wifi_VIF_State_mark_all_present(vstate);
++    vstate->_partial_update = true;
++    vstate->associated_clients_present = false;
++    vstate->vif_config_present = false;
++    memset(ssid_ifname, 0, sizeof(ssid_ifname));
++
++    ret = wifi_getSTAName(ssidIndex, ssid_ifname);
++    if (ret != RETURN_OK)
++    {
++        LOGE("%s: cannot get sta name for index %d", __func__, ssidIndex);
++        return false;
++    }
++
++    SCHEMA_SET_STR(vstate->if_name, target_unmap_ifname(ssid_ifname));
++
++    SCHEMA_SET_STR(vstate->mode, "sta");
++    SCHEMA_SET_INT(vstate->enabled, true);
++    SCHEMA_SET_INT(vstate->uapsd_enable, false);
++    SCHEMA_SET_INT(vstate->vif_radio_idx, target_map_ifname_to_vif_radio_idx(vstate->if_name));
++
++    // mac (w/ exists)
++    memset(buf, 0, sizeof(buf));
++    ret = wifi_getSTAMAC(ssidIndex, buf);
++    if (ret != RETURN_OK)
++    {
++        LOGW("%s: Failed to get STA (mac)", ssid_ifname);
++    }
++    else
++    {
++        SCHEMA_SET_STR(vstate->mac, buf);
++    }
++
++    // mac (w/ exists)
++    memset(buf, 0, sizeof(buf));
++    ret = wifi_getSTABSSID(ssidIndex, buf);
++    if (ret != RETURN_OK)
++    {
++        LOGW("%s: Failed to get STA (parent)", ssid_ifname);
++    }
++    else
++    {
++        SCHEMA_SET_STR(vstate->parent, buf);
++    }
++
++
++    ret = wifi_getSSIDRadioIndex(ssidIndex, &radio_idx);
++    if (ret != RETURN_OK)
++    {
++        LOGE("%s: cannot get radio idx for SSID %s\n", __func__, ssid_ifname);
++        return false;
++    }
++
++
++    memset(band, 0, sizeof(band));
++    ret = wifi_getRadioOperatingFrequencyBand(radio_idx, band);
++    if (ret != RETURN_OK)
++    {
++        LOGE("%s: cannot get radio band for idx %d", __func__, radio_idx);
++        return false;
++    }
++
++
++    // min_hw_mode (w/ exists)
++    if (band[0] == '5')
++    {
++        min_hw_mode = HW_MODE_11A;
++    } else
++    {
++        min_hw_mode = HW_MODE_11B;
++    }
++    ret = wifi_getRadioStandard(radio_idx, buf, &gOnly, &nOnly, &acOnly);
++    if (ret != RETURN_OK)
++    {
++        LOGW("%s: Failed to get min_hw_mode from %d", ssid_ifname, radio_idx);
++    }
++    else
++    {
++        if (gOnly)
++        {
++            min_hw_mode = HW_MODE_11G;
++        }
++        else if (nOnly)
++        {
++            min_hw_mode = HW_MODE_11N;
++        }
++        else if (acOnly)
++        {
++            min_hw_mode = HW_MODE_11AC;
++        }
++    }
++
++    str = c_get_str_by_key(map_hw_mode, min_hw_mode);
++    if (strlen(str) == 0)
++    {
++        LOGW("%s: failed to encode min_hw_mode (%d)",
++             ssid_ifname, min_hw_mode);
++    }
++    else
++    {
++        SCHEMA_SET_STR(vstate->min_hw_mode, str);
++    }
++    // channel (w/ exists)
++    ret = wifi_getRadioChannel(radio_idx, &lval);
++    if (ret != RETURN_OK)
++    {
++        LOGW("%s: Failed to get channel from radio idx %d", ssid_ifname, radio_idx);
++    }
++    else
++    {
++        SCHEMA_SET_INT(vstate->channel, lval);
++    }
++
++
++    SCHEMA_SET_STR(vstate->ssid_broadcast, "disabled");
++    SCHEMA_SET_STR(vstate->mac_list_type, "none");
++    SCHEMA_SET_INT(vstate->btm, 0);
++    SCHEMA_SET_INT(vstate->rrm, 0);
++    SCHEMA_SET_INT(vstate->wds, 0);
++    SCHEMA_SET_INT(vstate->ap_bridge, false);
++    //Wifi credentials
++    SCHEMA_SET_STR(vstate->ssid, "opensync.onboard");
++
++    strncpy(vstate->security_keys[n],
++            OVSDB_SECURITY_ENCRYPTION,
++            sizeof(vstate->security_keys[n]) - 1);
++
++    strncpy(vstate->security[n],
++            OVSDB_SECURITY_ENCRYPTION_WPA_PSK,
++            sizeof(vstate->security[n]) - 1);
++    n++;
++    strncpy(vstate->security_keys[n],
++            OVSDB_SECURITY_KEY,
++            sizeof(vstate->security_keys[n]) - 1);
++    strncpy(vstate->security[n],
++            "7eCyoqETHiJzKBBALPFP9X8mVy4dwCga",
++            sizeof(vstate->security[n]) - 1);
++
++    n++;
++    vstate->security_len = n;
++    return true;
++
++}
++#endif
++
+ bool vif_state_get(INT ssidIndex, struct schema_Wifi_VIF_State *vstate)
+ {
+     ULONG                           lval;
+@@ -888,7 +1055,9 @@ bool target_vif_config_set2(
+     INT ret;
+     c_item_t *citem;
+     char tmp[256];
++#if !defined(CONFIG_RDK_EXTENDER)
+     MeshWifiAPSecurity sec;
++#endif
+     const char *ssid_ifname = target_map_ifname((char *)vconf->if_name);
+ 
+     if (!vif_ifname_to_idx(ssid_ifname, &ssid_index))
+@@ -966,10 +1135,12 @@ bool target_vif_config_set2(
+             else
+             {
+                 LOGI("%s: SSID updated to '%s'", ssid_ifname, tmp);
++                #if !defined(CONFIG_RDK_EXTENDER)
+                 if (!sync_send_ssid_change(ssid_index, ssid_ifname, vconf->ssid))
+                 {
+                     LOGE("%s: Failed to sync SSID change to '%s'", ssid_ifname, vconf->ssid);
+                 }
++                #endif
+             }
+         }
+     }
+@@ -977,6 +1148,8 @@ bool target_vif_config_set2(
+ 
+     if (changed->security && vconf->security_len)
+     {
++	//TODO: add proper WA
++	#if !defined(CONFIG_RDK_EXTENDER)
+         memset(&sec, 0, sizeof(sec));
+         if (!security_to_syncmsg(vconf, &sec))
+         {
+@@ -1018,6 +1191,7 @@ bool target_vif_config_set2(
+                 }
+             }
+         }
++	#endif
+     }
+ 
+ 

@@ -1,0 +1,19 @@
+commit 61e04f8186c734312e0641a198f96a59f049f666
+Author: Mateusz Bajorski <mbajorski@plume.com>
+Date:   Thu Jan 30 16:46:33 2020 +0000
+
+    disable dry run
+
+diff --git a/src/cm2/unit.mk b/src/cm2/unit.mk
+index 8abe642..922e1fd 100644
+--- a/src/cm2/unit.mk
++++ b/src/cm2/unit.mk
+@@ -52,6 +52,8 @@ UNIT_LDFLAGS += -ldl
+ UNIT_LDFLAGS += -lev
+ UNIT_LDFLAGS += -lrt
+ 
++UNIT_CFLAGS += -DCONFIG_PLUME_CM2_DISABLE_DRYRUN_ON_GRE
++
+ ifneq ($(CONFIG_USE_KCONFIG),y)
+ # Disable dryrun on GRE by default for all platforms without KConfig
+ UNIT_CFLAGS += -DCONFIG_PLUME_CM2_DISABLE_DRYRUN_ON_GRE
