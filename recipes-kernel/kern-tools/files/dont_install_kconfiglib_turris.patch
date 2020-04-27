@@ -1,0 +1,30 @@
+diff --git a/Makefile b/Makefile
+index eb3daac..50ecbdf 100644
+--- a/Makefile
++++ b/Makefile
+@@ -5,7 +5,6 @@ kern_tools_LIST = kgit kgit-meta \
+ 		  symbol_why.py
+ 
+ cmds := $(wildcard tools/scc-cmds/*)
+-libs := Kconfiglib/kconfiglib.py
+ 
+ INSTALL=install
+ RM=rm
+@@ -25,9 +24,6 @@ endef
+ define install_cmd
+ 	$(INSTALL) -m 0755 $(1) $(DESTDIR)/scc-cmds/;
+ endef
+-define install_lib
+-	$(INSTALL) -m 0755 $(1) $(DESTDIR);
+-endef
+ define install_tool
+ 	$(INSTALL) -m 0755 tools/$(1) $(DESTDIR);
+ endef
+@@ -49,7 +45,6 @@ install:
+ 	@$(foreach tool,$(kern_tools_LIST),$(call install_tool,$(tool)))
+ 	@$(INSTALL) -d $(DESTDIR)/scc-cmds/
+ 	@$(foreach cmd,$(cmds),$(call install_cmd,$(cmd)))
+-	@$(foreach lib,$(libs),$(call install_lib,$(lib)))
+ 	@$(MAKE_STAMP)
+ 
+ clean:
