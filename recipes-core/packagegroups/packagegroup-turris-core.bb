@@ -49,3 +49,6 @@ RDEPENDS_packagegroup-turris-core_remove = "dt"
 
 #turris omnia uses dropbear, so removing openssh
 RDEPENDS_packagegroup-turris-core_remove = "openssh"
+
+#for yocto 3.1 migration, the following components are removed on core-image-minimal
+RDEPENDS_packagegroup-turris-core_remove_dunfell = " wireless-tools iperf trace-cmd"
