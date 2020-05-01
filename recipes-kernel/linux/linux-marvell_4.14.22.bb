@@ -17,8 +17,8 @@ SRC_URI_append_clearfog = " \
 "
 SRC_URI += " \
     file://ath-reg.cfg \
+    file://openvswitch.cfg \
 "
-SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://openvswitch.cfg', '', d)}"
 
 DEPENDS += " u-boot"
 COMPATIBLE_MACHINE = "(armada37xx|armada38x|armada70xx|armada80xx)"

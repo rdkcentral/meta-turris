@@ -72,16 +72,24 @@ iw dev wlan1 interface add wifi1 type __ap
 
 #2.4GHz Virtual Access Points for backhaul connection
 iw dev wlan0 interface add wifi2 type __ap
-ip addr add 169.254.2.1/24 dev wifi2
+ip addr add 169.254.0.1/24 dev wifi2
 ifconfig wifi2 mtu 1600
 
 #5GHz Virtual Access Points for backhaul connection
 iw dev wlan1 interface add wifi3 type __ap
-ip addr add 169.254.3.1/24 dev wifi3
+ip addr add 169.254.1.1/24 dev wifi3
 ifconfig wifi3 mtu 1600
 
 #iw dev wlan0 interface add wifi4 type __ap
 #iw dev wlan1 interface add wifi5 type __ap
+
+#Create empty acl list for hostapd
+touch /tmp/hostapd-acl0
+touch /tmp/hostapd-acl1
+touch /tmp/hostapd-acl2
+touch /tmp/hostapd-acl3
+touch /tmp/hostapd-acl4
+touch /tmp/hostapd-acl5
 
 #Setting brlan0 bridge
 if [ ! -f /sys/class/net/brlan0 ]
