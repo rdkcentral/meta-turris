@@ -16,7 +16,8 @@ VENDOR_URI = "git://git@github.com/rdkcentral/opensync-vendor-rdk-turris.git;pro
 VENDOR_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://rdk-ext-support.patch;patchdir=${WORKDIR}/git/vendor/turris', '', d)}"
 
 DEPENDS_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'mesh-agent', '', d)}"
-DEPENDS_append = " rdk-logger"
+DEPENDS_remove = "hal-wifi"
+DEPENDS_append = " rdk-logger hal-wifi-turris"
 
 RDK_CFLAGS += " -D_PLATFORM_TURRIS_"
 
