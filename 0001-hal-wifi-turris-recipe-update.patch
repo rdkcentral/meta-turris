@@ -1,0 +1,66 @@
+From 61ff5b5e253185490b81ec42d3e3089844de8bea Mon Sep 17 00:00:00 2001
+From: Manigandan Gopalakrishnan <manigandan.gopalakrishnan@ltts.com>
+Date: Fri, 8 May 2020 13:03:22 +0530
+Subject: [PATCH] hal-wifi-turris recipe update
+
+Signed-off-by: Manigandan Gopalakrishnan <manigandan.gopalakrishnan@ltts.com>
+---
+ .../hal/hal-wifi-generic_git.bbappend         | 19 -------------------
+ recipes-ccsp/hal/hal-wifi-turris_git.bb       | 11 ++++++-----
+ 2 files changed, 6 insertions(+), 24 deletions(-)
+ delete mode 100644 recipes-ccsp/hal/hal-wifi-generic_git.bbappend
+
+diff --git a/recipes-ccsp/hal/hal-wifi-generic_git.bbappend b/recipes-ccsp/hal/hal-wifi-generic_git.bbappend
+deleted file mode 100644
+index 40f42d0..0000000
+--- a/recipes-ccsp/hal/hal-wifi-generic_git.bbappend
++++ /dev/null
+@@ -1,19 +0,0 @@
+-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+-SRC_URI += "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};destsuffix=git/source/wifi/devices;name=wifihal-turris"
+-
+-SRCREV = "${AUTOREV}"
+-
+-DEPENDS += "halinterface libnl libev hostapd wpa-supplicant"
+-
+-do_configure_prepend(){
+-    rm ${S}/wifi_hal.c
+-    rm ${S}/Makefile.am
+-    ln -sf ${S}/devices/source/wifi/wifi_hal.c ${S}/wifi_hal.c
+-    ln -sf ${S}/devices/source/wifi/wifi_hostapd_interface.c ${S}/wifi_hostapd_interface.c
+-    ln -sf ${S}/devices/include/wifi_hal_turris.h ${S}/wifi_hal_turris.h
+-    ln -sf ${S}/devices/source/wifi/Makefile.am ${S}/Makefile.am
+-}
+-
+-CFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'extender', '-D_TURRIS_EXTENDER_', '', d)}"
+-CFLAGS_append = " -I=${includedir}/ccsp -I=${includedir}/libnl3"
+-LDFLAGS_append = " -lnl-nf-3 -lnl-route-3 -lnl-3 -lnl-xfrm-3 -lnl-genl-3 -lev -lwpa_client"
+diff --git a/recipes-ccsp/hal/hal-wifi-turris_git.bb b/recipes-ccsp/hal/hal-wifi-turris_git.bb
+index f7caf11..e57a251 100644
+--- a/recipes-ccsp/hal/hal-wifi-turris_git.bb
++++ b/recipes-ccsp/hal/hal-wifi-turris_git.bb
+@@ -2,15 +2,16 @@ SUMMARY = "WIFI HAL for RDK CCSP components"
+ LICENSE = "Apache-2.0"
+ LIC_FILES_CHKSUM = "file://LICENSE;md5=cc44d3d0bd3fb4f1a5b6f235c8c326c0"
+ 
+-PROVIDES = "hal-wifi-turris"
+-RPROVIDES_${PN} = "hal-wifi-turris"
++PROVIDES = "hal-wifi"
++RPROVIDES_${PN} = "hal-wifi"
+ 
+-inherit autotools
++inherit autotools coverity
+ 
+ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+ 
+-SRC_URI = "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};name=wifihal-turris"
+-SRCREV = "${AUTOREV}"
++SRC_URI = "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};name=wifihal"
++SRCREV_wifihal = "${AUTOREV}" 
++SRCREV_FORMAT = "wifihal"     
+ 
+ PV = "${RDK_RELEASE}+git${SRCPV}"
+ S = "${WORKDIR}/git/source/wifi/"
+-- 
+2.17.1
+
