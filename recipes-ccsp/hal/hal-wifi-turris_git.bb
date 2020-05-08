@@ -2,15 +2,16 @@ SUMMARY = "WIFI HAL for RDK CCSP components"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=cc44d3d0bd3fb4f1a5b6f235c8c326c0"
 
-PROVIDES = "hal-wifi-turris"
-RPROVIDES_${PN} = "hal-wifi-turris"
+PROVIDES = "hal-wifi"
+RPROVIDES_${PN} = "hal-wifi"
 
-inherit autotools
+inherit autotools coverity
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI = "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};name=wifihal-turris"
-SRCREV = "${AUTOREV}"
+SRC_URI = "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};name=wifihal"
+SRCREV_wifihal = "${AUTOREV}" 
+SRCREV_FORMAT = "wifihal"     
 
 PV = "${RDK_RELEASE}+git${SRCPV}"
 S = "${WORKDIR}/git/source/wifi/"
