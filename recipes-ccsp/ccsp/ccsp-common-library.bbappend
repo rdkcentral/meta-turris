@@ -22,7 +22,7 @@ SRC_URI += "file://0003-add-dependency-to-pandm.patch;apply=no"
 SRC_URI += "file://0004-remove-psm-db-reference.patch;apply=no"
 
 # we need to patch to code for Turris
-do_rpi_patches() {
+do_turris_patches() {
     cd ${S}
     if [ ! -e patch_applied ]; then
         patch -p1 < ${WORKDIR}/0003-add-dependency-to-pandm.patch
@@ -30,7 +30,7 @@ do_rpi_patches() {
         touch patch_applied
     fi
 }
-addtask rpi_patches after do_unpack before do_compile
+addtask turris_patches after do_unpack before do_compile
 
 do_install_append(){
     # Config files and scripts
