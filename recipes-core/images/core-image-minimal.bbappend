@@ -2,6 +2,8 @@ SUMMARY = "Marvell RFS"
 
 inherit rdk-image
 
+MACHINE_IMAGE_NAME = "core-image-minimal"
+
 IMAGE_FEATURES_remove = "read-only-rootfs"
 
 IMAGE_INSTALL_append = " \
