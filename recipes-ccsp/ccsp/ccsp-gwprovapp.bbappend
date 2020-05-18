@@ -6,7 +6,7 @@ SRC_URI += " file://turris-macro-gwprov.patch;apply=no"
 SRC_URI += " file://set-uplink-for-turris.patch;apply=no"
 
 # we need to patch to code for Turris
-do_rpi_patches() {
+do_turris_patches() {
     cd ${S}
     if [ ! -e patch_applied ]; then
         patch -p1 < ${WORKDIR}/turris-macro-gwprov.patch
@@ -14,7 +14,7 @@ do_rpi_patches() {
         touch patch_applied
     fi
 }
-addtask rpi_patches after do_unpack before do_compile
+addtask turris_patches after do_unpack before do_compile
 
 export PLATFORM_TURRIS_ENABLED="yes"
 

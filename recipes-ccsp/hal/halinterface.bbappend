@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://sta-network.patch;apply=no', '', d)}"
 
 # we need to patch to code for RPi camera
-do_rpi_patches() {
+do_turris_patches() {
     cd ${S}
     if [ -f ${WORKDIR}/sta-network.patch ]; then
         if [ ! -e patch_applied ]; then
@@ -11,4 +11,4 @@ do_rpi_patches() {
         fi
     fi
 }
-addtask rpi_patches after do_unpack before do_compile
+addtask turris_patches after do_unpack before do_compile

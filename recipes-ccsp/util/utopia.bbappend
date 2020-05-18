@@ -13,18 +13,23 @@ SRC_URI += "file://posix-gwprovapp.patch;apply=no"
 #This patch will add dummy swctl api which is originally given by brcm for XB3.
 SRC_URI += "file://0002-fix-swctl-missing-api.patch;apply=no"
 
+#following patch will be removed once change is downstreamed
+SRC_URI += "file://0004-add-backhaul-dhcp-range-for-dnsmasq.patch;apply=no"
+SRC_URI += "file://mesh_sync_lease.sh"
+
 # we need to patch to code for Turris
-do_rpi_patches() {
+do_turris_patches() {
     cd ${S}
     if [ ! -e patch_applied ]; then
         patch -p1 < ${WORKDIR}/0001-fix-lan-handler-for-turris.patch
         patch -p1 < ${WORKDIR}/0003-remove-autoconf.patch
         patch -p1 < ${WORKDIR}/posix-gwprovapp.patch
         patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
+        patch -p1 < ${WORKDIR}/0004-add-backhaul-dhcp-range-for-dnsmasq.patch
         touch patch_applied
     fi
 }
-addtask rpi_patches after do_unpack before do_compile
+addtask turris_patches after do_unpack before do_compile
 
 do_install_append() {
 
@@ -79,6 +84,7 @@ do_install_append() {
     touch ${D}${sysconfdir}/dhcp_static_hosts
     #turris omnia uses default service_bridge.sh for now
     install -m 755 ${S}/source/scripts/init/service.d/service_bridge.sh ${D}${sysconfdir}/utopia/service.d/service_bridge.sh
+    install -m 755 ${WORKDIR}/mesh_sync_lease.sh ${D}${sysconfdir}/utopia/service.d/service_dhcp_server/
 
     # Creating symbolic links to install files in specific directory as in legacy builds
     ln -sf /usr/bin/10_firewall ${D}${sysconfdir}/utopia/post.d/10_firewall
@@ -126,10 +132,6 @@ do_install_append() {
 
     echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "touch -f /tmp/utopia_inited" >> ${D}${sysconfdir}/utopia/utopia_init.sh
-
-    #Following line is for adding Backhaul interface entries in dnsmasq.conf
-    sed -i '/XB6/i \ \ \ \ \ \ \ elif [ "$BOX_TYPE" = "turris" ]; then\n\ \ \ \ \ \ \ \ \ \ \ echo "interface=wifi2" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ echo "dhcp-range=169.254.0.2,169.254.0.254,255.255.255.0,infinite" >> $LOCAL_DHCP_CONF\n\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if [ "1" == "$NAMESERVERENABLED" ] && [ "$WAN_DHCP_NS" != "" ]; then\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ echo "${PREFIX}""dhcp-option=wifi2,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fi\n\n\ \ \ \ \ \ \ \ \ \ \ echo "interface=wifi3" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ echo "dhcp-range=169.254.1.2,169.254.1.254,255.255.255.0,infinite" >> $LOCAL_DHCP_CONF\n\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if [ "1" == "$NAMESERVERENABLED" ] && [ "$WAN_DHCP_NS" != "" ]; then\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ echo "${PREFIX}""dhcp-option=wifi3,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fi\n\n\ \ \ \ \ \ \ \ \ \ \ echo "interface=br-home" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ echo "dhcp-range=192.168.1.2,192.168.1.253,255.255.255.0,7d" >> $LOCAL_DHCP_CONF\n\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if [ "1" == "$NAMESERVERENABLED" ] && [ "$WAN_DHCP_NS" != "" ]; then\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ echo "${PREFIX}""dhcp-option=br-home,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fi\n' ${D}${sysconfdir}/utopia/service.d/service_dhcp_server/dhcp_server_functions.sh
-
 }
 
 FILES_${PN} += " \
