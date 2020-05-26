@@ -91,6 +91,14 @@ touch /tmp/hostapd-acl3
 touch /tmp/hostapd-acl4
 touch /tmp/hostapd-acl5
 
+#create empty psk files
+touch /tmp/hostapd0.psk
+touch /tmp/hostapd1.psk
+touch /tmp/hostapd2.psk
+touch /tmp/hostapd3.psk
+touch /tmp/hostapd4.psk
+touch /tmp/hostapd5.psk
+
 #Setting brlan0 bridge
 if [ ! -f /sys/class/net/brlan0 ]
 then
