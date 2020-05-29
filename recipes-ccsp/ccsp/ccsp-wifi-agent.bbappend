@@ -5,6 +5,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 LDFLAGS += " \
 	-lutopiautil \
 	   "
+
+DEPENDS += "avro-c"
 	
 SRC_URI_append = " \
     file://wifiTelemetrySetup.sh \
