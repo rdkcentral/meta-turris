@@ -97,3 +97,5 @@ FILES_${PN}-ccsp += " \
     ${prefix}/ccsp/pam/CcspPandMSsp \
     /fss/gw/usr/sbin/ip \
 "
+
+RDEPENDS_${PN}-ccsp_append_dunfell = " bash"
