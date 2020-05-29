@@ -24,3 +24,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     opensync \
     openvswitch \
     "
+
+BB_HASH_IGNORE_MISMATCH = "1"
+IMAGE_NAME[vardepsexclude] = "DATETIME"
