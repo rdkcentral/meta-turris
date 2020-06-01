@@ -6,6 +6,10 @@ CFLAGS_append = " \
     -I=${includedir}/utctx \
     -I=${includedir}/utapi \
 "
+LDFLAGS_append =" \
+    -lsyscfg \
+    -lbreakpadwrapper \
+"
 
 LDFLAGS_remove = " \
     -lmoca_mgnt \
@@ -93,3 +97,5 @@ FILES_${PN}-ccsp += " \
     ${prefix}/ccsp/pam/CcspPandMSsp \
     /fss/gw/usr/sbin/ip \
 "
+
+RDEPENDS_${PN}-ccsp_append_dunfell = " bash"
