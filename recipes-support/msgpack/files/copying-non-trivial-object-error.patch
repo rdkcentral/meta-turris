@@ -1,0 +1,11 @@
+--- a/git/include/msgpack/v1/object.hpp	2020-05-20 12:49:48.074330084 +0000
++++ git/include/msgpack/v1/object.hpp	2020-05-20 12:51:21.733516863 +0000
+@@ -644,7 +644,7 @@
+ inline void operator<< (msgpack::object& o, const msgpack_object& v)
+ {
+     // FIXME beter way?
+-    std::memcpy(&o, &v, sizeof(v));
++    std::memcpy(static_cast<void*>(&o), &v, sizeof(v));
+ }
+ 
+ inline object::operator msgpack_object() const

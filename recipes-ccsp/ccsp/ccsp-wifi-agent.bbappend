@@ -28,3 +28,5 @@ FILES_${PN} += " \
     ${prefix}/ccsp/wifi/checkwifi.sh \
     ${prefix}/ccsp/wifi/radio_param_def.cfg \
 "
+
+LDFLAGS_append_dunfell = " -lpthread"
