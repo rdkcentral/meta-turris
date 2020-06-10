@@ -22,7 +22,7 @@ SRC_URI_append = " \
 do_turris_patches() {
     cd ${S}
     if [ ! -e patch_applied ]; then
-        patch -p1 < ${WORKDIR}/init_easy_connect-fix.patch
+        patch -p1 < ${WORKDIR}/init_easy_connect-fix.patch || echo "patch already applied"
         touch patch_applied
     fi
 }
