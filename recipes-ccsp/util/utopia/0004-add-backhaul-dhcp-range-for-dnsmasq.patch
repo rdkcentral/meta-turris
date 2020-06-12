@@ -27,7 +27,7 @@ index e965911..de7849b 100644
 +		fprintf(stderr, "DHCP_SERVER : [wifi3] dhcp-option=wifi3,6,%s\n", l_cWan_Dhcp_Dns);
 +	}
 +
-+	fprintf(l_fLocal_Dhcp_ConfFile, "dhcp-script=/etc/utopia/service.d/service_dhcp_server/mesh_sync_lease.sh\n");
++	fprintf(l_fLocal_Dhcp_ConfFile, "dhcp-script=/etc/mesh_sync_lease.sh\n");
 +#endif
  	if (TRUE == l_bCaptivePortal_Mode)
  	{
