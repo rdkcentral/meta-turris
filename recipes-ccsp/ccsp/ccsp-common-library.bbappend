@@ -32,7 +32,7 @@ do_turris_patches() {
 }
 addtask turris_patches after do_unpack before do_compile
 
-do_install_append(){
+do_install_append_class-target(){
     # Config files and scripts
     install -m 777 ${S}/scripts/cli_start_arm.sh ${D}/usr/ccsp/cli_start.sh
     install -m 777 ${S}/scripts/cosa_start_arm.sh ${D}/usr/ccsp/cosa_start.sh
