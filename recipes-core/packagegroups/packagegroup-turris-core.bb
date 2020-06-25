@@ -44,6 +44,7 @@ RDEPENDS_packagegroup-turris-core = " \
    iptables \
    dnsmasq \
    dt \
+   u-boot-fw-utils \
     "
 RDEPENDS_packagegroup-turris-core_remove = "dt"
 
