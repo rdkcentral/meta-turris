@@ -18,6 +18,9 @@ do_install_append () {
     sed -i "/wan0:443/a  echo \"This interface is not available in Turris\""  ${D}${sysconfdir}/webgui.sh
     sed -i '/wan0/d' ${D}${sysconfdir}/webgui.sh
 
+    sed -i '/21515/ s/^/#/g'  ${D}${sysconfdir}/webgui.sh
+    sed -i '/erouter0:$HTTP_PORT/c echo "Turris ipv6 workaround"' ${D}${sysconfdir}/webgui.sh
+
     #delete server.pem reference for TurrisOmnia
     sed -e '/server.pem/ s/^#*/echo "Removed server.pem references for R-pi"\n#/' -i ${D}${sysconfdir}/webgui.sh
 
