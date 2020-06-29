@@ -7,6 +7,7 @@ SRC_URI_append = " \
     file://0001-fix-lan-handler-for-turris.patch;apply=no \
     file://0003-remove-autoconf.patch;apply=no \
     file://system_defaults \
+    file://0001-Work-around-for-brlan0-issue.patch;apply=no \
 "
 
 SRC_URI += "file://posix-gwprovapp.patch;apply=no"
@@ -14,17 +15,20 @@ SRC_URI += "file://posix-gwprovapp.patch;apply=no"
 SRC_URI += "file://0002-fix-swctl-missing-api.patch;apply=no"
 
 # we need to patch to code for Turris
-do_rpi_patches() {
+do_turris_patches() {
     cd ${S}
     if [ ! -e patch_applied ]; then
         patch -p1 < ${WORKDIR}/0001-fix-lan-handler-for-turris.patch
         patch -p1 < ${WORKDIR}/0003-remove-autoconf.patch
         patch -p1 < ${WORKDIR}/posix-gwprovapp.patch
         patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
+        patch -p1 < ${WORKDIR}/0001-Work-around-for-brlan0-issue.patch
         touch patch_applied
     fi
 }
-addtask rpi_patches after do_unpack before do_compile
+addtask turris_patches after do_unpack before do_compile
+#ipv6 workaround
+CFLAGS_append = " -DNO_IPV6"
 
 do_install_append() {
 

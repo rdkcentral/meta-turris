@@ -99,6 +99,9 @@ do_install_append(){
    
     #change for turris omnia
     sed -i 's/PIDFile/#&/' ${D}${systemd_unitdir}/system/CcspPandMSsp.service 
+
+    #for yocto 3.1, Making psm to run after gwprovethwan
+    sed -i '/logagent.service/c After=logagent.service gwprovethwan.service' ${D}${systemd_unitdir}/system/PsmSsp.service
 }
 
 SYSTEMD_SERVICE_${PN} += "ccspwifiagent.service"
