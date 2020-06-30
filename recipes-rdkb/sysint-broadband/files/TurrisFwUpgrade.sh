@@ -27,7 +27,7 @@ echo "ActivePartition: $ActivePartition"
 echo "TargetPartition: $TargetPartition"
 
 umount /mnt 2>/dev/null
-mkfs.ext2 ${TargetPartition}
+echo y | mkfs.ext2 ${TargetPartition}
 check "Error in formatting ${TargetPartition}"
 
 mount ${TargetPartition} /mnt
