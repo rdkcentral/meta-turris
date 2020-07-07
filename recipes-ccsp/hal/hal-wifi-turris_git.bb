@@ -9,7 +9,7 @@ inherit autotools coverity
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI = "${CMF_GITHUB_ROOT}/rdkcentral/rdkb-turris-hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};name=wifihal"
+SRC_URI = "${CMF_GITHUB_ROOT}/rdkb-turris-hal;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};name=wifihal"
 SRCREV_wifihal = "${AUTOREV}"
 SRCREV_FORMAT = "wifihal"
 
