@@ -27,8 +27,6 @@ do_turris_patches() {
     fi
 }
 addtask turris_patches after do_unpack before do_compile
-#ipv6 workaround
-CFLAGS_append = " -DNO_IPV6"
 
 do_install_append() {
 
