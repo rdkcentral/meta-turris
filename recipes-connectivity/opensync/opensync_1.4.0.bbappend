@@ -9,4 +9,3 @@ PLATFORM_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://000
 VENDOR_URI = "git://git@github.com/rdkcentral/opensync-vendor-rdk-turris.git;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_MASTER_BRANCH};name=vendor;destsuffix=git/vendor/turris"
 
 DEPENDS_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'mesh-agent', '', d)}"
-DEPENDS_remove_dunfell = "wireless-tools"
