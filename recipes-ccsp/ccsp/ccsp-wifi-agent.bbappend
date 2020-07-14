@@ -15,18 +15,7 @@ SRC_URI_append = " \
     file://checkwifi.sh \
     file://radio_param_def.cfg \
     file://synclease.sh \
-    file://init_easy_connect-fix.patch;apply=no \
 "
-
-# we need to patch to code for Turris
-do_turris_patches() {
-    cd ${S}
-    if [ ! -e patch_applied ]; then
-        patch -p1 < ${WORKDIR}/init_easy_connect-fix.patch || echo "patch already applied"
-        touch patch_applied
-    fi
-}
-addtask turris_patches after do_unpack before do_compile
 
 do_install_append(){
     install -m 777 ${D}/usr/bin/CcspWifiSsp -t ${D}/usr/ccsp/wifi/

@@ -10,6 +10,7 @@ CFLAGS_append = " \
 LDFLAGS_remove = " \
     -lmoca_mgnt \
 "
+EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
 do_install_append(){
     # Config files and scripts
