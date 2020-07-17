@@ -1,6 +1,7 @@
 [Unit]
 Description=Hostapd IEEE 802.11n AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
 After=CcspPandMSsp.service
+StartLimitIntervalSec=120
 
 [Service]
 Type=forking
@@ -8,7 +9,6 @@ ExecStartPre=/bin/sh -c '(/lib/rdk/hostapd-init.sh)'
 PIDFile=/var/run/hostapd-global.pid
 ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid /nvram/hostapd0.conf /nvram/hostapd1.conf
 Restart=always
-StartLimitIntervalSec=120
 
 [Install]
 WantedBy=multi-user.target
