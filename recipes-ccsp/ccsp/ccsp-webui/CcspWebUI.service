@@ -20,7 +20,7 @@
 [Unit]
 Description=CcspWebUI service
 After=gwprovethwan.service
-wants=gwprovethwan.service
+Wants=gwprovethwan.service
 
 [Service]
 Type=forking
