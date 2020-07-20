@@ -61,6 +61,8 @@ then
 	sed -i "/^bssid=/c\bssid=`echo $WIFI1_MAC | cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:01" /nvram/hostapd3.conf
 fi
 
+#Setting up VAP status file
+echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0" >/tmp/vap-status
 if [ $device_type == "extender" ];
 then
         exit 0;

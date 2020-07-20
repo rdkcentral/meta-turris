@@ -19,6 +19,7 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     tcpdump \
     ebtables \
     iw \
+    ethtool \
     bc \
     mesh-agent \
     opensync \
