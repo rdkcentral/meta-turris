@@ -15,6 +15,7 @@ do_install_append () {
         sed -e '/ExecStartPost/ s/^#*/#/' -i  ${D}${systemd_unitdir}/system/gwprovethwan.service
         sed -i "/bin\/rm/a Restart=always"  ${D}${systemd_unitdir}/system/gwprovethwan.service
         sed -i "s/StandardOutput=syslog/StandardOutput=syslog+console/g"  ${D}${systemd_unitdir}/system/gwprovethwan.service
+        sed -i "s/wants=/Wants=/"  ${D}${systemd_unitdir}/system/gwprovethwan.service
 }
 
 SYSTEMD_SERVICE_${PN} = "gwprovethwan.service"

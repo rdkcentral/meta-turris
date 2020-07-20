@@ -5,6 +5,8 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=1ec986bec88070e2a59c68c95d763f89"
 
 DEPENDS = "libnl openssl"
+DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
+LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI = " \

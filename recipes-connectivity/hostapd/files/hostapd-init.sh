@@ -61,6 +61,8 @@ then
 	sed -i "/^bssid=/c\bssid=`echo $WIFI1_MAC | cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:01" /nvram/hostapd3.conf
 fi
 
+#Setting up VAP status file
+echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0" >/tmp/vap-status
 if [ $device_type == "extender" ];
 then
         exit 0;
@@ -72,16 +74,32 @@ iw dev wlan1 interface add wifi1 type __ap
 
 #2.4GHz Virtual Access Points for backhaul connection
 iw dev wlan0 interface add wifi2 type __ap
-ip addr add 169.254.2.1/24 dev wifi2
+ip addr add 169.254.0.1/24 dev wifi2
 ifconfig wifi2 mtu 1600
 
 #5GHz Virtual Access Points for backhaul connection
 iw dev wlan1 interface add wifi3 type __ap
-ip addr add 169.254.3.1/24 dev wifi3
+ip addr add 169.254.1.1/24 dev wifi3
 ifconfig wifi3 mtu 1600
 
 #iw dev wlan0 interface add wifi4 type __ap
 #iw dev wlan1 interface add wifi5 type __ap
+
+#Create empty acl list for hostapd
+touch /tmp/hostapd-acl0
+touch /tmp/hostapd-acl1
+touch /tmp/hostapd-acl2
+touch /tmp/hostapd-acl3
+touch /tmp/hostapd-acl4
+touch /tmp/hostapd-acl5
+
+#create empty psk files
+touch /tmp/hostapd0.psk
+touch /tmp/hostapd1.psk
+touch /tmp/hostapd2.psk
+touch /tmp/hostapd3.psk
+touch /tmp/hostapd4.psk
+touch /tmp/hostapd5.psk
 
 #Setting brlan0 bridge
 if [ ! -f /sys/class/net/brlan0 ]

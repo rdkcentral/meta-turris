@@ -8,6 +8,12 @@ do_configure_prepend()  {
 patch  -p3 --forward < ${WORKDIR}/dns.patch ${S}/source/MeshAgentSsp/cosa_mesh_apis.c  || echo "patch already applied"
 }
 
+do_install_append () {
+	install -D -m 0644 ${S}/systemd_units/meshAgent.service ${D}${systemd_unitdir}/system/meshAgent.service
+}
+
+FILES_${PN}_append = "${systemd_unitdir}/system/meshAgent.service"
+
 CFLAGS_append = " -D_PLATFORM_TURRIS_"
 
 

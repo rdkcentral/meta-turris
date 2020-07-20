@@ -1,0 +1,13 @@
+[Unit]
+Description=Software Update Service
+After=CcspPandMSsp.service
+StartLimitIntervalSec=120
+
+[Service]
+Type=forking
+ExecStartPre=/bin/sh -c '/bin/touch /rdklogs/logs/swupdate.log'
+ExecStart=/bin/sh -c '/lib/rdk/swupdate_utility.sh 2&> /rdklogs/logs/swupdate.log &'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
