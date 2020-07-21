@@ -63,6 +63,11 @@ fi
 
 #Setting up VAP status file
 echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0" >/tmp/vap-status
+
+#Creating files for tracking AssociatedDevices
+touch /tmp/AllAssociated_Devices_2G.txt
+touch /tmp/AllAssociated_Devices_5G.txt
+
 if [ $device_type == "extender" ];
 then
         exit 0;
