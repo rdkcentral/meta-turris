@@ -49,3 +49,13 @@ then
 BBLAYERS =+ "\${RDKROOT}/meta-rdk-opensync"
 EOF
 fi
+
+if [ -L ${TOP_DIR}/.repo/manifest.xml ] ; then
+      MANIFEST="$(basename `readlink -f ${TOP_DIR}/.repo/manifest.xml ` | cut -d '.' -f 1)"
+else
+      MANIFEST=$(grep include ${TOP_DIR}/.repo/manifest.xml | cut -d '"' -f 2 | cut -d '.' -f 1)
+fi
+echo " Manifest Name = ${MANIFEST}"
+if [ -f "${TOP_DIR}/.repo/manifests/${MANIFEST}.conf" ]; then
+    cat ${TOP_DIR}/.repo/manifests/${MANIFEST}.conf >> $BUILD_DIR/conf/auto.conf
+fi
