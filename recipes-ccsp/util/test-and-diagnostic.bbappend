@@ -4,3 +4,5 @@ do_install_append () {
     # Test and Diagonastics XML 
        install -m 644 ${S}/config/TestAndDiagnostic_arm.XML ${D}/usr/ccsp/tad/TestAndDiagnostic.XML
 }
+
+EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
