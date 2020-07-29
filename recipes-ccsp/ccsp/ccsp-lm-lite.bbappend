@@ -1,6 +1,8 @@
 require ccsp_common_turris.inc
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
+EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
+
 LDFLAGS_append = " -Wl,--no-as-needed"
 
 SRC_URI += "file://musl-header-missing.patch;apply=no"

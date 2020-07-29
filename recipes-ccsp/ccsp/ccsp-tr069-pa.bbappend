@@ -1,5 +1,8 @@
 require ccsp_common_turris.inc
 LDFLAGS += "-Wl,--no-as-needed -lulog"
+
+EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
+
 do_install_append () {
     # Config files and scripts
     install -m 644 ${S}/config/ccsp_tr069_pa_certificate_cfg_arm.xml ${D}/usr/ccsp/tr069pa/ccsp_tr069_pa_certificate_cfg.xml
