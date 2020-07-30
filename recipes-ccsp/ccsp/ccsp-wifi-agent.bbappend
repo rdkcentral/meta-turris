@@ -17,6 +17,8 @@ SRC_URI_append = " \
     file://synclease.sh \
 "
 
+EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
+
 do_install_append(){
     install -m 777 ${D}/usr/bin/CcspWifiSsp -t ${D}/usr/ccsp/wifi/
     install -m 755 ${S}/scripts/cosa_start_wifiagent.sh ${D}/usr/ccsp/wifi
