@@ -7,4 +7,4 @@ CFLAGS_append += " -U_COSA_SIM_ -fno-exceptions -ffunction-sections -fdata-secti
            -DBUILD_WEB -D_NO_ANSC_ZLIB_ -D_DEBUG -U_ANSC_IPV6_COMPATIBLE_ -DUSE_NOTIFY_COMPONENT \
            -D_PLATFORM_TURRIS_ -DENABLE_SD_NOTIFY -DCOSA_DML_WIFI_FEATURE_LoadPsmDefaults -UPARODUS_ENABLE"
 
-EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
+#EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
