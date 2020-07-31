@@ -6,6 +6,8 @@ LDFLAGS += " \
 	-lutopiautil \
 	   "
 
+EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
+
 DEPENDS += "avro-c"
 	
 SRC_URI_append = " \

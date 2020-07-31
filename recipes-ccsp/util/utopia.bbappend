@@ -3,6 +3,9 @@ require recipes-ccsp/ccsp/ccsp_common_turris.inc
 DEPENDS_append = " kernel-autoconf utopia-headers"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+
+EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
+
 SRC_URI_append = " \
     file://0001-fix-lan-handler-for-turris.patch;apply=no \
     file://0003-remove-autoconf.patch;apply=no \

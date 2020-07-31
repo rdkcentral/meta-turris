@@ -3,6 +3,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 LDFLAGS_append = " -Wl,--no-as-needed"
 
+EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
+
 SRC_URI += "file://musl-header-missing.patch;apply=no"
 
 # we need to patch to code for Turris
