@@ -6,6 +6,10 @@ CFLAGS_append = " \
     -I=${includedir}/utctx \
     -I=${includedir}/utapi \
 "
+LDFLAGS_append =" \
+    -lsyscfg \
+    -lbreakpadwrapper \
+"
 
 LDFLAGS_remove = " \
     -lmoca_mgnt \
