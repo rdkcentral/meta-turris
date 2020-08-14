@@ -49,3 +49,18 @@ then
 BBLAYERS =+ "\${RDKROOT}/meta-rdk-opensync"
 EOF
 fi
+
+if [ -L ${TOP_DIR}/.repo/manifest.xml ] ; then
+    MANIFEST="$(basename `readlink -f ${TOP_DIR}/.repo/manifest.xml` .xml)"
+else
+    MANIFEST=$(grep include ${TOP_DIR}/.repo/manifest.xml | cut -d '"' -f 2 | xargs basename -s .xml )
+fi
+echo "Manifest Name = ${MANIFEST}.xml"
+if [ -f "${TOP_DIR}/.repo/manifests/turris-tags/${MANIFEST}.conf" ]; then
+    cat ${TOP_DIR}/.repo/manifests/turris-tags/${MANIFEST}.conf >> $BUILD_DIR/conf/auto.conf
+    if [ $? == 0 ]; then
+        echo "${MANIFEST}.conf copied to auto.conf successfully"
+    else
+        echo "FAILED to copy auto.conf"
+    fi
+fi
