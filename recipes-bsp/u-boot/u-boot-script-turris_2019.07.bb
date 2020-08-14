@@ -1,5 +1,5 @@
 LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://README;md5=c1ec3c16b910df5472a2fa3a13c5b92e"
+LIC_FILES_CHKSUM = "file://README;md5=1272cbaf65c82bebc49d21637dbcb74b"
 DEPENDS = "u-boot-mkimage-native"
 
 SRC_URI = "file://bootscript \
