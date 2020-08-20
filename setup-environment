@@ -49,3 +49,5 @@ then
 BBLAYERS =+ "\${RDKROOT}/meta-rdk-opensync"
 EOF
 fi
+
+exit 0
