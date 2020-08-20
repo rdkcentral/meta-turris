@@ -26,7 +26,13 @@ sleep 5;
 fi
 
 mkdir -p /nvram
-mount /dev/mmcblk0p6 /nvram
+if [ -b /dev/mmcblk0p6 ]; then
+	#for Older Turris Omnia
+	mount /dev/mmcblk0p6 /nvram
+else
+	#for Omnia2019 and  Omnia2020
+	mount /dev/mmcblk0p5 /nvram
+fi
 
 WIFI0_MAC=`cat /sys/class/net/wlan0/address`
 WIFI1_MAC=`cat /sys/class/net/wlan1/address`
