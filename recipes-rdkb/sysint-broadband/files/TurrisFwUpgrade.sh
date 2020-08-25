@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [ $1 ] ; then
-echo "Usage '/lib/rdk/FwUgrade.sh'"
-echo "Note: New images should be downloaded in /tmp directory"
-exit 1
+  echo "Usage '/lib/rdk/FwUgrade.sh'"
+  echo "Note: New images should be downloaded in /tmp directory"
+  exit 1
 fi
 
 check ()
@@ -17,31 +17,43 @@ check ()
 ls /tmp/zImage* >/dev/null
 check "No new image present in /tmp directory"
 
-ActivePartition=`fw_printenv yocto_bootargs | cut -d' ' -f3 | cut -d'=' -f2`
-if [ $ActivePartition == "/dev/mmcblk0p5" ]; then
-  TargetPartition="/dev/mmcblk0p7"
-else
-  TargetPartition="/dev/mmcblk0p5"
+BootPartition="/dev/mmcblk0p1"
+NewTurrisModel=1
+
+ActiveRootPartition=`mount | grep "/" -w | cut -d' ' -f1`
+if [ $ActiveRootPartition == "/dev/mmcblk0p2" ]; then
+  TargetRootPartition="/dev/mmcblk0p3"
+elif [ $ActiveRootPartition == "/dev/mmcblk0p3" ]; then
+  TargetRootPartition="/dev/mmcblk0p2"
+elif [ $ActiveRootPartition == "/dev/mmcblk0p5" ]; then
+  TargetRootPartition="/dev/mmcblk0p7"
+  BootPartition="/dev/mmcblk0p3"
+  NewTurrisModel=0
+else ##if $ActiveRootPartition is "/dev/mmcblk0p7"
+  TargetRootPartition="/dev/mmcblk0p5"
+  BootPartition="/dev/mmcblk0p3"
+  NewTurrisMode=0
 fi
-echo "ActivePartition: $ActivePartition"
-echo "TargetPartition: $TargetPartition"
+echo "ActiveRootPartition: $ActiveRootPartition"
+echo "TargetRootPartition: $TargetRootPartition"
+echo "BootPartition: $BootPartition"
 
 umount /mnt 2>/dev/null
-echo y | mkfs.ext2 ${TargetPartition}
-check "Error in formatting ${TargetPartition}"
+echo y | mkfs.ext2 $TargetRootPartition
+check "Error in formatting $TargetRootPartition"
 
-mount ${TargetPartition} /mnt
-check "Error in mounting ${TargetPartition}"
+mount $TargetRootPartition /mnt
+check "Error in mounting $TargetRootPartition"
 
 tar -xzf /tmp/*.tar.gz -C /mnt
-check "Error in unpacking new image"
+check "Error in unpacking new rootfs"
 
 umount /mnt
 check "Error in unmounting"
-echo "New rootfs is loaded in ${TargetPartition}"
+echo "New rootfs is loaded in $TargetRootPartition"
 
-mount /dev/mmcblk0p3 /mnt/
-check "Error in mounting /dev/mmcblk0p3"
+mount $BootPartition /mnt/
+check "Error in mounting $BootPartition"
 
 mv /mnt/zImage /zImage_old
 cp /tmp/zImage* /mnt/zImage
@@ -51,4 +63,12 @@ mv /zImage_old /mnt/zImage
 exit 1
 fi
 
-fw_setenv yocto_bootargs earlyprintk console=ttyS0,115200 root=$TargetPartition rootfstype=ext2 rw rootwait
+if [ $NewTurrisModel -eq 1 ]; then
+  if [ $TargetRootPartition == "/dev/mmcblk0p2" ]; then
+    cp /boot-main.scr /mnt/boot.scr
+  else
+    cp /boot-alt.scr /mnt/boot.scr
+  fi
+else
+  fw_setenv yocto_bootargs earlyprintk console=ttyS0,115200 root=$TargetRootPartition rootfstype=ext2 rw rootwait
+fi
