@@ -1,0 +1,13 @@
+Index: core/src/cm2/src/cm2_ovsdb.c
+===================================================================
+--- core.orig/src/cm2/src/cm2_ovsdb.c	2020-01-27 15:10:38.435076332 +0000
++++ core/src/cm2/src/cm2_ovsdb.c	2020-01-27 15:11:01.481520930 +0000
+@@ -861,7 +861,7 @@
+ }
+ 
+ bool cm2_connection_get_used_link(struct schema_Connection_Manager_Uplink *uplink) {
+-    return ovsdb_table_select_one(&table_Connection_Manager_Uplink, SCHEMA_COLUMN(Connection_Manager_Uplink, is_used), "true", uplink);
++    return ovsdb_table_select_one_where(&table_Connection_Manager_Uplink, ovsdb_where_simple_typed(SCHEMA_COLUMN(Connection_Manager_Uplink, is_used), "true",OCLM_BOOL), uplink);
+ }
+ 
+ static void cm2_connection_clear_used(void)

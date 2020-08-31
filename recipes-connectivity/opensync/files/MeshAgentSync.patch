@@ -1,0 +1,62 @@
+diff --git a/src/lib/target/inc/target_internal.h b/src/lib/target/inc/target_internal.h
+index 1608b03..c520ad2 100644
+--- a/src/lib/target/inc/target_internal.h
++++ b/src/lib/target/inc/target_internal.h
+@@ -171,6 +171,9 @@ bool                 maclearn_update(maclearn_type_t type,
+ bool                 radio_cloud_mode_set(radio_cloud_mode_t mode);
+ radio_cloud_mode_t   radio_cloud_mode_get(void);
+ bool                 radio_rops_vstate(struct schema_Wifi_VIF_State *vstate);
++#if defined(_PLATFORM_TURRIS_)
++bool                 radio_rops_vconfig(struct schema_Wifi_VIF_Config *vconfig,const char *ifname);
++#endif
+ void                 radio_trigger_resync(void);
+ 
+ void                 clients_connection(INT apIndex,
+diff --git a/src/lib/target/src/radio.c b/src/lib/target/src/radio.c
+index 9bedd00..b0cbe33 100644
+--- a/src/lib/target/src/radio.c
++++ b/src/lib/target/src/radio.c
+@@ -786,6 +786,20 @@ void radio_trigger_resync()
+     }
+ }
+ 
++#if defined(_PLATFORM_TURRIS_)
++bool radio_rops_vconfig(struct schema_Wifi_VIF_Config *vconfig , const char *ifname)
++{
++    if (!g_rops.op_vconf)
++    {
++        LOGE("%s: op_vconfig not set", __func__);
++        return false;
++    }
++
++    g_rops.op_vconf(vconfig, ifname);
++    return true;
++}
++#endif
++
+ bool radio_rops_vstate(struct schema_Wifi_VIF_State *vstate)
+ {
+     if (!g_rops.op_vstate)
+diff --git a/src/lib/target/src/vif.c b/src/lib/target/src/vif.c
+index aaecbf9..4e6b4ed 100644
+--- a/src/lib/target/src/vif.c
++++ b/src/lib/target/src/vif.c
+@@ -1071,7 +1071,17 @@ bool vif_state_update(INT ssidIndex)
+         LOGE("%s: cannot update VIF state for SSID index %d", __func__, ssidIndex);
+         return false;
+     }
++#if defined(_PLATFORM_TURRIS_)
++    /*  After setting Wifi_VIF_State, updating Wifi_VIF_Config table also in order to avoid overwritting content from Wifi_VIF_Config    */
+ 
++    struct schema_Wifi_VIF_Config vconfig;
++
++    if (vif_copy_to_config(ssidIndex, &vstate, &vconfig))
++    {
++        LOGE("%s: copying VIF state to config for SSID index %d", __func__, ssidIndex);
++        radio_rops_vconfig(&vconfig, vconfig.if_name);
++    }
++#endif
+     LOGN("Updating VIF state for SSID index %d", ssidIndex);
+     return radio_rops_vstate(&vstate);
+ }
+

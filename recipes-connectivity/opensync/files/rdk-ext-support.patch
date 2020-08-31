@@ -1,0 +1,86 @@
+diff --git a/ovsdb/inet.json b/ovsdb/inet.json
+index af2994e..4adb651 100644
+--- a/ovsdb/inet.json
++++ b/ovsdb/inet.json
+@@ -19,6 +19,32 @@
+             "if_type": "bridge",
+             "enabled": true
+        }
++    },
++    {
++        "op":"insert",
++        "table":"Wifi_Inet_Config",
++        "row": {
++            "if_name": "bhaul-sta-24",
++            "ip_assign_scheme": "dhcp",
++            "mtu": 1600,
++            "if_type": "vif",
++            "enabled" : true,
++            "network" : true,
++            "NAT": false
++        }
++    },
++    {
++        "op":"insert",
++        "table":"Wifi_Inet_Config",
++        "row": {
++            "if_name": "bhaul-sta-50",
++            "ip_assign_scheme": "dhcp",
++            "mtu": 1600,
++            "if_type": "vif",
++            "enabled" : true,
++            "network" : true,
++            "NAT": false
++        }
+     }
+ ]
+ 
+diff --git a/src/lib/target/src/map.c b/src/lib/target/src/map.c
+index 55af881..fa535f9 100644
+--- a/src/lib/target/src/map.c
++++ b/src/lib/target/src/map.c
+@@ -20,10 +20,12 @@ typedef struct
+ 
+ static ifmap_t  ifmap[] = {
+ //    idx   cloud-ifname     dev-ifname  bridge    gre-br            vlan     description
+-    { 1,    "wifi2",   "wifi2",    "brlan0", "wifi2", 0 },  // 2G Backhaul
+-    { 1,    "wifi3",   "wifi3",    "brlan0", "wifi3",  0 },  // 5G Backhaul
+-    { 2,    "wifi0",    "wifi0",    "brlan0",  NULL,            0 },  // 2G User SSID
+-    { 2,    "wifi1",    "wifi1",    "brlan0",  NULL,            0 },  // 5G User SSID
++    { 0,    "bhaul-sta-24",   "bhaul-sta-24",    "br-wan", "bhaul-sta-24", 0 },  // 2G Backhaul
++    { 0,    "bhaul-sta-50",   "bhaul-sta-50",    "br-wan", "bhaul-sta-50", 0 },  // 2G Backhaul
++    { 1,    "wifi2",   "wifi2",    "br-home", "wifi2", 0 },  // 2G Backhaul
++    { 1,    "wifi3",   "wifi3",    "br-home", "wifi3",  0 },  // 5G Backhaul
++    { 2,    "wifi0",    "wifi0",    "br-home",  NULL,            0 },  // 2G User SSID
++    { 2,    "wifi1",    "wifi1",    "br-home",  NULL,            0 },  // 5G User SSID
+     { 0,    NULL,            NULL,        NULL,     NULL,            0 }
+ };
+ 
+diff --git a/src/lib/target/src/target.c b/src/lib/target/src/target.c
+index de884b5..59c1b59 100644
+--- a/src/lib/target/src/target.c
++++ b/src/lib/target/src/target.c
+@@ -5,3 +5,23 @@ const char* target_tls_privkey_filename(void)
+ {
+     return "/usr/plume/etc/certs/client_dec.key";
+ }
++
++bool target_device_connectivity_check(const char *ifname,
++                                      target_connectivity_check_t *cstate,
++                                      target_connectivity_check_option_t opts)
++{
++    cstate->ntp_state = true;
++    cstate->link_state = true;
++    cstate->router_state = true;
++    cstate->internet_state = true;
++    return true;
++}
++
++int target_device_capabilities_get()
++{
++#if defined(CONFIG_RDK_EXTENDER)
++    return TARGET_EXTENDER_TYPE;
++#else
++    return 0;
++#endif
++}
