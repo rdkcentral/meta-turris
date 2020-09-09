@@ -15,10 +15,7 @@ SRC_URI_append = " \
 SRC_URI += "file://posix-gwprovapp.patch;apply=no"
 #This patch will add dummy swctl api which is originally given by brcm for XB3.
 SRC_URI += "file://0002-fix-swctl-missing-api.patch;apply=no"
-
-#following patch will be removed once change is downstreamed
-SRC_URI += "file://0004-add-backhaul-dhcp-range-for-dnsmasq.patch;apply=no"
-SRC_URI += "file://mesh_sync_lease.sh"
+SRC_URI += "file://dhcp_script.sh"
 
 # we need to patch to code for Turris
 do_turris_patches() {
@@ -28,7 +25,6 @@ do_turris_patches() {
         patch -p1 < ${WORKDIR}/0003-remove-autoconf.patch
         patch -p1 < ${WORKDIR}/posix-gwprovapp.patch
         patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
-        patch -p1 < ${WORKDIR}/0004-add-backhaul-dhcp-range-for-dnsmasq.patch || echo "patch already applied"
         touch patch_applied
     fi
 }
@@ -87,7 +83,7 @@ do_install_append() {
     touch ${D}${sysconfdir}/dhcp_static_hosts
     #turris omnia uses default service_bridge.sh for now
     install -m 755 ${S}/source/scripts/init/service.d/service_bridge.sh ${D}${sysconfdir}/utopia/service.d/service_bridge.sh
-    install -m 755 ${WORKDIR}/mesh_sync_lease.sh ${D}${sysconfdir}/
+    install -m 755 ${WORKDIR}/dhcp_script.sh ${D}${sysconfdir}/
     #Removing service_dhcp_server.sh as dnsmasq is invoked by service_dhcp binary
     rm ${D}${sysconfdir}/utopia/service.d/service_dhcp_server.sh
 

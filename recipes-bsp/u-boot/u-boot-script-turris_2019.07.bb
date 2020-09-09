@@ -11,18 +11,24 @@ inherit deploy
 
 BOOTSCRIPT = "${S}/bootscript"
 FILES_${PN} += "/boot.scr"
+FILES_${PN} += "/boot-main.scr"
+FILES_${PN} += "/boot-alt.scr"
 
 do_mkimage () {
     uboot-mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
                   -n "boot script" -d ${BOOTSCRIPT} ${S}/boot.scr
+    cp ${S}/boot.scr ${S}/boot-main.scr
+    sed -i 's|/dev/mmcblk0p2|/dev/mmcblk0p3|' ${BOOTSCRIPT}
+    uboot-mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
+                  -n "boot script" -d ${BOOTSCRIPT} ${S}/boot-alt.scr
 }
 
 addtask mkimage after do_compile before do_install
 
 do_deploy () {
     install -d ${DEPLOYDIR}
-    install ${S}/boot.scr \
-            ${DEPLOYDIR}/boot.scr
+    install ${S}/boot*.scr \
+            ${DEPLOYDIR}/
 
     cd ${DEPLOYDIR}
     mv boot.scr boot.scr-${MACHINE}-${PV}-${PR}
@@ -32,7 +38,7 @@ do_deploy () {
 }
 
 do_install () {
-    install ${S}/boot.scr ${D}/boot.scr
+    install ${S}/boot*.scr ${D}/
 }
 
 addtask deploy after do_install before do_build
