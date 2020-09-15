@@ -1,0 +1,12 @@
+Index: core/src/wm2/src/wm2_radio.c
+===================================================================
+--- core.orig/src/wm2/src/wm2_radio.c	2020-09-03 12:44:33.296696706 +0000
++++ core/src/wm2/src/wm2_radio.c	2020-09-03 12:45:58.249525748 +0000
+@@ -810,6 +810,7 @@
+     if (!want && has && strcmp(vstate.mode, "ap_vlan") && vstate.enabled) {
+         LOGN("%s: config is gone, but non-ap_vlan bss is running - workaround to put it down", ifname);
+         SCHEMA_SET_INT(vconf.enabled, false);
++        STRSCPY(vconf.mode,vstate.mode);
+         want = true;
+     }
+ 
