@@ -10,10 +10,10 @@ Change-Id: Ib098c6d444b75d15120b2224ff46869b0e436c2f
  1 file changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/source/MeshAgentSsp/cosa_mesh_apis.c b/source/MeshAgentSsp/cosa_mesh_apis.c
-index d985992..9fcbfe2 100644
+index 46ed117..566cc0d 100644
 --- a/source/MeshAgentSsp/cosa_mesh_apis.c
 +++ b/source/MeshAgentSsp/cosa_mesh_apis.c
-@@ -1920,7 +1920,9 @@ static void *Mesh_sysevent_handler(void *data)
+@@ -2154,7 +2154,9 @@ static void *Mesh_sysevent_handler(void *data)
      async_id_t mesh_enable_asyncid;
      async_id_t mesh_url_asyncid;
      async_id_t wifi_txRate_asyncid;
@@ -24,7 +24,7 @@ index d985992..9fcbfe2 100644
      sysevent_set_options(sysevent_fd,     sysevent_token, meshSyncMsgArr[MESH_WIFI_RESET].sysStr,                     TUPLE_FLAG_EVENT);
      sysevent_setnotification(sysevent_fd, sysevent_token, meshSyncMsgArr[MESH_WIFI_RESET].sysStr,                     &wifi_init_asyncid);
      sysevent_set_options(sysevent_fd,     sysevent_token, meshSyncMsgArr[MESH_WIFI_SSID_NAME].sysStr,                 TUPLE_FLAG_EVENT);
-@@ -1961,6 +1963,10 @@ static void *Mesh_sysevent_handler(void *data)
+@@ -2195,6 +2197,10 @@ static void *Mesh_sysevent_handler(void *data)
      sysevent_set_options(sysevent_fd,     sysevent_token, meshSyncMsgArr[MESH_WIFI_TXRATE].sysStr,                   TUPLE_FLAG_EVENT);
      sysevent_setnotification(sysevent_fd, sysevent_token, meshSyncMsgArr[MESH_WIFI_TXRATE].sysStr,                   &wifi_txRate_asyncid);
  
@@ -35,12 +35,12 @@ index d985992..9fcbfe2 100644
  
      for (;;)
      {
-@@ -2944,6 +2950,13 @@ static void *Mesh_sysevent_handler(void *data)
+@@ -3198,6 +3204,13 @@ static void *Mesh_sysevent_handler(void *data)
                      }
                  }
              }
 +#ifdef _PLATFORM_TURRIS_
-+ 		    else if (strcmp(name, meshSyncMsgArr[MESH_DHCP_RESYNC_LEASES].sysStr)==0)
++            else if (strcmp(name, meshSyncMsgArr[MESH_DHCP_RESYNC_LEASES].sysStr)==0)
 +            {
 +                //This will handle sending lease information to plume for every new connection, without restarting the MeshAgent
 +                Mesh_sendDhcpLeaseSync();
