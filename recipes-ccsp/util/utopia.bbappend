@@ -1,6 +1,6 @@
 require recipes-ccsp/ccsp/ccsp_common_turris.inc
 
-DEPENDS_append = " kernel-autoconf utopia-headers"
+DEPENDS_append = " kernel-autoconf utopia-headers libsyswrapper"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
@@ -16,6 +16,10 @@ SRC_URI += "file://posix-gwprovapp.patch;apply=no"
 #This patch will add dummy swctl api which is originally given by brcm for XB3.
 SRC_URI += "file://0002-fix-swctl-missing-api.patch;apply=no"
 SRC_URI += "file://dhcp_script.sh"
+
+LDFLAGS_append = " \
+    -lsecure_wrapper \
+"
 
 # we need to patch to code for Turris
 do_turris_patches() {
