@@ -6,3 +6,6 @@ CFLAGS_append += " -U_COSA_SIM_ -fno-exceptions -ffunction-sections -fdata-secti
            -D_ANSC_AES_USED_ -D_NO_EXECINFO_H_ -DFEATURE_SUPPORT_SYSLOG \
            -DBUILD_WEB -D_NO_ANSC_ZLIB_ -D_DEBUG -U_ANSC_IPV6_COMPATIBLE_ -DUSE_NOTIFY_COMPONENT \
            -D_PLATFORM_TURRIS_ -DENABLE_SD_NOTIFY -DCOSA_DML_WIFI_FEATURE_LoadPsmDefaults -UPARODUS_ENABLE -DENABLE_FEATURE_MESHWIFI"
+
+DEPENDS += "breakpad-wrapper"
+LDFLAGS += "-lbreakpadwrapper"
