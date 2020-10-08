@@ -2,7 +2,7 @@ require ccsp_common_turris.inc
 
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
-LDFLAGS_append =" \
-    -lsyscfg \
-    -lbreakpadwrapper \
-"
+LDFLAGS += " -lbreakpadwrapper \
+             -lsyscfg \
+           "
+LDFLAGS_append_dunfell = " -lpthread"

@@ -27,6 +27,7 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     strace \
     wpa-supplicant \
     "
+IMAGE_INSTALL_append_dunfell += " network-hotplug"
 
 SYSTEMD_TOOLS = "systemd-analyze systemd-bootchart"
 # systemd-bootchart doesn't currently build with musl libc

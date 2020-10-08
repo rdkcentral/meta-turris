@@ -1,0 +1,5 @@
+BBMASK_dunfell .= "|meta-rdk/recipes-core/packagegroups/packagegroup-rdk-media-common.bb"
+BBMASK_dunfell .= "|meta-rdk-ext/recipes-support/base64/base64_git.bb"
+BBMASK_dunfell .= "|meta-marvell/conf/machine/include/armada38x-base.inc"
+BBMASK_dunfell .= "|meta-browser/*"
+BBMASK_dunfell .= "|openembedded-core/meta/recipes-bsp/u-boot/libubootenv_0.2.bb"

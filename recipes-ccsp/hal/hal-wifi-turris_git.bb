@@ -20,3 +20,6 @@ DEPENDS += "halinterface libnl libev hostapd wpa-supplicant"
 CFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'extender', '-D_TURRIS_EXTENDER_', '', d)}"
 CFLAGS_append = " -I=${includedir}/ccsp -I=${includedir}/libnl3"
 LDFLAGS_append = " -lnl-nf-3 -lnl-route-3 -lnl-3 -lnl-xfrm-3 -lnl-genl-3 -lev -lwpa_client"
+
+RDEPENDS_${PN}_dunfell += " wpa-supplicant"
+

@@ -5,18 +5,20 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 LDFLAGS += " \
 	-lutopiautil \
 	   "
+
 #work around for wifi restart_flag=false, for meshagent synchroniztaion
 do_configure_prepend() {
 sed -i '/wlanRestart == TRUE/!{p;d;};n;a #if defined(ENABLE_FEATURE_MESHWIFI)\n if ((sWiFiDmlSsidStoredCfg[wlanIndex].SSID, sWiFiDmlSsidRunningCfg[wlanIndex].SSID) != 0)\n {\n char arg[256] = {0};\n snprintf(arg, sizeof(arg), "RDK|%d|%s",wlanIndex,sWiFiDmlSsidStoredCfg[wlanIndex].SSID);\n char * const cmd[] = {"/usr/bin/sysevent", "set", "wifi_SSIDName", arg, NULL};\n execvp_wrapper(cmd);\n }\n #endif\n'  ${S}/source/TR-181/sbapi/cosa_wifi_apis.c
 }
 
+DEPENDS_append_dunfell = " avro-c"
+	
 SRC_URI_append = " \
     file://wifiTelemetrySetup.sh \
     file://checkwifi.sh \
     file://radio_param_def.cfg \
     file://synclease.sh \
 "
-
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
 do_install_append(){
@@ -36,3 +38,5 @@ FILES_${PN} += " \
     ${prefix}/ccsp/wifi/radio_param_def.cfg \
     ${prefix}/ccsp/wifi/synclease.sh \
 "
+
+LDFLAGS_append_dunfell = " -lpthread"
