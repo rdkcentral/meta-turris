@@ -27,11 +27,11 @@ fi
 
 mkdir -p /nvram
 if [ -b /dev/mmcblk0p6 ]; then
-	#for Older Turris Omnia
-	mount /dev/mmcblk0p6 /nvram
+       #for Older Turris Omnia
+       mount /dev/mmcblk0p6 /nvram
 else
-	#for Omnia2019 and  Omnia2020
-	mount /dev/mmcblk0p5 /nvram
+       #for Omnia2019 and  Omnia2020
+       mount /dev/mmcblk0p5 /nvram
 fi
 
 WIFI0_MAC=`cat /sys/class/net/wlan0/address`
@@ -134,3 +134,4 @@ ifconfig lan3 up
 ifconfig lan4 up
 
 exit 0
+

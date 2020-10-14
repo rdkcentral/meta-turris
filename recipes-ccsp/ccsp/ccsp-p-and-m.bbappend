@@ -14,6 +14,7 @@ LDFLAGS_append =" \
 LDFLAGS_remove = " \
     -lmoca_mgnt \
 "
+
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
 do_install_append(){
@@ -92,7 +93,14 @@ do_install_append(){
 
 }
 
+do_install_append_dunfell() {
+    #advsec_migrate_psm_to_syscfg.sh available in ./git/scripts/
+    install -m 755 ${S}/scripts/advsec_migrate_psm_to_syscfg.sh ${D}/usr/ccsp/pam/advsec_migrate_psm_to_syscfg.sh
+}
+
 FILES_${PN}-ccsp += " \
     ${prefix}/ccsp/pam/CcspPandMSsp \
     /fss/gw/usr/sbin/ip \
 "
+
+RDEPENDS_${PN}-ccsp_append_dunfell = " bash"

@@ -101,6 +101,11 @@ do_install_append_class-target(){
     sed -i 's/PIDFile/#&/' ${D}${systemd_unitdir}/system/CcspPandMSsp.service 
 }
 
+do_install_append_dunfell () {
+    #for yocto 3.1, Making psm to run after gwprovethwan
+    sed -i '/logagent.service/c After=logagent.service gwprovethwan.service' ${D}${systemd_unitdir}/system/PsmSsp.service
+}
+
 SYSTEMD_SERVICE_${PN} += "ccspwifiagent.service"
 SYSTEMD_SERVICE_${PN} += "CcspCrSsp.service"
 SYSTEMD_SERVICE_${PN} += "CcspPandMSsp.service"
