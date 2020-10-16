@@ -1,0 +1,121 @@
+Index: dnsmasq-2.78/src/dnsmasq.h
+===================================================================
+--- dnsmasq-2.78.orig/src/dnsmasq.h	2020-09-09 12:04:48.512772429 +0000
++++ dnsmasq-2.78/src/dnsmasq.h	2020-09-09 12:08:18.441392007 +0000
+@@ -670,6 +670,7 @@
+   char *hostname, *fqdn; /* name from client-hostname option or config */
+   char *old_hostname;    /* hostname before it moved to another lease */
+   char *fingerprint;     /* DHCP fingerprint                         */
++  char *vendor_class;    /* DHCP vendor class                         */
+   int flags;
+   time_t expires;        /* lease expiry */
+ #ifdef HAVE_BROKEN_RTC
+@@ -1349,6 +1350,7 @@
+ 			 unsigned int len, int delim);
+ #endif
+ void lease_add_fingerprint(struct dhcp_lease *lease, unsigned char *req_options);
++void lease_add_vendor_class(struct dhcp_lease *lease, unsigned char *data, unsigned int len);
+ #endif
+ 
+ /* rfc2131.c */
+Index: dnsmasq-2.78/src/lease.c
+===================================================================
+--- dnsmasq-2.78.orig/src/lease.c	2020-09-09 12:04:48.512772429 +0000
++++ dnsmasq-2.78/src/lease.c	2020-09-09 12:14:20.482344455 +0000
+@@ -35,6 +35,7 @@
+   int items;
+   char *domain = NULL;
+   char *dhcp_fingerprint = NULL;
++  char vendor_buf[256];
+ 
+   *daemon->dhcp_buff3 = *daemon->dhcp_buff2 = '\0';
+ 
+@@ -76,8 +77,8 @@
+ 	  }
+ #endif
+ 	
+-	if (fscanf(leasestream, " %64s %255s %255s %764s",
+-		   daemon->namebuff, daemon->dhcp_buff, dhcp_fingerprint, daemon->packet) != 4)
++	if (fscanf(leasestream, " %64s %255s %255s \"%255[^\"]\" %764s",
++		   daemon->namebuff, daemon->dhcp_buff, dhcp_fingerprint, vendor_buf, daemon->packet) != 5)
+         {
+             if (NULL != dhcp_fingerprint)
+                 free(dhcp_fingerprint);
+@@ -135,6 +136,9 @@
+         if (strcmp(dhcp_fingerprint, "*") != 0)
+           lease->fingerprint = strdup(dhcp_fingerprint);
+ 
++	if (strcmp(vendor_buf, "*") != 0)
++	  lease->vendor_class = strdup(vendor_buf);
++
+ 	ei = atol(daemon->dhcp_buff3);
+ 
+ #ifdef HAVE_BROKEN_RTC
+@@ -313,6 +317,8 @@
+ 	  ourprintf(&err, "%s ", lease->hostname ? lease->hostname : "*");
+ 
+           ourprintf(&err, "%s ", lease->fingerprint ? lease->fingerprint : "*");
++	  // Here we use double quotes since vendor-class can contain spaces
++	  ourprintf(&err, "\"%s\" ", lease->vendor_class ? lease->vendor_class : "*");
+ 	  	  
+ 	  if (lease->clid && lease->clid_len != 0)
+ 	    {
+@@ -594,6 +600,12 @@
+              free(lease->fingerprint);
+               lease->fingerprint = NULL;
+             }
++
++          if (lease->vendor_class)
++            {
++             free(lease->vendor_class);
++              lease->vendor_class = NULL;
++            }
+ 	  
+  	  *up = lease->next; /* unlink */
+ 	  
+@@ -1291,4 +1303,27 @@
+   }
+ }
+ 
++void lease_add_vendor_class(struct dhcp_lease *lease, unsigned char *data, unsigned int len)
++{
++  unsigned int i;
++  if (lease->vendor_class != NULL)
++  {
++    free(lease->vendor_class);
++  }
++
++  if (len > 0)
++  {
++    lease->vendor_class = whine_malloc(len);
++    memcpy(lease->vendor_class, data, len);
++    lease->vendor_class[len]    = '\0';
++
++    // Escape quotes (") and 0 in vendor-class by replacing them with space just to be safe
++    for (i = 0; i < len; i++)
++    {
++       if (lease->vendor_class[i] == '\"' || lease->vendor_class[i] == '\0')
++            lease->vendor_class[i] = ' ';
++   }
++ }
++}
++
+ #endif
+Index: dnsmasq-2.78/src/rfc2131.c
+===================================================================
+--- dnsmasq-2.78.orig/src/rfc2131.c	2020-09-09 12:04:48.512772429 +0000
++++ dnsmasq-2.78/src/rfc2131.c	2020-09-09 12:15:34.021860806 +0000
+@@ -1253,6 +1253,13 @@
+ 		}
+ 	    }
+ 	}
++
++      /* get vendor-class information           */
++      if (lease && (opt = option_find(mess, sz, OPTION_VENDOR_ID, 1)))
++        {
++          lease_add_vendor_class(lease, option_ptr(opt, 0), option_len(opt));
++        }
++
+       /* get options information                */
+       if (lease)
+         {

@@ -43,32 +43,54 @@ if [ ! -f /nvram/hostapd0.conf ]
 then
 	cp /etc/hostapd-2G.conf /nvram/hostapd0.conf
 	#Set bssid for wifi0
-	sed -i "/^bssid=/c\bssid=`echo $WIFI0_MAC | cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:00" /nvram/hostapd0.conf
+        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
+	sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd0.conf
 fi
 
 if [ ! -f /nvram/hostapd1.conf ]
 then
 	cp /etc/hostapd-5G.conf /nvram/hostapd1.conf
 	#Set bssid for wifi1
-	sed -i "/^bssid=/c\bssid=`echo $WIFI1_MAC | cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:00" /nvram/hostapd1.conf
+        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
+        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd1.conf
 fi
 
 if [ ! -f /nvram/hostapd2.conf ]
 then
 	cp /etc/hostapd-bhaul2G.conf /nvram/hostapd2.conf
 	#Set bssid for wifi2
-	sed -i "/^bssid=/c\bssid=`echo $WIFI0_MAC | cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:01" /nvram/hostapd2.conf
+        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+4, $2, $3, $4 ,$5, $6}')
+        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd2.conf
 fi
 
 if [ ! -f /nvram/hostapd3.conf ]
 then
 	cp /etc/hostapd-bhaul5G.conf /nvram/hostapd3.conf
 	#Set bssid for wifi3
-	sed -i "/^bssid=/c\bssid=`echo $WIFI1_MAC | cut -d ':' -f1,2,3,4,5 --output-delimiter=':'`:01" /nvram/hostapd3.conf
+        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+4, $2, $3, $4 ,$5, $6}')
+        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd3.conf
+fi
+
+if [ ! -f /nvram/hostapd4.conf ]
+then
+	cp /etc/hostapd-bhaul2G.conf /nvram/hostapd4.conf
+	#Set bssid for wifi4
+        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
+        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd4.conf
+        sed -i "/^interface=/c\interface=wifi4" /nvram/hostapd4.conf
+fi
+
+if [ ! -f /nvram/hostapd5.conf ]
+then
+	cp /etc/hostapd-bhaul5G.conf /nvram/hostapd5.conf
+	#Set bssid for wifi5
+        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
+        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd5.conf
+        sed -i "/^interface=/c\interface=wifi5" /nvram/hostapd5.conf
 fi
 
 #Setting up VAP status file
-echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0" >/tmp/vap-status
+echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0\nwifi4=0\nwifi5=0" >/tmp/vap-status
 
 #Creating files for tracking AssociatedDevices
 touch /tmp/AllAssociated_Devices_2G.txt
@@ -91,6 +113,16 @@ ifconfig wifi2 mtu 1600
 #5GHz Virtual Access Points for backhaul connection
 iw dev wlan1 interface add wifi3 type __ap
 ip addr add 169.254.1.1/24 dev wifi3
+ifconfig wifi3 mtu 1600
+
+#2.4GHz Virtual Access Points for onboard connection
+iw dev wlan0 interface add wifi4 type __ap
+ip addr add 169.254.0.1/24 dev wifi4
+ifconfig wifi2 mtu 1600
+
+#5GHz Virtual Access Points for onboard connection
+iw dev wlan1 interface add wifi5 type __ap
+ip addr add 169.254.1.1/24 dev wifi5
 ifconfig wifi3 mtu 1600
 
 #iw dev wlan0 interface add wifi4 type __ap
