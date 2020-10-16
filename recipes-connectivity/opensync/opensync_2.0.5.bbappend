@@ -9,8 +9,10 @@ CORE_URI += "file://lan-port-fix.patch"
 
 
 PLATFORM_URI += "file://use_stats2.patch;patchdir=${WORKDIR}/git/platform/rdk"
+PLATFORM_URI += "file://rdk-vif-extender.patch;patchdir=${WORKDIR}/git/platform/rdk"
 
 VENDOR_URI = "git://git@github.com/rdkcentral/opensync-vendor-rdk-turris.git;protocol=ssh;branch=${CMF_GIT_MASTER_BRANCH};name=vendor;destsuffix=git/vendor/turris"
+VENDOR_URI += "file://service.patch;patchdir=${WORKDIR}/git/"
 VENDOR_URI += "file://opensync.service"
 
 DEPENDS_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'mesh-agent', '', d)}"
