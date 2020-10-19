@@ -1,0 +1,10 @@
+diff --git a/service-provider/academy/build/provider.mk b/service-provider/academy/build/provider.mk
+new file mode 100644
+index 0000000..c81cafd
+--- /dev/null
++++ b/service-provider/academy/build/provider.mk
+@@ -0,0 +1,4 @@
++VALID_IMAGE_DEPLOYMENT_PROFILES += dev-academy prod-academy
++
++CONTROLLER_ADDR="ssl:wildfire.plume.tech:443"
++PROVIDER_BACKHAUL_CREDS = bhaul-ssid:bhaul-password
