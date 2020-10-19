@@ -8,6 +8,8 @@ PROVIDES += "u-boot"
 
 DEPENDS_append = " dtc-native"
 
+DEPENDS_dunfell += " bison-native bc-native"
+
 SRC_URI = " \
     git://git@gitlab.labs.nic.cz/turris/turris-omnia-uboot;branch=${SRCBRANCH};protocol=https \
 "

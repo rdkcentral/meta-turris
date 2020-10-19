@@ -6,3 +6,4 @@ LDFLAGS_append =" \
     -lsyscfg \
     -lbreakpadwrapper \
 "
+LDFLAGS_append_dunfell = " -lpthread"

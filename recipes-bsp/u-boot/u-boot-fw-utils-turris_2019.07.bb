@@ -3,6 +3,7 @@ LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://README;md5=030fd86c891b64ce88b7aa3cff0fbd44"
 SECTION = "bootloader"
 DEPENDS = "mtd-utils"
+DEPENDS_append_dunfell = " bison-native"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
@@ -17,8 +18,8 @@ SRCREV = "${AUTOREV}"
 S = "${WORKDIR}/git"
 
 INSANE_SKIP_${PN} = "already-stripped"
-EXTRA_OEMAKE_class-target = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${CC} ${CFLAGS} ${LDFLAGS}" V=1'
 
+EXTRA_OEMAKE_class-target = 'CROSS_COMPILE=${TARGET_PREFIX} HOSTCC=${BUILD_CC} CC="${CC} ${CFLAGS} ${LDFLAGS}"  V=1'
 inherit uboot-config
 
 do_compile () {
