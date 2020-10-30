@@ -5,3 +5,7 @@ BBMASK .= "|meta-browser/*"
 BBMASK .= "|openembedded-core/meta/recipes-bsp/u-boot/libubootenv_0.2.bb"
 BBMASK .= "|openembedded-core/meta/recipes-bsp/u-boot/libubootenv_0.3.1.bb"
 
+BBMASK .= "|meta-rdk/recipes-core/images/rdk-generic-mediaclient-nightly-image.bb"
+BBMASK .= "|meta-rdk.*/recipes-core/images/comcast/"
+BBMASK .= "|meta-rdk.*/recipes-extended/netzyn/"
+BBMASK .= "|meta-virtualization/recipes-kernel/linux/linux-yocto_3.19.bbappend"
