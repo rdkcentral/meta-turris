@@ -1,0 +1,6 @@
+# short-description: Create mmc image for Turris Omnia
+# long-description: Creates a partitioned mmc image for use with
+# Turris Omnia. Boot files are located in the first vfat partition.
+
+part --source bootimg-partition --ondisk mmcblk --fstype=vfat --label boot --active --align 1024 --system-id 0x0c
+part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 1024
