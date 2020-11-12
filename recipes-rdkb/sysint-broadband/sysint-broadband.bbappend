@@ -1,5 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
+SRCREV_FORMAT = "${AUTOREV}"
+
 SRC_URI += "file://TurrisFwUpgrade.sh"
 SRC_URI += "file://swupdate_utility.sh"
 SRC_URI += "file://swupdate.service"

@@ -4,6 +4,10 @@ SRC_URI += "\
 file://enabling_dhcp_lease_resync.patch \
 "
 
+DEPENDS_append_dunfell = " safec"
+RDEPENDS_${PN}_append_dunfell = " bash"
+
+
 do_configure_prepend()  {
 patch  -p1 < ${WORKDIR}/enabling_dhcp_lease_resync.patch ${S}/source/MeshAgentSsp/cosa_mesh_apis.c  || echo "patch already applied"
 }
@@ -17,3 +21,5 @@ FILES_${PN}_append = "${systemd_unitdir}/system/meshAgent.service"
 CFLAGS_append = " -D_PLATFORM_TURRIS_"
 
 LDFLAGS_append_dunfell = " -lsyscfg -lsysevent -lbreakpadwrapper"
+
+LDFLAGS_remove_dunfell = "-lsafec-3.5"
