@@ -9,11 +9,11 @@ patch  -p1 < ${WORKDIR}/enabling_dhcp_lease_resync.patch ${S}/source/MeshAgentSs
 }
 
 do_install_append () {
-	install -D -m 0644 ${S}/systemd_units/meshAgent.service ${D}${systemd_unitdir}/system/meshAgent.service
+       install -D -m 0644 ${S}/systemd_units/meshAgent.service ${D}${systemd_unitdir}/system/meshAgent.service
 }
 
 FILES_${PN}_append = "${systemd_unitdir}/system/meshAgent.service"
 
 CFLAGS_append = " -D_PLATFORM_TURRIS_"
 
-
+LDFLAGS_append_dunfell = " -lsyscfg -lsysevent -lbreakpadwrapper"

@@ -17,3 +17,5 @@ do_install_append() {
 }
 
 FILES_${PN} += "${systemd_unitdir}/system/swupdate.service"
+
+RDEPENDS_${PN}_append_dunfell = " bash"

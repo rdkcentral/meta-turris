@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenSync service
+After=hostapd.service
+
+[Service]
+Type=forking
+ExecStart=/usr/opensync/scripts/managers.init start
+Restart=always
+StartLimitIntervalSec=120
+
+[Install]
+WantedBy=multi-user.target
+

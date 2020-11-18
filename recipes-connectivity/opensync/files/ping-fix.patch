@@ -1,0 +1,17 @@
+Index: core/src/lib/target/src/target_kconfig.c
+===================================================================
+--- core.orig/src/lib/target/src/target_kconfig.c	2020-09-03 12:28:45.788909596 +0000
++++ core/src/lib/target/src/target_kconfig.c	2020-09-03 12:43:18.343807410 +0000
+@@ -403,9 +403,9 @@
+     char cmd[256];
+     bool rc;
+ 
+-    snprintf(cmd, sizeof(cmd), "ping %s -s %d -c %d -w %d >/dev/null 2>&1",
+-             ipstr, DEFAULT_PING_PACKET_SIZE, DEFAULT_PING_PACKET_CNT,
+-             DEFAULT_PING_TIMEOUT);
++    snprintf(cmd, sizeof(cmd), "ping -s %d -c %d -w %d %s >/dev/null 2>&1",
++             DEFAULT_PING_PACKET_SIZE, DEFAULT_PING_PACKET_CNT,
++             DEFAULT_PING_TIMEOUT, ipstr);
+ 
+     rc = target_device_execute(cmd);
+     LOGD("Ping %s result %d (cmd=%s)", ipstr, rc, cmd);

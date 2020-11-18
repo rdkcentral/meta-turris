@@ -1,0 +1,29 @@
+From 6d1fbccb0f1bf9057055f3802d19d6d2d549a213 Mon Sep 17 00:00:00 2001
+From: "rajakumaran.a" <rajakumaran.a@lnttechservices.com>
+Date: Mon, 22 Jun 2020 09:08:27 +0000
+Subject: [PATCH] Work around for brlan0 issue
+
+Signed-off-by: rajakumaran.a <rajakumaran.a@lnttechservices.com>
+---
+ source/scripts/init/service.d/lan_handler.sh | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/source/scripts/init/service.d/lan_handler.sh b/source/scripts/init/service.d/lan_handler.sh
+index 73f274f7..e84090cd 100755
+--- a/source/scripts/init/service.d/lan_handler.sh
++++ b/source/scripts/init/service.d/lan_handler.sh
+@@ -369,6 +369,11 @@ case "$1" in
+                                 echo_t "Calling lan-start"
+                                 eval  '$THIS lan-start NULL'
+                 fi
++                if [ "$BOX_TYPE" = "turris" ]; then
++                               sleep 2
++                               echo_t "Calling lan-start"
++                               eval  '$THIS lan-start NULL'
++                fi
+ 	elif [ "$BOX_TYPE" = "TCCBR" ]; then
+ 		if [ "$INST" = "" ]; then
+ 			echo "*****SET THE PRIMARY LAN ******" > /dev/null
+-- 
+2.17.1
+
