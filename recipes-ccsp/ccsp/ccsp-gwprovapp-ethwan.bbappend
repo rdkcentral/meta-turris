@@ -4,6 +4,12 @@ export PLATFORM_TURRIS_ENABLED="yes"
 
 inherit systemd
 
+DEPENDS_remove_dunfell = "hal-gwprovappabs"
+DEPENDS_append_dunfell = " breakpad-wrapper rdk-logger utopia"
+
+
+LDFLAGS_remove_dunfell = "-lgwprovappabs"
+
 do_install_append () {
 	install -d ${D}${systemd_unitdir}/system
 	install -m 0644 ${S}/service/gwprovethwan.service ${D}${systemd_unitdir}/system

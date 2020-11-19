@@ -34,7 +34,7 @@ do_turris_patches() {
     fi
 }
 
-do_turris_patches_append_dunfell() {
+do_turris_patches-append_dunfell() {
     cd ${S}
     if [ ! -e dunfell_patch_applied ]; then
 	patch -p1 < ${WORKDIR}/0001-Work-around-for-brlan0-issue.patch

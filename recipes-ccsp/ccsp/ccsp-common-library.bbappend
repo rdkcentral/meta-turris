@@ -20,6 +20,8 @@ SRC_URI_append = " \
 
 SRC_URI += "file://0003-add-dependency-to-pandm.patch;apply=no"
 SRC_URI += "file://0004-remove-psm-db-reference.patch;apply=no"
+SRC_URI_append_dunfell = " file://0001-DBusLoop-SSL_state-TLS_ST_OK.patch;apply=no"
+SRC_URI_append_dunfell = " file://0001-SSLeay_add_all_algorithms-remove-in-openssl-1.1.patch;apply=no"
 
 # we need to patch to code for Turris
 do_turris_patches() {
@@ -27,7 +29,11 @@ do_turris_patches() {
     if [ ! -e patch_applied ]; then
         patch -p1 < ${WORKDIR}/0003-add-dependency-to-pandm.patch
         patch -p1 < ${WORKDIR}/0004-remove-psm-db-reference.patch
-        touch patch_applied
+		 if [ "${@bb.utils.contains('DISTRO_CODENAME', 'dunfell', 'dunfell', '', d)}" = "dunfell" ] ; then
+			      patch -p1 < ${WORKDIR}/0001-DBusLoop-SSL_state-TLS_ST_OK.patch
+                              patch -p1 < ${WORKDIR}/0001-SSLeay_add_all_algorithms-remove-in-openssl-1.1.patch
+                 fi
+       touch patch_applied
     fi
 }
 addtask turris_patches after do_unpack before do_compile
@@ -101,7 +107,7 @@ do_install_append_class-target(){
     sed -i 's/PIDFile/#&/' ${D}${systemd_unitdir}/system/CcspPandMSsp.service 
 }
 
-do_install_append_dunfell () {
+do_install_append_dunfell_class-target () {
     #for yocto 3.1, Making psm to run after gwprovethwan
     sed -i '/logagent.service/c After=logagent.service gwprovethwan.service' ${D}${systemd_unitdir}/system/PsmSsp.service
 }
