@@ -6,4 +6,4 @@ LDFLAGS_append =" \
     -lsyscfg \
     -lbreakpadwrapper \
 "
-LDFLAGS_append_dunfell = " -lpthread"
+LDFLAGS_append_dunfell = " -lpthread -lsafec-3.5.1"

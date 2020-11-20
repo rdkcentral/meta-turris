@@ -1,5 +1,8 @@
 require ccsp_common_turris.inc
 
+DEPENDS_append_dunfell = " safec"
+LDFLAGS_append_dunfell = " -lsafec-3.5.1"
+
 do_install_append() {
     # Config files and scripts
     install -m 644 ${S}/config-arm/CcspCMDM.cfg ${D}${prefix}/ccsp/cm/CcspCMDM.cfg
