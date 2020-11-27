@@ -1,0 +1,29 @@
+From 869cc8dec87571972c487aa3c948ed2ba6b94fb2 Mon Sep 17 00:00:00 2001
+From: GuruVinayak P <gp@synamedia.com>
+Date: Tue, 3 Nov 2020 19:07:28 +0530
+Subject: [PATCH 1/2] Added support for RDK flavour compilation
+
+---
+ Makefile | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index 0f5c0f0..3750cf9 100644
+--- a/Makefile
++++ b/Makefile
+@@ -86,6 +86,12 @@ ifeq ($(PLATFORM),linux)
+ 
+         AL_SUPPORTED  := yes
+         HLE_SUPPORTED := yes
++    else ifeq ($(FLAVOUR), RDK)
++	# AR, CC, LDFLAGS and CFLAGS should come from the recipe
++        CCFLAGS   := $(CFLAGS)
++
++        AL_SUPPORTED  := yes
++        HLE_SUPPORTED := yes
+     else ifeq ($(FLAVOUR), arm_wrt1900acx)
+         CC        := $(WRT1900_CROSS)gcc
+         AR        := $(WRT1900_CROSS)ar
+-- 
+2.7.4
+
