@@ -9,4 +9,9 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/${LIGHTTPDCONF} ${D}${sysconfdir}/lighttpd.conf
 }
 
-FILES_${PN} += "/usr/lib/mod_fastcgi.so"
+FILES_${PN}_append_morty = " /usr/lib/mod_fastcgi.so"
+
+RDEPENDS_${PN}_append_dunfell = " \
+    lighttpd-module-fastcgi \
+    lighttpd-module-proxy \
+    " 
