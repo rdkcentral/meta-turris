@@ -25,6 +25,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     opensync \
     openvswitch \
     "
-IMAGE_INSTALL_remove_dunfell += " ccsp-webui-php ccsp-webui-csrf ethtool"
+IMAGE_INSTALL_remove_dunfell = " ccsp-webui-jst"
 BB_HASH_IGNORE_MISMATCH = "1"
 IMAGE_NAME[vardepsexclude] = "DATETIME"
