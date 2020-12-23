@@ -342,7 +342,7 @@ sendHttpRequestToServer()
 
     estbMacAddress=`ifconfig erouter0 | grep HWaddr | cut -c39-55`
     JSONSTR=$estbMacAddress
-    CURL_CMD="curl -w "%{http_code}" '$URL?estbMacAddress=$JSONSTR&model=Turris'  -o $DCMRESPONSE >> /tmp/telehttpcode.txt "
+    CURL_CMD="curl -w "%{http_code}" '$URL?estbMacAddress=$JSONSTR&model=$MODEL_NAME'  -o $DCMRESPONSE >> /tmp/telehttpcode.txt "
     echo "------CURL_CMD:"$CURL_CMD
 
     # Execute curl command

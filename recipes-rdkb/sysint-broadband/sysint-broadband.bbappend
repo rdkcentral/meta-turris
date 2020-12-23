@@ -29,6 +29,7 @@ do_install_append() {
     install -m 0755 ${WORKDIR}/TurrisFwUpgrade.sh ${D}${base_libdir}/rdk
     install -m 0755 ${WORKDIR}/swupdate_utility.sh ${D}${base_libdir}/rdk
     install -m 0644 ${WORKDIR}/swupdate.service ${D}${systemd_unitdir}/system
+    echo "CLOUDURL="http://35.155.171.121:9092/xconf/swu/stb?eStbMac="" >> ${D}${sysconfdir}/include.properties
 
     #DCM simulator Support
     install -m 0644 ${S}/dcmlogservers.txt   ${D}/rdklogger/
@@ -44,6 +45,11 @@ do_install_append() {
     install -m 0755 ${WORKDIR}/getpartnerid.sh ${D}${base_libdir}/rdk
     install -m 0755 ${WORKDIR}/utils.sh ${D}${base_libdir}/rdk
     install -m 0755 ${WORKDIR}/dcm-log.service ${D}${systemd_unitdir}/system
+    echo "DCM_LOG_SERVER_URL="http://35.155.171.121:9092/loguploader/getSettings"" >> ${D}${sysconfdir}/dcm.properties
+    echo "DCM_HTTP_SERVER_URL="http://35.155.171.121/xconf/telemetry_upload.php"" >> ${D}${sysconfdir}/dcm.properties
+    echo "DCM_LA_SERVER_URL="http://35.155.171.121/xconf/logupload.php"" >> ${D}${sysconfdir}/dcm.properties
+    echo "TFTP_SERVER_IP=35.155.171.121" >> ${D}${sysconfdir}/device.properties
+    echo "MODEL_NAME=Turris" >> ${D}${sysconfdir}/device.properties
 }
 
 FILES_${PN} += "${systemd_unitdir}/system/swupdate.service"
