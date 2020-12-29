@@ -1,0 +1,30 @@
+diff --git a/src/bm/src/bm_events.c b/src/bm/src/bm_events.c
+index 19bcd47..dfdf33c 100644
+--- a/src/bm/src/bm_events.c
++++ b/src/bm/src/bm_events.c
+@@ -315,14 +315,14 @@ bm_events_handle_event(bsal_event_t *event)
+         }
+ 
+         /* This one managed by cloud */
+-        if (abs(stats->probe.last_snr - event->data.probe_req.rssi) < client->preq_snr_thr) {
++        if (abs((int32_t)(stats->probe.last_snr - event->data.probe_req.rssi)) < client->preq_snr_thr) {
+             LOGD("[%s] %s: %s skip preq report (%d %d)", bandstr, ifname, client->mac_addr,
+                  stats->probe.last_snr, event->data.probe_req.rssi);
+             break;
+         }
+ 
+         /* This is short time probe report filtering/limitation */
+-        if (abs(stats->probe.last_snr - event->data.probe_req.rssi) <= BM_CLIENT_PREQ_SNR_TH &&
++        if (abs((int32_t)(stats->probe.last_snr - event->data.probe_req.rssi)) <= BM_CLIENT_PREQ_SNR_TH &&
+             (now - last_probe) < BM_CLIENT_PREQ_TIME_TH) {
+             LOGD("[%s] %s: %s skip preq report (%d %d) short time", bandstr, ifname, client->mac_addr,
+                  stats->probe.last_snr, event->data.probe_req.rssi);
+@@ -790,7 +790,7 @@ bm_events_handle_rssi_xing(bm_client_t *client, bsal_event_t *event)
+ {
+     if (event->data.rssi_change.low_xing == client->xing_low &&
+         event->data.rssi_change.high_xing == client->xing_high &&
+-        (abs(event->data.rssi_change.rssi - client->xing_snr) <= BM_CLIENT_SNR_XING_DIFF)) {
++        (abs((int32_t)(event->data.rssi_change.rssi - client->xing_snr)) <= BM_CLIENT_SNR_XING_DIFF)) {
+         LOGT("%s same xing skip (%d, %d) snr %d old %d", client->mac_addr, client->xing_low, client->xing_high,
+              event->data.rssi_change.rssi, client->xing_snr);
+         return;
