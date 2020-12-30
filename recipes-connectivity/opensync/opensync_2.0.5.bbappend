@@ -9,7 +9,8 @@ CORE_URI += "file://ping-fix.patch"
 CORE_URI += "file://wm2-vif-sta-fix.patch"
 CORE_URI += "file://lan-port-fix.patch"
 
-CORE_URI_append_dunfell = " file://turris-3.1-workaround.patch"
+CORE_URI_append_dunfell = " file://absolute-value-glibc-dunfell-fix.patch"
+CORE_URI_append_dunfell = " file://dunfell-nm-crash-fix.patch"
 
 PLATFORM_URI = "git://git@github.com/plume-design/opensync-platform-rdk.git;protocol=${CMF_GIT_PROTOCOL};branch=osync_2.0.5;name=platform;destsuffix=git/platform/rdk"
 PLATFORM_URI += "file://use_stats2.patch;patchdir=${WORKDIR}/git/platform/rdk"
