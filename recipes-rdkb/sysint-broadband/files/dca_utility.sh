@@ -692,18 +692,18 @@ else
            # Trigger inotify event on ARM to upload message to splunk
            GetConfigFile $PEER_COMM_ID
            if [ $triggerType -eq 2 ]; then
-                    ssh -I $IDLE_TIMEOUT -i $PEER_COMM_ID root@$ARM_INTERFACE_IP "/bin/echo 'notifyFlushLogs' > $TELEMETRY_INOTIFY_EVENT"  > /dev/null 2>&1
-                    echo_t "notify ARM for dca execution completion" >> $RTL_LOG_FILE
+               ssh -I $IDLE_TIMEOUT -i $PEER_COMM_ID root@$ARM_INTERFACE_IP "/bin/echo 'notifyFlushLogs' > $TELEMETRY_INOTIFY_EVENT"  > /dev/null 2>&1
+               echo_t "notify ARM for dca execution completion" >> $RTL_LOG_FILE
            else
                if [ -f $TELEMETRY_PREVIOUS_LOG -a $triggerType -eq 1 ];then
                     ssh -I $IDLE_TIMEOUT -i $PEER_COMM_ID root@$ARM_INTERFACE_IP "/bin/echo 'previousLog' > $TELEMETRY_INOTIFY_EVENT"  > /dev/null 2>&1
                     echo_t "notify ARM for dca running is for previous log" >> $RTL_LOG_FILE
 	       else
-               	    if [ "$bootupTelemetryBackup" = "true" -a $triggerType -eq 1 ];then
-               	         ssh -I $IDLE_TIMEOUT -i $PEER_COMM_ID root@$ARM_INTERFACE_IP "/bin/echo 'bootupBackup' > $TELEMETRY_INOTIFY_EVENT" > /dev/null 2>&1
-               	    else
-               	         ssh -I $IDLE_TIMEOUT -i $PEER_COMM_ID root@$ARM_INTERFACE_IP "/bin/echo 'splunkUpload' > $TELEMETRY_INOTIFY_EVENT" > /dev/null 2>&1
-               	    fi
+               	   if [ "$bootupTelemetryBackup" = "true" -a $triggerType -eq 1 ];then
+               	        ssh -I $IDLE_TIMEOUT -i $PEER_COMM_ID root@$ARM_INTERFACE_IP "/bin/echo 'bootupBackup' > $TELEMETRY_INOTIFY_EVENT" > /dev/null 2>&1
+               	   else
+               	        ssh -I $IDLE_TIMEOUT -i $PEER_COMM_ID root@$ARM_INTERFACE_IP "/bin/echo 'splunkUpload' > $TELEMETRY_INOTIFY_EVENT" > /dev/null 2>&1
+                   fi
                fi
            fi
            rm -f $PEER_COMM_ID
