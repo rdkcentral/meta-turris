@@ -1,5 +1,7 @@
 require ccsp_common_turris.inc
 
+LDFLAGS_append_dunfell = " -lsafec-3.5.1"
+
 do_configure_append() {
     install -m 644 ${S}/source-arm/psm_hal_apis.c -t ${S}/source/Ssp
 }

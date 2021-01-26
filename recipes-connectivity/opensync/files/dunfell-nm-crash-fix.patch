@@ -1,0 +1,13 @@
+diff --git a/src/lib/inet/src/inet_base.c b/src/lib/inet/src/inet_base.c
+index a93cefc..db66cf2 100644
+--- a/src/lib/inet/src/inet_base.c
++++ b/src/lib/inet/src/inet_base.c
+@@ -1080,7 +1080,7 @@ bool inet_base_dhcpc_option_set(inet_t *super, enum osn_dhcp_option opt, const c
+ {
+     inet_base_t *self = (void *)super;
+     bool _req;
+-    const char *_value;
++    const char *_value=NULL;
+ 
+     if (!osn_dhcp_client_opt_get(self->in_dhcpc, opt, &_req, &_value))
+     {

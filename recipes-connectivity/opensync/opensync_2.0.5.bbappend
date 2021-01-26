@@ -1,13 +1,16 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 CORE_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://0001-inet-start-dhcps-always.patch', '', d)}"
-CORE_URI = "git://git@github.com/plume-design/opensync.git;protocol=${CMF_GIT_PROTOCOL};branch=osync_2.0.5;name=core;destsuffix=git/core"
-CORE_URI += "file://0007-Fix-conflict-with-yocto-kernel-tools-kconfiglib.patch"
+CORE_URI_remove = "git://git@github.com/plume-design/opensync.git;protocol=ssh;branch=osync_2.0.5;name=core;destsuffix=git/core"
+CORE_URI += "git://git@github.com/plume-design/opensync.git;protocol=${CMF_GIT_PROTOCOL};branch=osync_2.0.5;name=core;destsuffix=git/core"
 CORE_URI += "file://remove_target_managers.patch"
 #CORE_URI += "file://remove_map.patch"
 CORE_URI += "file://ping-fix.patch"
 CORE_URI += "file://wm2-vif-sta-fix.patch"
 CORE_URI += "file://lan-port-fix.patch"
+
+CORE_URI_append_dunfell = " file://absolute-value-glibc-dunfell-fix.patch"
+CORE_URI_append_dunfell = " file://dunfell-nm-crash-fix.patch"
 
 PLATFORM_URI = "git://git@github.com/plume-design/opensync-platform-rdk.git;protocol=${CMF_GIT_PROTOCOL};branch=osync_2.0.5;name=platform;destsuffix=git/platform/rdk"
 PLATFORM_URI += "file://use_stats2.patch;patchdir=${WORKDIR}/git/platform/rdk"

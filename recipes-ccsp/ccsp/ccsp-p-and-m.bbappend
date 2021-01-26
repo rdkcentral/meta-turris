@@ -1,6 +1,23 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+
 require ccsp_common_turris.inc
 
 DEPENDS_append = " utopia curl "
+
+SRC_URI_append_dunfell = " file://0001-openssl-1.1.x-compatibility-in-HMAC-functions.patch;apply=no"
+
+#This is workaround for missing do_patch when RDK uses external sources
+do_turris_patches() {
+    cd ${S}
+        if [ ! -e dunfell_patch_applied ]; then
+		  if [ "${@bb.utils.contains('DISTRO_CODENAME', 'dunfell', 'dunfell', '', d)}" = "dunfell" ] ; then
+                         patch -p1 < ${WORKDIR}/0001-openssl-1.1.x-compatibility-in-HMAC-functions.patch
+                  fi
+            touch dunfell_patch_applied
+        fi
+}
+
+addtask turris_patches after do_unpack before do_compile
 
 CFLAGS_append = " \
     -I=${includedir}/utctx \
@@ -93,10 +110,6 @@ do_install_append(){
 
 }
 
-do_install_append_dunfell() {
-    #advsec_migrate_psm_to_syscfg.sh available in ./git/scripts/
-    install -m 755 ${S}/scripts/advsec_migrate_psm_to_syscfg.sh ${D}/usr/ccsp/pam/advsec_migrate_psm_to_syscfg.sh
-}
 
 FILES_${PN}-ccsp += " \
     ${prefix}/ccsp/pam/CcspPandMSsp \
