@@ -144,6 +144,9 @@ touch /tmp/hostapd3.psk
 touch /tmp/hostapd4.psk
 touch /tmp/hostapd5.psk
 
+#Create wps pin request log file
+touch /var/run/hostapd_wps_pin_requests.log
+
 #Setting brlan0 bridge
 if [ ! -f /sys/class/net/brlan0 ]
 then
