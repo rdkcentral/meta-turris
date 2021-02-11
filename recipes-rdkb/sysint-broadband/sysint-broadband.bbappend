@@ -50,6 +50,12 @@ do_install_append() {
     echo "DCM_LA_SERVER_URL="http://35.155.171.121/xconf/logupload.php"" >> ${D}${sysconfdir}/dcm.properties
     echo "TFTP_SERVER_IP=35.155.171.121" >> ${D}${sysconfdir}/device.properties
     echo "MODEL_NAME=Turris" >> ${D}${sysconfdir}/device.properties
+
+    #Log Rotate Support
+    sed -i "/if \[ \! -f \/usr\/bin\/GetConfigFile \]\;then/,+4d" ${D}/rdklogger/logfiles.sh
+    sed -i "/uploadRDKBLogs.sh/a \ \t \t  \t  uploading_rdklogs" ${D}/rdklogger/rdkbLogMonitor.sh
+    sed -i "/uploadRDKBLogs.sh/d " ${D}/rdklogger/rdkbLogMonitor.sh
+    sed -i "/upload_nvram2_logs()/i uploading_rdklogs() \n { \n \ \t \t TFTP_RULE_COUNT=\`iptables -t raw -L -n | grep tftp | wc -l\` \n \ \t \t if [ \"\$TFTP_RULE_COUNT\" == 0 ] \n \t \t then \n \ \t \t \t iptables -t raw -I OUTPUT -j CT -p udp -m udp --dport 69 --helper tftp \n \ \t \t \t sleep 2 \n \ \t \t fi \n \ \t \t cd /nvram/logbackup \n \ \t \t FILENAME=\`ls *.tgz\` \n \ \t \t tftp -p -r \$FILENAME \$TFTP_SERVER_IP \n } " ${D}/rdklogger/rdkbLogMonitor.sh
 }
 
 FILES_${PN} += "${systemd_unitdir}/system/swupdate.service"
