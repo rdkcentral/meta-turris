@@ -4,6 +4,8 @@ require ccsp_common_turris.inc
 
 DEPENDS_append = " utopia curl "
 
+SRC_URI_remove_dunfell = "file://0001-openssl-1.1.x-compatibility-in-HMAC-functions.patch"
+
 SRC_URI_append_dunfell = " file://0001-openssl-1.1.x-compatibility-in-HMAC-functions.patch;apply=no"
 
 #This is workaround for missing do_patch when RDK uses external sources

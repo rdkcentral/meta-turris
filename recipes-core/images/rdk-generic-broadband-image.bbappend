@@ -1,4 +1,4 @@
-inherit rdk-image
+inherit rdk-image-sdk
 
 IMAGE_FEATURES_remove = "read-only-rootfs"
 
@@ -28,3 +28,16 @@ IMAGE_INSTALL += " packagegroup-turris-core \
 IMAGE_INSTALL_remove_dunfell = " ccsp-webui-jst"
 BB_HASH_IGNORE_MISMATCH = "1"
 IMAGE_NAME[vardepsexclude] = "DATETIME"
+
+do_populate_sdk_ext_prepend() {
+    builddir = d.getVar('TOPDIR')
+    if os.path.exists(builddir + '/conf/templateconf.cfg'):
+        with open(builddir + '/conf/templateconf.cfg', 'w') as f:
+            f.write('meta/conf\n')
+}
+
+sdk_ext_postinst_append() {
+   echo "ln -s $target_sdk_dir/layers/openembedded-core/meta-rdk $target_sdk_dir/layers/openembedded-core/../meta-rdk \n" >> $env_setup_script
+}
+
+inherit populate_sdk_base
