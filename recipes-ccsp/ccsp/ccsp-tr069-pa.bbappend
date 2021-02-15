@@ -3,7 +3,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 require ccsp_common_turris.inc
 LDFLAGS += "-Wl,--no-as-needed -lulog"
 
-SRC_URI_dunfell += "file://0001-openssl-1.1.x-compatibility-in-HMAC-functions-Tr069.patch;apply=no"
+SRC_URI_remove_dunfell = "file://0001-openssl-1.1.x-compatibility.patch"
+
+SRC_URI_append_dunfell = " file://0001-openssl-1.1.x-compatibility-in-HMAC-functions-Tr069.patch;apply=no"
 
 #This is workaround for missing do_patch when RDK uses external sources
 do_turris_patches() {
