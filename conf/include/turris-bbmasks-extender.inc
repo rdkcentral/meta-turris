@@ -3,6 +3,7 @@ BBMASK .= "|meta-rdk-broadband/recipes-ccsp/ccsp/ccsp-webui-jst.bb"
 
 BBMASK .= "|meta-rdk/recipes-core/packagegroups/packagegroup-rdk-media-common.bb"
 
+BBMASK .= "|meta-rdk-ext/recipes-common/rtmessage/"
 BBMASK .= "|meta-rdk-ext/recipes-support/base64/base64_git.bb"
 BBMASK .= "|meta-rdk-ext/recipes-kernel/linux/linux-libc-headers_%.bbappend"
 
