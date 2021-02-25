@@ -34,6 +34,8 @@ LDFLAGS_remove = " \
     -lmoca_mgnt \
 "
 
+CFLAGS_remove = "-Werror"
+
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
 do_install_append(){
