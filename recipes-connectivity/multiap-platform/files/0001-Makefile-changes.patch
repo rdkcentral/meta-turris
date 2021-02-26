@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index bd88d31..5ddf08f 100755
+--- a/Makefile
++++ b/Makefile
+@@ -29,7 +29,7 @@ endif
+ 
+ LIBINCLUDE_FLAGS=$(foreach includedir, $(LIBINCLUDE_DIRS), -I$(includedir))
+ 
+-LIBOBJFILES = $(LIBSRC:.c=.o)
++LIBOBJFILES = $(patsubst %c,%o,$(wildcard src/*.c))
+ UBUS_LIBOBJFILES = $(UBUSLIBSRC:.c=.o)
+ 
+ LIBCFLAGS+=$(EXTRA_FLAGS)
