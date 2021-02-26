@@ -18,10 +18,14 @@ SRC_URI_append = " \
     file://wifi-initialized.target \
 "
 
+SRC_URI_remove_dunfell = "file://0001-DBusLoop-SSL_state-TLS_ST_OK.patch"
+SRC_URI_remove_dunfell = "file://0001-SSLeay_add_all_algorithms-remove-in-openssl-1.1.patch"
+
 SRC_URI += "file://0003-add-dependency-to-pandm.patch;apply=no"
 SRC_URI += "file://0004-remove-psm-db-reference.patch;apply=no"
 SRC_URI_append_dunfell = " file://0001-DBusLoop-SSL_state-TLS_ST_OK.patch;apply=no"
 SRC_URI_append_dunfell = " file://0001-SSLeay_add_all_algorithms-remove-in-openssl-1.1.patch;apply=no"
+
 
 # we need to patch to code for Turris
 do_turris_patches() {
