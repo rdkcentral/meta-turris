@@ -26,10 +26,18 @@ LDFLAGS_append = " \
 do_turris_patches() {
     cd ${S}
     if [ ! -e patch_applied ]; then
+        bbnote "Patching 0001-fix-lan-handler-for-turris.patch"
         patch -p1 < ${WORKDIR}/0001-fix-lan-handler-for-turris.patch
+
+        bbnote "Patching 0003-remove-autoconf.patch"
         patch -p1 < ${WORKDIR}/0003-remove-autoconf.patch
+
+        bbnote "Patching posix-gwprovapp.patch"
         patch -p1 < ${WORKDIR}/posix-gwprovapp.patch
+
+        bbnote "Patching 0002-fix-swctl-missing-api.patch"
         patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
+
         touch patch_applied
     fi
 }

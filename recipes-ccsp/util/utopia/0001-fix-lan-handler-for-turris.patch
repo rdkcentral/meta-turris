@@ -1,6 +1,6 @@
-From b37d0291fd518f7db14f4432cb522846a0896a5f Mon Sep 17 00:00:00 2001
-From: Jenkins Slave <jenkins@code.rdkcentral.com>
-Date: Mon, 12 Nov 2018 14:29:46 +0000
+From 9cfe9b080409315cc9057459aa34d28f35334b6b Mon Sep 17 00:00:00 2001
+From: Simon Chung <simon.c.chung@accenture.com>
+Date: Tue, 9 Mar 2021 11:56:00 +0000
 Subject: [PATCH] Refresh of the patch originally added by:
 
   d46de29 RDKCMF-3935 Modify gwprovapp state machine for Raspberry Pi events
@@ -22,10 +22,10 @@ Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
  1 file changed, 18 insertions(+)
 
 diff --git a/source/scripts/init/service.d/lan_handler.sh b/source/scripts/init/service.d/lan_handler.sh
-index ede6e02..016e7ef 100755
+index 7fd1b46c..4e95ed54 100755
 --- a/source/scripts/init/service.d/lan_handler.sh
 +++ b/source/scripts/init/service.d/lan_handler.sh
-@@ -266,6 +266,24 @@ case "$1" in
+@@ -284,6 +284,24 @@ case "$1" in
              sysevent set multinet-up 9
          fi
  
@@ -47,9 +47,9 @@ index ede6e02..016e7ef 100755
 +        # Turris Omnia specific change end
 +        # --------------------------------------------------------------------
 +
-         echo_t "LAN HANDLER : Triggering RDKB_FIREWALL_RESTART after nfqhandler" 
+         echo_t "LAN HANDLER : Triggering RDKB_FIREWALL_RESTART after nfqhandler"
+ 	t2CountNotify "SYS_SH_RDKB_FIREWALL_RESTART"
          sysevent set firewall-restart 
-         uptime=`cat /proc/uptime | awk '{ print $1 }' | cut -d"." -f1`
 -- 
-2.22.0
+2.28.0
 
