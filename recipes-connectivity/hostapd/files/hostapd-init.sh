@@ -89,8 +89,26 @@ then
         sed -i "/^interface=/c\interface=wifi5" /nvram/hostapd5.conf
 fi
 
+if [ ! -f /nvram/hostapd6.conf ]
+then
+	cp /etc/hostapd-bhaul2G.conf /nvram/hostapd6.conf
+	#Set bssid for wifi6
+        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
+        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd6.conf
+        sed -i "/^interface=/c\interface=wifi6" /nvram/hostapd6.conf
+fi
+
+if [ ! -f /nvram/hostapd7.conf ]
+then
+	cp /etc/hostapd-bhaul5G.conf /nvram/hostapd7.conf
+	#Set bssid for wifi7
+        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
+        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd7.conf
+        sed -i "/^interface=/c\interface=wifi7" /nvram/hostapd7.conf
+fi
+
 #Setting up VAP status file
-echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0\nwifi4=0\nwifi5=0" >/tmp/vap-status
+echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0\nwifi4=0\nwifi5=0\nwifi6=0\nwifi7=0" >/tmp/vap-status
 
 #Creating files for tracking AssociatedDevices
 touch /tmp/AllAssociated_Devices_2G.txt
@@ -101,7 +119,7 @@ then
         exit 0;
 fi
 
-#Creating wifi0 and wifi1 AP interfaces
+#Creating virtual interfaces wifi0 and wifi1 for Home APs
 iw dev wlan0 interface add wifi0 type __ap
 iw dev wlan1 interface add wifi1 type __ap
 
@@ -115,18 +133,23 @@ iw dev wlan1 interface add wifi3 type __ap
 ip addr add 169.254.1.1/24 dev wifi3
 ifconfig wifi3 mtu 1600
 
-#2.4GHz Virtual Access Points for onboard connection
+#Creating virtual interfaces wifi4 and wifi5 for Guest APs
 iw dev wlan0 interface add wifi4 type __ap
-ip addr add 169.254.0.1/24 dev wifi4
-ifconfig wifi2 mtu 1600
+iw dev wlan1 interface add wifi5 type __ap
+
+#2.4GHz Virtual Access Points for Secure Onboard connection
+iw dev wlan0 interface add wifi6 type __ap
+ip addr add 169.254.0.1/24 dev wifi6
+ifconfig wifi6 mtu 1600
 
 #5GHz Virtual Access Points for onboard connection
-iw dev wlan1 interface add wifi5 type __ap
-ip addr add 169.254.1.1/24 dev wifi5
-ifconfig wifi3 mtu 1600
+iw dev wlan1 interface add wifi7 type __ap
+ip addr add 169.254.1.1/24 dev wifi7
+ifconfig wifi7 mtu 1600
 
-#iw dev wlan0 interface add wifi4 type __ap
-#iw dev wlan1 interface add wifi5 type __ap
+#Creating virtual interfaces wifi8 and wifi9 for Service APs
+iw dev wlan0 interface add wifi8 type __ap
+iw dev wlan1 interface add wifi9 type __ap
 
 #Create empty acl list for hostapd
 touch /tmp/hostapd-acl0
@@ -135,14 +158,20 @@ touch /tmp/hostapd-acl2
 touch /tmp/hostapd-acl3
 touch /tmp/hostapd-acl4
 touch /tmp/hostapd-acl5
+touch /tmp/hostapd-acl6
+touch /tmp/hostapd-acl7
+touch /tmp/hostapd-acl8
+touch /tmp/hostapd-acl9
 
 #create empty psk files
 touch /tmp/hostapd0.psk
 touch /tmp/hostapd1.psk
 touch /tmp/hostapd2.psk
 touch /tmp/hostapd3.psk
-touch /tmp/hostapd4.psk
-touch /tmp/hostapd5.psk
+touch /tmp/hostapd6.psk
+touch /tmp/hostapd7.psk
+touch /tmp/hostapd8.psk
+touch /tmp/hostapd9.psk
 
 #Create wps pin request log file
 touch /var/run/hostapd_wps_pin_requests.log
