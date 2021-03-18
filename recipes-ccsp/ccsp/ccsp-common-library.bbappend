@@ -88,8 +88,8 @@ do_install_append_class-target(){
 
     install -D -m 0644 ${WORKDIR}/wifi-initialized.target ${D}${systemd_unitdir}/system/wifi-initialized.target
 
-    install -D -m 0644 ${S}/systemd_units/crResetDetect.service ${D}${systemd_unitdir}/system/crResetDetect.service
-    install -D -m 0644 ${S}/systemd_units/crResetDetect.path ${D}${systemd_unitdir}/system/crResetDetect.path
+    install -D -m 0644 ${S}/systemd_units/ProcessResetDetect.service ${D}${systemd_unitdir}/system/ProcessResetDetect.service
+    install -D -m 0644 ${S}/systemd_units/ProcessResetDetect.path ${D}${systemd_unitdir}/system/ProcessResetDetect.path
     install -D -m 0644 ${S}/systemd_units/logagent.service ${D}${systemd_unitdir}/system/logagent.service
 
     # Install wrapper for breakpad (disabled to support External Source build)
@@ -132,8 +132,8 @@ SYSTEMD_SERVICE_${PN} += "wifiinitialized.path"
 SYSTEMD_SERVICE_${PN} += "turriswifiinitialized.path"
 SYSTEMD_SERVICE_${PN} += "checkturriswifisupport.path"
 SYSTEMD_SERVICE_${PN} += "wifi-initialized.target"
-SYSTEMD_SERVICE_${PN} += "crResetDetect.path"
-SYSTEMD_SERVICE_${PN} += "crResetDetect.service"
+SYSTEMD_SERVICE_${PN} += "ProcessResetDetect.path"
+SYSTEMD_SERVICE_${PN} += "ProcessResetDetect.service"
 SYSTEMD_SERVICE_${PN} += "logagent.service"
 SYSTEMD_SERVICE_${PN} += "rfc.service"
 
@@ -159,8 +159,8 @@ FILES_${PN}_append = " \
     ${systemd_unitdir}/system/turriswifiinitialized.path \
     ${systemd_unitdir}/system/checkturriswifisupport.path \
     ${systemd_unitdir}/system/wifi-initialized.target \
-    ${systemd_unitdir}/system/crResetDetect.path \
-    ${systemd_unitdir}/system/crResetDetect.service \
+    ${systemd_unitdir}/system/ProcessResetDetect.path \
+    ${systemd_unitdir}/system/ProcessResetDetect.service \
     ${systemd_unitdir}/system/logagent.service \
     ${systemd_unitdir}/system/rfc.service \
 "
