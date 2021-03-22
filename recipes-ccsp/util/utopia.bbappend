@@ -1,6 +1,6 @@
 require recipes-ccsp/ccsp/ccsp_common_turris.inc
 
-DEPENDS_append = " kernel-autoconf utopia-headers libsyswrapper"
+DEPENDS_append = " kernel-autoconf utopia-headers libsyswrapper telemetry"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
