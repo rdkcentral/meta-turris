@@ -11,7 +11,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     linux-firmware-ath10k \
     ccsp-webui-csrf \
     network-hotplug \
-    php \
     libmcrypt \
     bzip2 \
     nmap \

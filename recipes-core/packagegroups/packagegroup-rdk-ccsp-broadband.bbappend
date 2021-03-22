@@ -9,6 +9,14 @@ RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "mesh-agent"
 RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "xupnp"
 
 RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "ccsp-hotspot-kmod"
+RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = " \
+        ccsp-cm-agent \
+        ccsp-cm-agent-ccsp \
+        ccsp-mta-agent \
+        ccsp-mta-agent-ccsp \
+        xupnp \
+        ccsp-epon-agent \
+"
 
 RDEPENDS_packagegroup-rdk-ccsp-broadband_append = "\
     rdk-logger \
