@@ -1,0 +1,20 @@
+--- sm_survey_report.c	2021-03-15 10:22:25.053525724 +0000
++++ sm_survey_report_new.c	2021-03-18 12:07:35.814395396 +0000
+@@ -967,7 +967,7 @@
+     survey_ctx->threshold_record = *survey_entry;
+ 
+     int threshold_util = result_entry.chan_tx + result_entry.chan_self;
+-    LOGD("Checking %s %s survey threshold util: %d/%d delay: %ld/%d count: %d/%d",
++    LOGD("Checking %s %s survey threshold util: %d/%d delay: %lld/%d count: %d/%d",
+          radio_get_name_from_cfg(radio_cfg_ctx),
+          radio_get_scan_name_from_type(scan_type),
+          threshold_util, request_ctx->threshold_util,
+@@ -1099,7 +1099,7 @@
+             scan_interval = SURVEY_MIN_SCAN_INTERVAL;
+ 
+             // always scan if max_delay exceeded
+-            LOGI("Force processing %s %s survey delay: %ld/%d count: %d/%d",
++            LOGI("Force processing %s %s survey delay: %lld/%d count: %d/%d",
+                  radio_get_name_from_cfg(radio_cfg_ctx),
+                  radio_get_scan_name_from_type(scan_type),
+                  survey_ctx->threshold_time_delta, request_ctx->threshold_max_delay,
