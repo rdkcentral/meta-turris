@@ -1,4 +1,4 @@
-CMF_GIT_BRANCH = "rdk-next"
-RDK_GIT_BRANCH = "stable2"
-
-DEPENDS_append = " rdk-logger"
+#To avoid build error due to RDKALL-2546
+do_install_append_broadband_dunfell () {
+	rm ${D}/usr/include/rbus-core
+}
