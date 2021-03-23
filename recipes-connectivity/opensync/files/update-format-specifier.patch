@@ -1,0 +1,22 @@
+diff --git a/src/sm/src/sm_survey_report.c b/src/sm/src/sm_survey_report.c
+index 3e464e8..c94008c 100644
+--- a/src/sm/src/sm_survey_report.c
++++ b/src/sm/src/sm_survey_report.c
+@@ -967,7 +967,7 @@ bool sm_survey_threshold_util_cb (
+     survey_ctx->threshold_record = *survey_entry;
+ 
+     int threshold_util = result_entry.chan_tx + result_entry.chan_self;
+-    LOGD("Checking %s %s survey threshold util: %d/%d delay: %ld/%d count: %d/%d",
++    LOGD("Checking %s %s survey threshold util: %d/%d delay: %lld/%d count: %d/%d",
+          radio_get_name_from_cfg(radio_cfg_ctx),
+          radio_get_scan_name_from_type(scan_type),
+          threshold_util, request_ctx->threshold_util,
+@@ -1099,7 +1099,7 @@ bool sm_survey_stats_update (
+             scan_interval = SURVEY_MIN_SCAN_INTERVAL;
+ 
+             // always scan if max_delay exceeded
+-            LOGI("Force processing %s %s survey delay: %ld/%d count: %d/%d",
++            LOGI("Force processing %s %s survey delay: %lld/%d count: %d/%d",
+                  radio_get_name_from_cfg(radio_cfg_ctx),
+                  radio_get_scan_name_from_type(scan_type),
+                  survey_ctx->threshold_time_delta, request_ctx->threshold_max_delay,
