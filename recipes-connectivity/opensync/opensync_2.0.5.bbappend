@@ -9,6 +9,7 @@ CORE_URI += "file://remove_target_managers.patch"
 CORE_URI += "file://ping-fix.patch"
 CORE_URI += "file://wm2-vif-sta-fix.patch"
 CORE_URI += "file://lan-port-fix.patch"
+CORE_URI += "file://update-format-specifier.patch"
 
 CORE_URI_append_dunfell = " file://absolute-value-glibc-dunfell-fix.patch"
 CORE_URI_append_dunfell = " file://dunfell-nm-crash-fix.patch"
