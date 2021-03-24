@@ -12,6 +12,7 @@ CORE_URI += "file://lan-port-fix.patch"
 
 CORE_URI_append_dunfell = " file://absolute-value-glibc-dunfell-fix.patch"
 CORE_URI_append_dunfell = " file://dunfell-nm-crash-fix.patch"
+CORE_URI_append_dunfell = " ${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://update-format-specifier-for-time_t.patch', '', d)}"
 
 PLATFORM_URI = "git://git@github.com/plume-design/opensync-platform-rdk.git;protocol=${CMF_GIT_PROTOCOL};branch=osync_2.0.5;name=platform;destsuffix=git/platform/rdk"
 PLATFORM_URI += "file://use_stats2.patch;patchdir=${WORKDIR}/git/platform/rdk"
