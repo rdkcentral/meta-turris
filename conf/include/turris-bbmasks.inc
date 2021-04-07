@@ -1,5 +1,3 @@
-BBMASK .= "|meta-rdk-broadband/recipes-ccsp/ccsp/ccsp-webui-jst.bb"
-
 BBMASK .= "|meta-rdk/recipes-core/packagegroups/packagegroup-rdk-media-common.bb"
 
 BBMASK .= "|meta-rdk-ext/recipes-common/rtmessage"
