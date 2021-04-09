@@ -1,6 +1,5 @@
-BBMASK .= "|meta-rdk-broadband/recipes-ccsp/ccsp/ccsp-hotspot-kmod.bb"
-
 BBMASK .= "|meta-rdk/recipes-core/packagegroups/packagegroup-rdk-media-common.bb"
+BBMASK .= "|meta-rdk/recipes-common/sys_mon_tools/cpuprocanalyzer_git.bb"
 
 BBMASK .= "|meta-rdk-ext/recipes-common/rtmessage"
 BBMASK .= "|meta-rdk-ext/recipes-support/base64/base64_git.bb"
@@ -15,3 +14,5 @@ BBMASK .= "${@'' if os.path.isdir('|meta-openembedded/meta-oe/recipes-devtools/b
 
 #To avoid build warning
 BBMASK .= "|meta-rdk-ext/recipes-support/iksemel/iksemel_1.5.bb"
+
+BBMASK .= "|meta-cmf/recipes-extended/rpcserver/"
