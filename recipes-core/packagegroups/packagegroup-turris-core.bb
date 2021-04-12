@@ -46,7 +46,9 @@ RDEPENDS_packagegroup-turris-core = " \
    dt \
    u-boot-fw-utils \
     "
-RDEPENDS_packagegroup-turris-core_remove = "dt"
+RDEPENDS_packagegroup-turris-core_remove = "\
+dt \
+"
 
 #turris omnia uses dropbear, so removing openssh
 RDEPENDS_packagegroup-turris-core_remove = "openssh"
