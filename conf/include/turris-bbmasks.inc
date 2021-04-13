@@ -13,5 +13,8 @@ BBMASK .= "|meta-virtualization/recipes-devtools/protobuf"
 
 BBMASK .= "${@'' if os.path.isdir('|meta-openembedded/meta-oe/recipes-devtools/breakpad/breakpad_git.bb') else '|meta-cmf/recipes-devtools/breakpad/breakpad_git.bb'}"
 
+#To avoid expansion error
+BBMASK .= "|meta-rdk/recipes-common/sys_mon_tools/cpuprocanalyzer_git.bb"
+
 #To avoid build warning
 BBMASK .= "|meta-rdk-ext/recipes-support/iksemel/iksemel_1.5.bb"
