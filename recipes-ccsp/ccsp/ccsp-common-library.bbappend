@@ -60,8 +60,6 @@ do_install_append_class-target(){
     install -m 777 ${S}/systemd_units/scripts/utopiaInitCheck.sh ${D}/usr/ccsp/utopiaInitCheck.sh
     install -m 777 ${S}/systemd_units/scripts/ccspPAMCPCheck.sh ${D}/usr/ccsp/ccspPAMCPCheck.sh
 
-    install -m 777 ${S}/systemd_units/scripts/ProcessResetCheck.sh ${D}/usr/ccsp/ProcessResetCheck.sh
-    sed -i -e "s/source \/rdklogger\/logfiles.sh;syncLogs_nvram2/#source \/rdklogger\/logfiles.sh;syncLogs_nvram2/g" ${D}/usr/ccsp/ProcessResetCheck.sh
     # install systemd services
     install -d ${D}${systemd_unitdir}/system
     install -D -m 0644 ${S}/systemd_units/ccspwifiagent.service ${D}${systemd_unitdir}/system/ccspwifiagent.service
@@ -88,8 +86,6 @@ do_install_append_class-target(){
 
     install -D -m 0644 ${WORKDIR}/wifi-initialized.target ${D}${systemd_unitdir}/system/wifi-initialized.target
 
-    install -D -m 0644 ${S}/systemd_units/ProcessResetDetect.service ${D}${systemd_unitdir}/system/ProcessResetDetect.service
-    install -D -m 0644 ${S}/systemd_units/ProcessResetDetect.path ${D}${systemd_unitdir}/system/ProcessResetDetect.path
     install -D -m 0644 ${S}/systemd_units/logagent.service ${D}${systemd_unitdir}/system/logagent.service
 
     # Install wrapper for breakpad (disabled to support External Source build)
@@ -132,8 +128,6 @@ SYSTEMD_SERVICE_${PN} += "wifiinitialized.path"
 SYSTEMD_SERVICE_${PN} += "turriswifiinitialized.path"
 SYSTEMD_SERVICE_${PN} += "checkturriswifisupport.path"
 SYSTEMD_SERVICE_${PN} += "wifi-initialized.target"
-SYSTEMD_SERVICE_${PN} += "ProcessResetDetect.path"
-SYSTEMD_SERVICE_${PN} += "ProcessResetDetect.service"
 SYSTEMD_SERVICE_${PN} += "logagent.service"
 SYSTEMD_SERVICE_${PN} += "rfc.service"
 
@@ -142,7 +136,6 @@ FILES_${PN}_append = " \
     /usr/ccsp/ccspSysConfigLate.sh \
     /usr/ccsp/utopiaInitCheck.sh \
     /usr/ccsp/ccspPAMCPCheck.sh \
-    /usr/ccsp/ProcessResetCheck.sh \
     ${systemd_unitdir}/system/ccspwifiagent.service \
     ${systemd_unitdir}/system/CcspCrSsp.service \
     ${systemd_unitdir}/system/CcspPandMSsp.service \
@@ -159,8 +152,6 @@ FILES_${PN}_append = " \
     ${systemd_unitdir}/system/turriswifiinitialized.path \
     ${systemd_unitdir}/system/checkturriswifisupport.path \
     ${systemd_unitdir}/system/wifi-initialized.target \
-    ${systemd_unitdir}/system/ProcessResetDetect.path \
-    ${systemd_unitdir}/system/ProcessResetDetect.service \
     ${systemd_unitdir}/system/logagent.service \
     ${systemd_unitdir}/system/rfc.service \
 "
