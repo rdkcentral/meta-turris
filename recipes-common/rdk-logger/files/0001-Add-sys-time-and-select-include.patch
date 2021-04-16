@@ -1,0 +1,27 @@
+From 5885fbd6a145e12e36b90d0627306a23eface17f Mon Sep 17 00:00:00 2001
+From: Simon Chung <simon.c.chung@accenture.com>
+Date: Fri, 16 Apr 2021 11:47:02 +0100
+Subject: [PATCH] Add sys time and select include
+
+Change-Id: Ia00ff2f15280e564b8ff4af0fb255444292c2855
+---
+ src/rdk_dynamic_logger.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/rdk_dynamic_logger.c b/src/rdk_dynamic_logger.c
+index 48eb55e..6675dfa 100644
+--- a/src/rdk_dynamic_logger.c
++++ b/src/rdk_dynamic_logger.c
+@@ -28,6 +28,9 @@
+ #include <unistd.h>
+ #include "rdk_dynamic_logger.h"
+ 
++#include <sys/time.h>
++#include <sys/select.h>
++
+ #define DL_PORT 12035
+ #define DL_SIGNATURE "COMC"
+ #define DL_SIGNATURE_LEN 4
+-- 
+2.28.0
+
