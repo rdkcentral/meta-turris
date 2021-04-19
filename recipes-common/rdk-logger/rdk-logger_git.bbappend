@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI_extender += "file://0001-Add-sys-time-and-select-include.patch;apply=no"
+SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://0001-Add-sys-time-and-select-include.patch;apply=no', '', d)}"
 
 # we need to patch to code for rdk-logger
 do_rdk_logger_patches() {
