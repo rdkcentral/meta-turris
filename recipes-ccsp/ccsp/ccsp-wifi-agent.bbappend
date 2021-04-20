@@ -5,6 +5,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 LDFLAGS += " \
 	-lutopiautil \
 	   "
+CFLAGS_append = " -Wno-error"
 
 #work around for wifi restart_flag=false, for meshagent synchroniztaion
 do_configure_prepend() {
