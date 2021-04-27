@@ -34,7 +34,6 @@ RDEPENDS_packagegroup-turris-core = " \
    openssh \
    openssl \
    rpcbind \
-   python-core \
    sg3-utils \
    squashfs-tools \
    valgrind \
