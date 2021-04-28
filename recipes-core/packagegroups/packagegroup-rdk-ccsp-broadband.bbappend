@@ -8,8 +8,6 @@ RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "mesh-agent"
 
 RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "xupnp"
 
-RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "ccsp-hotspot-kmod"
-
 RDEPENDS_packagegroup-rdk-ccsp-broadband_append = "\
     rdk-logger \
     libseshat \

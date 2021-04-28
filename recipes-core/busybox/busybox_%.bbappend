@@ -2,6 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += " \
 	    file://timeout.cfg \
+            file://rdkb.cfg \
            "
 
 do_install_append_dunfell() {

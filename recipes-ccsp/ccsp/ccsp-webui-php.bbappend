@@ -1,6 +1,6 @@
 require ccsp_common_turris.inc
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 EXTRA_OECONF += "PHP_RPATH=no"
 

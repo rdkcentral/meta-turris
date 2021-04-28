@@ -60,6 +60,8 @@ do_install_append(){
     ln -sf /sbin/ip.iproute2 ${D}/fss/gw/usr/sbin/ip
 
     #captiveportal redirection
+    DISTRO_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','webui_jst','true','false',d)}"
+    if [ $DISTRO_ENABLED = 'false' ]; then
     sed -i "/captiveportaldhcp/a fi" ${D}/etc/revert_redirect.sh
     sed -i "/captiveportaldhcp/a lighttpd -f /var/lighttpd.conf" ${D}/etc/revert_redirect.sh
     sed -i "/captiveportaldhcp/a sleep 2" ${D}/etc/revert_redirect.sh
@@ -107,6 +109,7 @@ do_install_append(){
     sed -i "/dibbler-server start/a if [ -f /nvram/reverted ] ; then" ${D}/etc/restart_services.sh
     sed -i "/dibbler-server start/a LIGHTTPD_CONF=/var/lighttpd.conf" ${D}/etc/restart_services.sh
     sed -i "/dibbler-server start/a #captiveportal redirection" ${D}/etc/restart_services.sh
+    fi
 
 ########## ETHWAN Support
    sed -i "s/www.comcast.net/www.google.com/g" ${D}/etc/partners_defaults.json
