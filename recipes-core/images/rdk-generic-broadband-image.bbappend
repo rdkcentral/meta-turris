@@ -10,7 +10,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     ${SYSTEMD_TOOLS} \
     linux-firmware-ath10k \
     network-hotplug \
-    php \
     libmcrypt \
     bzip2 \
     nmap \
