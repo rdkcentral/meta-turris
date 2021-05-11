@@ -10,7 +10,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     ${SYSTEMD_TOOLS} \
     linux-firmware-ath10k \
     network-hotplug \
-    php \
     libmcrypt \
     bzip2 \
     nmap \
@@ -43,3 +42,11 @@ sdk_ext_postinst_append() {
 PRSERV_HOST = "localhost:0"
 INHERIT += "buildhistory"
 BUILDHISTORY_COMMIT = "1"
+
+require image-exclude-files.inc
+
+remove_unused_file() {
+   for i in ${REMOVED_FILE_LIST} ; do rm -rf ${IMAGE_ROOTFS}/$i ; done
+}
+
+ROOTFS_POSTPROCESS_COMMAND_append = "remove_unused_file; "

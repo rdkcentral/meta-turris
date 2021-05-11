@@ -1,3 +1,6 @@
+BBMASK .= "|meta-rdk/recipes-common/rdkversion/"
+BBMASK .= "|meta-cmf/recipes-common/rdkversion/"
+
 BBMASK .= "|meta-rdk/recipes-core/packagegroups/packagegroup-rdk-media-common.bb"
 
 BBMASK .= "|meta-rdk-ext/recipes-common/rtmessage"

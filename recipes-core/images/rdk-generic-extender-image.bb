@@ -10,7 +10,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     rdk-logger \
     ${SYSTEMD_TOOLS} \
     linux-firmware-ath10k \
-    php \
     libmcrypt \
     bzip2 \
     nmap \
