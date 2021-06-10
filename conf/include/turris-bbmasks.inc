@@ -2,9 +2,9 @@ BBMASK .= "|meta-rdk/recipes-common/rdkversion/"
 BBMASK .= "|meta-cmf/recipes-common/rdkversion/"
 
 BBMASK .= "|meta-rdk/recipes-core/packagegroups/packagegroup-rdk-media-common.bb"
+BBMASK .= "|meta-rdk/recipes-support/base64/base64_git.bb"
 
 BBMASK .= "|meta-rdk-ext/recipes-common/rtmessage"
-BBMASK .= "|meta-rdk-ext/recipes-support/base64/base64_git.bb"
 BBMASK .= "|meta-rdk-ext/recipes-kernel/linux/linux-libc-headers_%.bbappend"
 
 BBMASK .= "|meta-browser/*"
