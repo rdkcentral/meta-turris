@@ -22,6 +22,8 @@ LDFLAGS_append = " \
     -lsecure_wrapper \
 "
 
+CFLAGS_append = " -Wno-format-extra-args -Wno-error "
+
 # we need to patch to code for Turris
 do_turris_patches() {
     cd ${S}
