@@ -37,6 +37,7 @@ _RDK_FLAVOR="rdkb"
 # Add meta-marvell only if not already present.
 if [[ $(grep '^BBLAYERS' conf/bblayers.conf | grep -c 'meta-marvell') -eq 0 ]] && [[ -d  ../meta-marvell ]]
 then
+    echo 'LAYERSERIES_COMPAT_marvell-layer = "dunfell"' >> ../meta-marvell/conf/layer.conf
     cat >> conf/bblayers.conf <<EOF
 BBLAYERS =+ "\${RDKROOT}/meta-marvell"
 EOF
@@ -45,6 +46,7 @@ fi
 # Add meta-rdk-opensync only if not already present.
 if [[ $(grep '^BBLAYERS' conf/bblayers.conf | grep -c 'meta-rdk-opensync') -eq 0 ]] && [[ -d  ../meta-rdk-opensync ]]
 then
+    echo 'LAYERSERIES_COMPAT_opensync = "dunfell"' >> ../meta-rdk-opensync/conf/layer.conf
     cat >> conf/bblayers.conf <<EOF
 BBLAYERS =+ "\${RDKROOT}/meta-rdk-opensync"
 EOF
