@@ -78,6 +78,7 @@ then
         NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd4.conf
         sed -i "/^interface=/c\interface=wifi4" /nvram/hostapd4.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl4"  /nvram/hostapd4.conf
 fi
 
 if [ ! -f /nvram/hostapd5.conf ]
@@ -87,6 +88,7 @@ then
         NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd5.conf
         sed -i "/^interface=/c\interface=wifi5" /nvram/hostapd5.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl5" /nvram/hostapd5.conf
 fi
 
 if [ ! -f /nvram/hostapd6.conf ]
@@ -96,6 +98,7 @@ then
         NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd6.conf
         sed -i "/^interface=/c\interface=wifi6" /nvram/hostapd6.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl6"  /nvram/hostapd6.conf
 fi
 
 if [ ! -f /nvram/hostapd7.conf ]
@@ -105,6 +108,7 @@ then
         NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd7.conf
         sed -i "/^interface=/c\interface=wifi7" /nvram/hostapd7.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl7"  /nvram/hostapd7.conf
 fi
 
 #Setting up VAP status file
