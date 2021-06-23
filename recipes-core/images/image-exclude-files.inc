@@ -5,4 +5,5 @@ usr/ccsp/mta \
 usr/bin/CcspEPONAgentSsp \
 usr/lib/libepon_tr181.so* \
 usr/ccsp/epon \
+usr/lib/python* \
 "
