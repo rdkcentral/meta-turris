@@ -2,6 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI += "\
 file://enabling_dhcp_lease_resync.patch \
+file://meshwifi-rename-opensync.patch \
 "
 
 DEPENDS_append_dunfell = " safec trower-base64"
@@ -10,6 +11,7 @@ RDEPENDS_${PN}_append_dunfell = " bash"
 
 do_configure_prepend()  {
 patch  -p1 < ${WORKDIR}/enabling_dhcp_lease_resync.patch ${S}/source/MeshAgentSsp/cosa_mesh_apis.c  || echo "patch already applied"
+patch  -p1 < ${WORKDIR}/meshwifi-rename-opensync.patch ${S}/systemd_units/meshwifi.service || echo "patch already applied"
 }
 
 do_install_append () {
