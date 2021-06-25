@@ -10,6 +10,7 @@ CFLAGS_append = " -Wno-error"
 #work around for wifi restart_flag=false, for meshagent synchroniztaion
 do_configure_prepend() {
 sed -i '/wlanRestart == TRUE/!{p;d;};n;a #if defined(ENABLE_FEATURE_MESHWIFI)\n if ((sWiFiDmlSsidStoredCfg[wlanIndex].SSID, sWiFiDmlSsidRunningCfg[wlanIndex].SSID) != 0)\n {\n char arg[256] = {0};\n snprintf(arg, sizeof(arg), "RDK|%d|%s",wlanIndex,sWiFiDmlSsidStoredCfg[wlanIndex].SSID);\n char * const cmd[] = {"/usr/bin/sysevent", "set", "wifi_SSIDName", arg, NULL};\n execvp_wrapper(cmd);\n }\n #endif\n'  ${S}/source/TR-181/sbapi/cosa_wifi_apis.c
+patch  -p1 < ${WORKDIR}/handle_mesh-rename-opensync.patch ${S}/scripts/handle_mesh || echo "patch already applied"
 }
 
 DEPENDS_append_dunfell = " avro-c"
@@ -19,6 +20,7 @@ SRC_URI_append = " \
     file://checkwifi.sh \
     file://radio_param_def.cfg \
     file://synclease.sh \
+    file://handle_mesh-rename-opensync.patch \
 "
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 

@@ -1,0 +1,13 @@
+diff --git a/source/MeshAgentSsp/cosa_mesh_apis.c b/source/MeshAgentSsp/cosa_mesh_apis.c
+index c100dfd..a33b37e 100644
+--- a/source/MeshAgentSsp/cosa_mesh_apis.c
++++ b/source/MeshAgentSsp/cosa_mesh_apis.c
+@@ -2497,7 +2497,7 @@ static void Mesh_SetDefaults(ANSC_HANDLE hThisObject)
+     if(Mesh_SysCfgGetStr("mesh_ovs_enable", out_val, sizeof(out_val)) != 0)
+     {
+         MeshInfo("Syscfg error, Setting OVS mode to default\n");
+-        Mesh_SetOVS(false,true,true);
++        Mesh_SetOVS(true,true,true);
+     }
+     else
+     {
