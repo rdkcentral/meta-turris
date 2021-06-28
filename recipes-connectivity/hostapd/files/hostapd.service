@@ -7,7 +7,9 @@ StartLimitIntervalSec=120
 Type=forking
 ExecStartPre=/bin/sh -c '(/lib/rdk/hostapd-init.sh)'
 PIDFile=/var/run/hostapd-global.pid
-ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid /nvram/hostapd0.conf /nvram/hostapd1.conf
+ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid
+ExecStartPost=hostapd_cli -i global raw ADD bss_config=phy0:/nvram/hostapd0.conf
+ExecStartPost=hostapd_cli -i global raw ADD bss_config=phy1:/nvram/hostapd1.conf
 Restart=always
 
 [Install]

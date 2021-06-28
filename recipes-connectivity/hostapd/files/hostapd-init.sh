@@ -129,12 +129,12 @@ iw dev wlan1 interface add wifi1 type __ap
 
 #2.4GHz Virtual Access Points for backhaul connection
 iw dev wlan0 interface add wifi2 type __ap
-ip addr add 169.254.0.1/24 dev wifi2
+ip addr add 169.254.0.1/25 dev wifi2
 ifconfig wifi2 mtu 1600
 
 #5GHz Virtual Access Points for backhaul connection
 iw dev wlan1 interface add wifi3 type __ap
-ip addr add 169.254.1.1/24 dev wifi3
+ip addr add 169.254.1.1/25 dev wifi3
 ifconfig wifi3 mtu 1600
 
 #Creating virtual interfaces wifi4 and wifi5 for Guest APs
@@ -143,12 +143,12 @@ iw dev wlan1 interface add wifi5 type __ap
 
 #2.4GHz Virtual Access Points for Secure Onboard connection
 iw dev wlan0 interface add wifi6 type __ap
-ip addr add 169.254.0.1/24 dev wifi6
+ip addr add 169.254.0.129/25 dev wifi6
 ifconfig wifi6 mtu 1600
 
 #5GHz Virtual Access Points for onboard connection
 iw dev wlan1 interface add wifi7 type __ap
-ip addr add 169.254.1.1/24 dev wifi7
+ip addr add 169.254.1.129/25 dev wifi7
 ifconfig wifi7 mtu 1600
 
 #Creating virtual interfaces wifi8 and wifi9 for Service APs
