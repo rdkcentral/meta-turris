@@ -1,0 +1,11 @@
+diff --git a/scripts/handle_mesh b/scripts/handle_mesh
+index cc3080e..aa31f6d 100644
+--- a/scripts/handle_mesh
++++ b/scripts/handle_mesh
+@@ -44,5 +44,5 @@ if [ $# -eq 0 ]; then
+  exit 0
+ else
+  platform_checks
+- /usr/plume/scripts/managers.init $1
++ /usr/opensync/scripts/managers.init $1
+ fi
