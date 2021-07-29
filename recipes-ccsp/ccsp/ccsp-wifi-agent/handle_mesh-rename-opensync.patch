@@ -1,11 +1,29 @@
+From 1f6aa982fbba1c41ebdf3b722e06de23f9aff2ca Mon Sep 17 00:00:00 2001
+From: Simon Chung <simon.c.chung@accenture.com>
+Date: Wed, 14 Jul 2021 10:41:15 +0100
+Subject: [PATCH] handle_mesh-rename-opensync
+
+Change-Id: I425f9dda5e6473792823f2f60a06754b84f750d6
+---
+ scripts/handle_mesh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
 diff --git a/scripts/handle_mesh b/scripts/handle_mesh
-index cc3080e..aa31f6d 100644
+index 528213d..157fc83 100644
 --- a/scripts/handle_mesh
 +++ b/scripts/handle_mesh
-@@ -44,5 +44,5 @@ if [ $# -eq 0 ]; then
-  exit 0
- else
-  platform_checks
-- /usr/plume/scripts/managers.init $1
-+ /usr/opensync/scripts/managers.init $1
+@@ -59,9 +59,9 @@ else
+         /usr/opensync/scripts/managers.init $1
+     else
+         echo "Opensync will be effective only after reboot"
+-	/usr/plume/scripts/managers.init $1
++	/usr/opensync/scripts/managers.init $1
+     fi
+  else
+-  /usr/plume/scripts/managers.init $1
++  /usr/opensync/scripts/managers.init $1
+  fi
  fi
+-- 
+2.28.0
+
