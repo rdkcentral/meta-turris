@@ -25,13 +25,16 @@ then
 sleep 5;
 fi
 
-mkdir -p /nvram
-if [ -b /dev/mmcblk0p6 ]; then
-       #for Older Turris Omnia
-       mount /dev/mmcblk0p6 /nvram
-else
-       #for Omnia2019 and  Omnia2020
-       mount /dev/mmcblk0p5 /nvram
+nvram_mounted=`mount | grep nvram -wc`
+if [ $nvram_mounted == 0 ]; then
+	mkdir -p /nvram
+	if [ -b /dev/mmcblk0p6 ]; then
+		#for Older Turris Omnia
+		mount /dev/mmcblk0p6 /nvram
+	else
+		#for Omnia2019 and  Omnia2020
+		mount /dev/mmcblk0p5 /nvram
+	fi
 fi
 
 WIFI0_MAC=`cat /sys/class/net/wlan0/address`
@@ -78,6 +81,7 @@ then
         NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd4.conf
         sed -i "/^interface=/c\interface=wifi4" /nvram/hostapd4.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl4"  /nvram/hostapd4.conf
 fi
 
 if [ ! -f /nvram/hostapd5.conf ]
@@ -87,6 +91,7 @@ then
         NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd5.conf
         sed -i "/^interface=/c\interface=wifi5" /nvram/hostapd5.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl5" /nvram/hostapd5.conf
 fi
 
 if [ ! -f /nvram/hostapd6.conf ]
@@ -96,6 +101,7 @@ then
         NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd6.conf
         sed -i "/^interface=/c\interface=wifi6" /nvram/hostapd6.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl6"  /nvram/hostapd6.conf
 fi
 
 if [ ! -f /nvram/hostapd7.conf ]
@@ -105,6 +111,7 @@ then
         NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd7.conf
         sed -i "/^interface=/c\interface=wifi7" /nvram/hostapd7.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl7"  /nvram/hostapd7.conf
 fi
 
 #Setting up VAP status file
@@ -125,12 +132,12 @@ iw dev wlan1 interface add wifi1 type __ap
 
 #2.4GHz Virtual Access Points for backhaul connection
 iw dev wlan0 interface add wifi2 type __ap
-ip addr add 169.254.0.1/24 dev wifi2
+ip addr add 169.254.0.1/25 dev wifi2
 ifconfig wifi2 mtu 1600
 
 #5GHz Virtual Access Points for backhaul connection
 iw dev wlan1 interface add wifi3 type __ap
-ip addr add 169.254.1.1/24 dev wifi3
+ip addr add 169.254.1.1/25 dev wifi3
 ifconfig wifi3 mtu 1600
 
 #Creating virtual interfaces wifi4 and wifi5 for Guest APs
@@ -139,12 +146,12 @@ iw dev wlan1 interface add wifi5 type __ap
 
 #2.4GHz Virtual Access Points for Secure Onboard connection
 iw dev wlan0 interface add wifi6 type __ap
-ip addr add 169.254.0.1/24 dev wifi6
+ip addr add 169.254.0.129/25 dev wifi6
 ifconfig wifi6 mtu 1600
 
 #5GHz Virtual Access Points for onboard connection
 iw dev wlan1 interface add wifi7 type __ap
-ip addr add 169.254.1.1/24 dev wifi7
+ip addr add 169.254.1.129/25 dev wifi7
 ifconfig wifi7 mtu 1600
 
 #Creating virtual interfaces wifi8 and wifi9 for Service APs

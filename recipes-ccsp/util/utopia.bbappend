@@ -22,6 +22,8 @@ LDFLAGS_append = " \
     -lsecure_wrapper \
 "
 
+CFLAGS_append = " -Wno-format-extra-args -Wno-error "
+
 # we need to patch to code for Turris
 do_turris_patches() {
     cd ${S}
@@ -154,6 +156,7 @@ do_install_append() {
     #MSG_QUEUE  files are not present in turris
     sed -i '/TOT_MSG_MAX=\$/ s/^/#/g'  ${D}${sysconfdir}/utopia/utopia_init.sh    
 
+    echo "sysevent set bridge_mode \`syscfg get bridge_mode\`" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "touch -f /tmp/utopia_inited" >> ${D}${sysconfdir}/utopia/utopia_init.sh
 

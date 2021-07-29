@@ -1,6 +1,8 @@
 RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "ccsp-moca"
 RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "ccsp-moca-ccsp"
 RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "sys-resource"
+RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "ccsp-cm-agent-ccsp"
+RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "ccsp-cm-agent"
 #removing memstress for now following a build issue
 RDEPENDS_packagegroup-rdk-ccsp-broadband_remove = "memstress"
 #removing mesh-agent for now. will be brought back along with opensync

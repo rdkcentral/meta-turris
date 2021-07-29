@@ -19,7 +19,20 @@ SRC_URI_append = " \
     file://checkwifi.sh \
     file://radio_param_def.cfg \
     file://synclease.sh \
+    file://handle_mesh-rename-opensync.patch;apply=no \
 "
+
+# we need to patch to code for ccsp-wifi-agent
+do_turris_ccspwifiagent_patches() {
+    cd ${S}
+    if [ ! -e patch_applied ]; then
+        bbnote "Patching handle_mesh-rename-opensync.patch"
+        patch  -p1 < ${WORKDIR}/handle_mesh-rename-opensync.patch ${S}/scripts/handle_mesh
+        touch patch_applied
+    fi
+}
+addtask turris_ccspwifiagent_patches after do_unpack before do_configure
+
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
 do_install_append(){
