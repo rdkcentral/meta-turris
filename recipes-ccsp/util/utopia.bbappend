@@ -27,7 +27,7 @@ CFLAGS_append = " -Wno-format-extra-args -Wno-error "
 # we need to patch to code for Turris
 do_turris_patches() {
     cd ${S}
-    if [ ! -e patch_applied ]; then
+    if [ ! -e turris_patch_applied ]; then
         bbnote "Patching 0001-fix-lan-handler-for-turris.patch"
         patch -p1 < ${WORKDIR}/0001-fix-lan-handler-for-turris.patch
 
@@ -40,16 +40,16 @@ do_turris_patches() {
         bbnote "Patching 0002-fix-swctl-missing-api.patch"
         patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
 
-        touch patch_applied
+        touch turris_patch_applied
     fi
 }
 
 do_turris_patches-append_dunfell() {
     cd ${S}
-    if [ ! -e dunfell_patch_applied ]; then
+    if [ ! -e dunfell_turris_patch_applied ]; then
 	patch -p1 < ${WORKDIR}/0001-Work-around-for-brlan0-issue.patch
     fi
-    touch dunfell_patch_applied
+    touch dunfell_turris_patch_applied
 }
 
 addtask turris_patches after do_unpack before do_compile
