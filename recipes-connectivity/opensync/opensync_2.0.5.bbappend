@@ -10,6 +10,6 @@ VENDOR_URI = "git://git@github.com/rdkcentral/opensync-vendor-rdk-turris.git;pro
 VENDOR_URI += "file://service.patch;patchdir=${WORKDIR}/git/"
 VENDOR_URI += "file://opensync.service"
 
-DEPENDS_append = " rdk-logger hal-wifi-turris"
+DEPENDS_append = " rdk-logger hal-wifi-cfg80211"
 
 RDK_CFLAGS += " -D_PLATFORM_TURRIS_"
