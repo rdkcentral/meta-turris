@@ -1,28 +1,38 @@
+From 68113170930788e52f8fa6089a2882dc28f5693f Mon Sep 17 00:00:00 2001
+From: Simon Chung <simon.c.chung@accenture.com>
+Date: Thu, 2 Sep 2021 15:44:57 +0100
+Subject: [PATCH] sta-network
+
+Change-Id: Idaae3038a352e94d1f2810a8d73b7f77c8e47309
+---
+ wifi_hal.h | 91 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 91 insertions(+)
+
 diff --git a/wifi_hal.h b/wifi_hal.h
-index c69f690..84cb639 100644
+index 579418e..d284af4 100644
 --- a/wifi_hal.h
 +++ b/wifi_hal.h
-@@ -9372,4 +9510,95 @@ INT wifi_setZeroDFSState(UINT radioIndex, BOOL enable, BOOL precac);
+@@ -110,4 +110,95 @@
+ * APIs to be deprecated. Not add new function or structure!
  */
- INT wifi_getZeroDFSState(UINT radioIndex, BOOL *enable, BOOL *precac);
- 
+ #include "wifi_hal_deprecated.h"
 +
 +/* DRAFT FOR CLIENT API */
 +
 +
 +/* APPROACH 1*/
 +typedef enum wifi_sta_network_flags {
-+	WIFI_STA_NET_F_OPEN,
-+	WIFI_STA_NET_F_PSK1,
-+	WIFI_STA_NET_F_PSK2,WIFI_STA_NET_F_PSK_FT,
-+	WIFI_STA_NET_F_AES,
-+	WIFI_STA_NET_F_TKIP,
-+	WIFI_STA_NET_F_4ADDR_MULTI_AP, /* future: easymesh's wds */
-+	WIFI_STA_NET_F_OWE, /* future: opportunistic wireless encryption */
-+	WIFI_STA_NET_F_SAE, /* future: wpa3 */
++ WIFI_STA_NET_F_OPEN,
++ WIFI_STA_NET_F_PSK1,
++ WIFI_STA_NET_F_PSK2,WIFI_STA_NET_F_PSK_FT,
++ WIFI_STA_NET_F_AES,
++ WIFI_STA_NET_F_TKIP,
++ WIFI_STA_NET_F_4ADDR_MULTI_AP, /* future: easymesh's wds */
++ WIFI_STA_NET_F_OWE, /* future: opportunistic wireless encryption */
++ WIFI_STA_NET_F_SAE, /* future: wpa3 */
 +} wifi_sta_network_flags_t;
 +typedef enum wifi_sta_multi_ap_flag {
-+	WIFI_STA_MULTI_AP_NOT_SUPPORTED,
++ WIFI_STA_MULTI_AP_NOT_SUPPORTED,
 +        WIFI_STA_MULTI_AP_NONE,
 +        WIFI_STA_MULTI_AP_BHAUL_STA,
 +} wifi_sta_multi_ap_flag_t;
@@ -30,24 +40,24 @@ index c69f690..84cb639 100644
 +
 +typedef struct wifi_sta_network {
 +        int id;
-+	char bridge[16]; /* valid for 4addr_multi_ap */
-+	char ssid[32];
-+	char psk[128];
-+	char bssid[6]; /* 00:00:00:00:00:00 means any */
-+	size_t ssid_len;
-+	size_t psk_len;
++ char bridge[16]; /* valid for 4addr_multi_ap */
++ char ssid[32];
++ char psk[128];
++ char bssid[6]; /* 00:00:00:00:00:00 means any */
++ size_t ssid_len;
++ size_t psk_len;
 +        int multi_ap;
 +        char pairwise[64]; 
 +        char proto[64];
 +        char key_mgmt[64];
-+	unsigned long flags; /* enum wifi_sta_network_flags */
++ unsigned long flags; /* enum wifi_sta_network_flags */
 +} wifi_sta_network_t;
 +
 +typedef struct wifi_sta_network_state {
-+	struct wifi_sta_network desired_network;
-+	char current_bssid[6]; /* 00:00:00:00:00:00 means disconnected */
-+	int last_deauth_reason;
-+	int last_disassoc_reason;
++ struct wifi_sta_network desired_network;
++ char current_bssid[6]; /* 00:00:00:00:00:00 means disconnected */
++ int last_deauth_reason;
++ int last_disassoc_reason;
 +} wifi_sta_network_state_t;
 +
 +typedef void (*wifi_sta_network_cb)(INT radioIndex, void *ctx);
@@ -58,9 +68,9 @@ index c69f690..84cb639 100644
 +
 +/* APPROACH 2 */
 +typedef struct {
-+	CHAR ssid[33];
-+	CHAR bssid[17];
-+	CHAR passphrase[65];
++ CHAR ssid[33];
++ CHAR bssid[17];
++ CHAR passphrase[65];
 +} wifi_staNetwork_t;
 +
 +INT wifi_getSTANetworks(INT apIndex, wifi_sta_network_t **out_staNetworks_array, INT out_array_size, BOOL *out_scan_cur_freq);
@@ -83,8 +93,8 @@ index c69f690..84cb639 100644
 +typedef struct _wifi_client_associated_dev
 +{
 +        UCHAR MACAddress[6];                /**< The MAC address of an associated device. */
-+        INT NetworkID;			    /**< Network ID */
-+        INT connected;			    /**< If network is connected */
++        INT NetworkID;         /**< Network ID */
++        INT connected;         /**< If network is connected */
 +        INT reason;
 +        INT locally_generated;
 +} wifi_client_associated_dev_t;       
@@ -98,3 +108,6 @@ index c69f690..84cb639 100644
 +
 +
  #endif
+-- 
+2.28.0
+
