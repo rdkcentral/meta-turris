@@ -1,0 +1,31 @@
+From cb9248280ab6cabf0ae7fd64b5c9bd6abf3cbe76 Mon Sep 17 00:00:00 2001
+From: Simon Chung <simon.c.chung@accenture.com>
+Date: Fri, 3 Sep 2021 15:00:02 +0100
+Subject: [PATCH] RDKBCMF-279 CcspEthAgent build failure when WanManager is
+ enabled
+
+| CcspEthAgent/source/TR-181/board_sbapi/cosa_ethernet_apis.c:476:70: error: 'ETHWAN_DEF_INTF_NAME' undeclared (first use in this function); did you mean 'ETHWAN_DEF_INTF_NUM'?
+|   476 |         v_secure_system(ip link set %s name %s,WAN_IF_NAME_PRIMARY,ETHWAN_DEF_INTF_NAME);
+|       |                                                                      ^~~~~~~~~~~~~~~~~~~~
+
+Change-Id: Ifc3bd9aa00d76ee8471c240462b64fab550b196b
+---
+ source/TR-181/board_sbapi/cosa_ethernet_apis.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/source/TR-181/board_sbapi/cosa_ethernet_apis.c b/source/TR-181/board_sbapi/cosa_ethernet_apis.c
+index b09bf37..4a8664e 100644
+--- a/source/TR-181/board_sbapi/cosa_ethernet_apis.c
++++ b/source/TR-181/board_sbapi/cosa_ethernet_apis.c
+@@ -180,7 +180,7 @@ typedef enum WanMode
+ 
+ #endif //#if defined (ENABLE_ETH_WAN)
+ 
+-#if defined(_PLATFORM_RASPBERRYPI_)
++#if defined(_PLATFORM_RASPBERRYPI_) || defined(_PLATFORM_TURRIS_)
+ #define ETHWAN_DEF_INTF_NAME "eth0"
+ #endif
+ 
+-- 
+2.28.0
+
