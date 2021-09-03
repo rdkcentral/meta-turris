@@ -13,7 +13,7 @@ SRC_URI = " \
 SRC_URI += "file://fw_env.config"
 
 SRCBRANCH = "omnia-2019"
-SRCREV = "${AUTOREV}"
+SRCREV = "c3cbc14686bbc97a60a72b5dc7d5749b0cce8fbe"
 
 S = "${WORKDIR}/git"
 
