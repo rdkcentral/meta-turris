@@ -1,24 +1,19 @@
-From 18feedd20d53f541b0aeb86dadb067ae5a73dc73 Mon Sep 17 00:00:00 2001
-From: Jaga <jagadheesan_duraisamy@comcast.com>
-Date: Wed, 26 Feb 2020 09:17:01 +0000
-Subject: [PATCH] openssl 1.1.x compatibility in HMAC functions
+From ddd180b6ada9f079d406f230eede76de014cc3ea Mon Sep 17 00:00:00 2001
+From: Simon Chung <simon.c.chung@accenture.com>
+Date: Mon, 20 Sep 2021 16:01:34 +0100
+Subject: [PATCH] openssl-1.1.x-compatibility-in-HMAC-functions
 
-Reason for change: HMAC_CTX object allocated in heap, openssl 1.1.x
-compatibility
-Source: COMCAST
-License: Apache-2.0
-Upstream-Status: Pending
-Signed-off-by: Jaga <Jagadheesan_Duraisamy@comcast.com>
+Change-Id: Iafaed6c19dd16121aeca6e9f114e76c96a20beaf
 ---
  .../TR-181/board_sbapi/cosa_users_apis.c      | 19 +++++++++++++++++++
  1 file changed, 19 insertions(+)
 
 diff --git a/source-arm/TR-181/board_sbapi/cosa_users_apis.c b/source-arm/TR-181/board_sbapi/cosa_users_apis.c
-index 87ec0f95..e6935bb3 100644
+index 4930db38..b615f20a 100644
 --- a/source-arm/TR-181/board_sbapi/cosa_users_apis.c
 +++ b/source-arm/TR-181/board_sbapi/cosa_users_apis.c
-@@ -595,7 +595,11 @@ ANSC_STATUS
-         char cmp[128] = {'\0'};
+@@ -594,7 +594,11 @@ ANSC_STATUS
+         char *convertTo = NULL;
          char saltText[128] = {'\0'}, hashedmd[128] = {'\0'};
          int  iIndex = 0, Key_len = 0, salt_len = 0, hashedmd_len = 0;
 +#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
@@ -27,9 +22,9 @@ index 87ec0f95..e6935bb3 100644
 +        HMAC_CTX *pctx = HMAC_CTX_new();
 +#endif
          errno_t safec_rc = -1;
+         int hashedpassword_size = 128;
  			
-         safec_rc = strcpy_s(saltText, sizeof(saltText), SerialNumber);
-@@ -607,17 +611,32 @@ ANSC_STATUS
+@@ -607,10 +611,19 @@ ANSC_STATUS
          Key_len = strlen(pString);
  	
          salt_len = strlen(saltText);
@@ -46,11 +41,12 @@ index 87ec0f95..e6935bb3 100644
 +        HMAC_Final(  pctx, (unsigned char *)hashedmd, (unsigned int *)&hashedmd_len );
 +#endif
 +
-         convertTo = cmp;
+         convertTo = hashedpassword;
          for (iIndex = 0; iIndex < hashedmd_len; iIndex++) 
          {
-           sprintf(convertTo,"%02x", hashedmd[iIndex] & 0xff);
+@@ -623,7 +636,13 @@ ANSC_STATUS
            convertTo += 2;
+           hashedpassword_size -= 2;
          }
 +
 +#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
@@ -59,9 +55,9 @@ index 87ec0f95..e6935bb3 100644
 +        HMAC_CTX_free(pctx);
 +#endif
 +
-         AnscCopyString(hashedpassword,cmp);
          CcspTraceWarning(("%s, Returning success\n",__FUNCTION__));	
          return ANSC_STATUS_SUCCESS ;
+ 
 -- 
 2.28.0
 
