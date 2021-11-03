@@ -4,9 +4,6 @@ require ccsp_common_turris.inc
 
 DEPENDS_append = " utopia curl "
 
-SRC_URI_remove_dunfell = "file://0001-openssl-1.1.x-compatibility-in-HMAC-functions.patch"
-
-
 CFLAGS_append = " \
     -I=${includedir}/utctx \
     -I=${includedir}/utapi \

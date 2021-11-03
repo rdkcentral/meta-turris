@@ -3,9 +3,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 require ccsp_common_turris.inc
 LDFLAGS += "-Wl,--no-as-needed -lulog"
 
-SRC_URI_remove_dunfell = "file://0001-openssl-1.1.x-compatibility.patch"
-
-
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
 LDFLAGS_append_dunfell = " -lsafec-3.5.1 -lcrypto"
