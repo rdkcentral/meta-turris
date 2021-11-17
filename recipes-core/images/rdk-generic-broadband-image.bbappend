@@ -12,7 +12,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     network-hotplug \
     libmcrypt \
     bzip2 \
-    nmap \
     libpcap \
     tcpdump \
     ebtables \
