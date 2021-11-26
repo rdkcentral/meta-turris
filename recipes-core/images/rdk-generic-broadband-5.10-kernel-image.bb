@@ -12,6 +12,7 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     network-hotplug \
     libmcrypt \
     bzip2 \
+    nmap \
     libpcap \
     tcpdump \
     ebtables \
@@ -26,24 +27,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
 BB_HASH_IGNORE_MISMATCH = "1"
 IMAGE_NAME[vardepsexclude] = "DATETIME"
 
-#ESDK-CHANGES
-do_populate_sdk_ext_prepend() {
-    builddir = d.getVar('TOPDIR')
-    if os.path.exists(builddir + '/conf/templateconf.cfg'):
-        with open(builddir + '/conf/templateconf.cfg', 'w') as f:
-            f.write('meta/conf\n')
-}
-
-sdk_ext_postinst_append() {
-   echo "ln -s $target_sdk_dir/layers/openembedded-core/meta-rdk $target_sdk_dir/layers/openembedded-core/../meta-rdk \n" >> $env_setup_script
-}
-
-PRSERV_HOST = "localhost:0"
-INHERIT += "buildhistory"
-BUILDHISTORY_COMMIT = "1"
-
-
-
 require image-exclude-files.inc
 
 remove_unused_file() {
@@ -51,3 +34,5 @@ remove_unused_file() {
 }
 
 ROOTFS_POSTPROCESS_COMMAND_append = "remove_unused_file; "
+
+MACHINE_IMAGE_NAME = "rdk-generic-broadband-5.10-kernel-image"

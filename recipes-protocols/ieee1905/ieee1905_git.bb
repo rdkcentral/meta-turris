@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=9cbc6eb40e7e82d67fbbce1734e6622b"
 DEPENDS = "openssl libpcap multiap-platform"
 S = "${WORKDIR}/git"
 
-SRC_URI = "git://github.com/TechnicolorEDGM/ieee1905.git \
+SRC_URI = "git://github.com/TechnicolorEDGM/ieee1905.git;protocol=https \
            file://0001-Added-support-for-RDK-flavour-compilation.patch \
           "
 #rdk-port: <TBD> need to apply following patch accordingly

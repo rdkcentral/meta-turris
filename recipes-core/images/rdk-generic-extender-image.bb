@@ -12,13 +12,11 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     linux-firmware-ath10k \
     libmcrypt \
     bzip2 \
-    nmap \
     libpcap \
     tcpdump \
     ebtables \
     dropbear \
     iw \
-    bc \
     opensync \
     openvswitch \
     libcap \

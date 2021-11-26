@@ -123,6 +123,8 @@ touch /tmp/AllAssociated_Devices_5G.txt
 
 if [ $device_type == "extender" ];
 then
+        ifconfig wlan0 down                                     
+        ifconfig wlan1 down 
         exit 0;
 fi
 
