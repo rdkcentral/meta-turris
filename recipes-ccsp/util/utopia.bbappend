@@ -160,6 +160,8 @@ do_install_append() {
     echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "touch -f /tmp/utopia_inited" >> ${D}${sysconfdir}/utopia/utopia_init.sh
 
+    sed -i '/log_capture_path.sh/a \
+mkdir -p \/opt\/secure ' ${D}${sysconfdir}/utopia/utopia_init.sh
 }
 
 do_install_append_dunfell() {
