@@ -939,3 +939,40 @@ $nameserver2=0.0.0.0
 $hostname=TurrisOmnia-GW
 
 $IPv6subPrefix=true
+
+#DSLite
+#dslite_enable - Enable/disable DS-Lite
+$dslite_enable=0
+
+#dslite_count - The number of dslite entries
+$dslite_count=1
+
+#dslite_InsNum - The index of dslite entry
+$dslite_InsNum_1=1
+
+#dslite_active - Enable or disable this 1st ipv6 tunnel
+$dslite_active_1=0
+
+#dslite_alias - The alias of the 1st ipv6 tunnel
+$dslite_alias_1=Dslite.Tunnel.1
+
+#dslite_mode - The preferred method to be used for EndpointName: DHCPv6(1), Static(2)
+$dslite_mode_1=1
+
+#dslite_addr_type - The preferred method to be used for the DS-Lite Endpoint: FQDN(1) IPv6Address(2)
+$dslite_addr_type_1=2
+
+#dslite_addr_fqdn - The Fully Qualified Domain Name (FQDN) of the tunnel concentrator (remote endpoint)
+$dslite_addr_fqdn_1=none
+
+#dslite_addr_ipv6 - The IPv6 address of the tunnel concentrator (remote endpoint)
+$dslite_addr_ipv6_1=::
+
+#dslite_mss_clamping_enable - Turn on/off (TCP) MSS clamping for ipv6 tunnel
+$dslite_mss_clamping_enable_1=0
+
+#dslite_tcpmss - TCP Mss value for ipv6 tunnel
+$dslite_tcpmss_1=1420
+
+#dslite_ipv6_frag_enable - Enable/disable dslite IPv6 frag
+$dslite_ipv6_frag_enable_1=0
