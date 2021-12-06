@@ -1,0 +1,31 @@
+diff --git a/src/lib/target/src/stats.c b/src/lib/target/src/stats.c
+index 9439654..1767d82 100644
+--- a/src/lib/target/src/stats.c
++++ b/src/lib/target/src/stats.c
+@@ -260,7 +260,7 @@ static bool stats_client_fetch(
+         int                         radioIndex,
+         int                         apIndex,
+         char                       *apName,
+-        wifi_associated_dev3_t     *assoc_dev)
++        wifi_associated_dev2_t     *assoc_dev)
+ {
+     stats_client_record_t *client_entry = NULL;
+     wifi_associated_dev_rate_info_rx_stats_t *stats_rx = NULL;
+@@ -328,7 +328,7 @@ bool stats_clients_get(
+         ds_dlist_t                 *client_list)
+ {
+     radio_essid_t ssid_name;
+-    wifi_associated_dev3_t *client_array;
++    wifi_associated_dev2_t *client_array;
+     UINT client_num;
+     int ret;
+     int i;
+@@ -392,7 +392,7 @@ bool stats_clients_get(
+ 
+         client_array = NULL;
+         client_num = 0;
+-        ret = wifi_getApAssociatedDeviceDiagnosticResult3(s, &client_array, &client_num);
++        ret = wifi_getApAssociatedDeviceDiagnosticResult2(s, &client_array, &client_num);
+         if (ret != RETURN_OK)
+         {
+             LOGW("%s %s %ld %s: fetch client list",
