@@ -1,0 +1,22 @@
+diff --git a/src/lib/target/src/target_kconfig.c b/src/lib/target/src/target_kconfig.c
+index ca635ce..6a48512 100644
+--- a/src/lib/target/src/target_kconfig.c
++++ b/src/lib/target/src/target_kconfig.c
+@@ -364,14 +364,11 @@ static bool
+ util_ping_cmd(const char *ipstr, bool ipv6)
+ {
+     char cmd[256];
+-    char *ipv6_s;
+     bool rc;
+ 
+-    ipv6_s = ipv6 ? "-6" : "";
+-
+-    snprintf(cmd, sizeof(cmd), "ping %s %s -s %d -c %d -w %d >/dev/null 2>&1",
+-             ipv6_s, ipstr, DEFAULT_PING_PACKET_SIZE, DEFAULT_PING_PACKET_CNT,
+-             DEFAULT_PING_TIMEOUT);
++    snprintf(cmd, sizeof(cmd), "ping -s %d -c %d -w %d %s >/dev/null 2>&1",
++             DEFAULT_PING_PACKET_SIZE, DEFAULT_PING_PACKET_CNT,
++             DEFAULT_PING_TIMEOUT, ipstr);
+ 
+     rc = util_system_cmd(cmd);
+     LOGD("Ping %s result %d (cmd=%s)", ipstr, rc, cmd);
