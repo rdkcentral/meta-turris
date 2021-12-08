@@ -9,7 +9,7 @@ DEPENDS_append_dunfell = " breakpad-wrapper rdk-logger utopia"
 
 LDFLAGS_remove_dunfell = "-lgwprovappabs"
 
-CFLAGS_append = " -Wno-unused-variable -Wno-sizeof-pointer-memaccess -Wno-unused-parameter -Wno-unused-but-set-variable "
+CFLAGS_append = " -Wno-unused-variable -Wno-sizeof-pointer-memaccess -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-format-overflow "
 
 do_install_append () {
 	install -d ${D}${systemd_unitdir}/system
