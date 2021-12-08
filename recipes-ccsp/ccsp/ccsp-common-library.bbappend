@@ -90,7 +90,6 @@ do_install_append_class-target(){
 
     install -D -m 0644 ${S}/systemd_units/ProcessResetDetect.service ${D}${systemd_unitdir}/system/ProcessResetDetect.service
     install -D -m 0644 ${S}/systemd_units/ProcessResetDetect.path ${D}${systemd_unitdir}/system/ProcessResetDetect.path
-    install -D -m 0644 ${S}/systemd_units/logagent.service ${D}${systemd_unitdir}/system/logagent.service
 
     # Install wrapper for breakpad (disabled to support External Source build)
     #install -d ${D}${includedir}/ccsp
@@ -113,7 +112,7 @@ do_install_append_class-target(){
 
 do_install_append_dunfell_class-target () {
     #for yocto 3.1, Making psm to run after gwprovethwan
-    sed -i '/logagent.service/c After=logagent.service gwprovethwan.service' ${D}${systemd_unitdir}/system/PsmSsp.service
+    sed -i '/CcspCrSsp.service/c After=CcspCrSsp.service gwprovethwan.service' ${D}${systemd_unitdir}/system/PsmSsp.service
 }
 
 SYSTEMD_SERVICE_${PN} += "ccspwifiagent.service"
@@ -134,7 +133,6 @@ SYSTEMD_SERVICE_${PN} += "checkturriswifisupport.path"
 SYSTEMD_SERVICE_${PN} += "wifi-initialized.target"
 SYSTEMD_SERVICE_${PN} += "ProcessResetDetect.path"
 SYSTEMD_SERVICE_${PN} += "ProcessResetDetect.service"
-SYSTEMD_SERVICE_${PN} += "logagent.service"
 SYSTEMD_SERVICE_${PN} += "rfc.service"
 
 FILES_${PN}_append = " \
@@ -161,6 +159,5 @@ FILES_${PN}_append = " \
     ${systemd_unitdir}/system/wifi-initialized.target \
     ${systemd_unitdir}/system/ProcessResetDetect.path \
     ${systemd_unitdir}/system/ProcessResetDetect.service \
-    ${systemd_unitdir}/system/logagent.service \
     ${systemd_unitdir}/system/rfc.service \
 "
