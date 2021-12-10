@@ -190,6 +190,7 @@ if [ ! -f /sys/class/net/brlan0 ]
 then
     brctl addbr brlan0
     ip link set brlan0 address `cat /sys/class/net/eth1/address`
+    ifconfig brlan0 10.0.0.1 netmask 255.255.255.0 up
 fi
 
 #Work around for Ethernet connected clients
