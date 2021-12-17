@@ -12,8 +12,6 @@ BBMASK .= "|openembedded-core/meta/recipes-bsp/u-boot/libubootenv_0.2.bb"
 BBMASK .= "|openembedded-core/meta/recipes-bsp/u-boot/libubootenv_0.3.1.bb"
 BBMASK .= "|meta-virtualization/recipes-devtools/protobuf"
 
-BBMASK .= "${@'' if os.path.isdir('|meta-openembedded/meta-oe/recipes-devtools/breakpad/breakpad_git.bb') else '|meta-cmf/recipes-devtools/breakpad/breakpad_git.bb'}"
-
 #To avoid build warning
 BBMASK .= "|meta-rdk-ext/recipes-support/iksemel/iksemel_1.5.bb"
 
