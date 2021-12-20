@@ -1,6 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/opensync_2.4.5:${THISDIR}/files:"
 
-
 CORE_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://0001-inet-start-dhcps-always.patch', '', d)}"
 CORE_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'extender', 'file://0002-Use-osync_hal-in-inet_gretap.patch', '', d)}"
 CORE_URI_remove = "git://git@github.com/plume-design/opensync.git;protocol=ssh;branch=osync_2.0.5;name=core;destsuffix=git/core"
