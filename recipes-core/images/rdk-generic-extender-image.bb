@@ -31,3 +31,9 @@ SYSTEMD_TOOLS = "systemd-analyze systemd-bootchart"
 SYSTEMD_TOOLS_remove_libc-musl = "systemd-bootchart"
 
 do_rootfs[nostamp] = "1"
+
+remove_unused_file() {
+ rm -rf ${IMAGE_ROOTFS}/usr/lib/python* ;
+}
+
+ROOTFS_POSTPROCESS_COMMAND_append = "remove_unused_file; "
