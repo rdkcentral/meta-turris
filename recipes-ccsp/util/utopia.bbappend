@@ -23,6 +23,7 @@ LDFLAGS_append = " \
 "
 
 CFLAGS_append = " -Wno-format-extra-args -Wno-error "
+CFLAGS_append += "${@bb.utils.contains('DISTRO_FEATURES', 'rdkb_wan_manager', ' -D_WAN_MANAGER_ENABLED_', '', d)}"
 
 # we need to patch to code for Turris
 do_turris_patches() {
@@ -159,6 +160,38 @@ do_install_append() {
     echo "sysevent set bridge_mode \`syscfg get bridge_mode\`" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "sysevent set lan-status started" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
+
+#WanManager Feature
+    DISTRO_WAN_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','rdkb_wan_manager','true','false',d)}"
+    if [ $DISTRO_WAN_ENABLED = 'true' ]; then
+    sed -i '/cron/a \
+\# Creating the dibbler directory for its pid files in \/tmp \ 
+mkdir -p \/tmp\/dibbler ' ${D}${sysconfdir}/utopia/utopia_init.sh
+
+    sed -i '/log_capture_path.sh/a \
+mkdir -p \/nvram \
+rm -f \/nvram\/dnsmasq.leases \
+cp \/usr\/ccsp\/ccsp_msg.cfg \/tmp \
+touch \/tmp\/cp_subsys_ert \
+ln -s \/var\/spool\/cron\/crontabs \/ \
+mkdir -p \/var\/run\/firewall \
+touch \/nvram\/ETHWAN_ENABLE ' ${D}${sysconfdir}/utopia/utopia_init.sh
+
+    sed -i '/sshd-start/a \
+\#TODO: Need to replaced once the sky version 2 code is available \
+sysevent set lan-start 0 \
+sysevent set bridge-stop 0 \
+sysevent set bridge_mode 0 \
+sysevent set dhcp_server-resync 0 \
+sysevent set ethwan-initialized 1 \
+syscfg set eth_wan_enabled true \
+syscfg commit \
+echo 1 > \/proc\/sys\/net\/ipv4\/ip_forward ' ${D}${sysconfdir}/utopia/utopia_init.sh
+
+    sed -i '/lan-status started/a \
+sysevent set wan-status started ' ${D}${sysconfdir}/utopia/utopia_init.sh
+    fi
+
     echo "touch -f /tmp/utopia_inited" >> ${D}${sysconfdir}/utopia/utopia_init.sh
 
 }

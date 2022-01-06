@@ -976,3 +976,9 @@ $dslite_tcpmss_1=1420
 
 #dslite_ipv6_frag_enable - Enable/disable dslite IPv6 frag
 $dslite_ipv6_frag_enable_1=0
+
+#Defaults for WanManager
+$tr_dhcpv6c_enabled=1
+$tr_dhcpv6c_iana_enabled=1
+$tr_dhcpv6c_iapd_enabled=1
+

@@ -21,6 +21,30 @@ CFLAGS_remove = "-Werror"
 
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
+do_configure_prepend () {
+   #for WanManager support
+   #Below lines of code needs to be removed , once (Device.DHCPv4.Client.{i} and Device.DhCPv6,CLient.{i}) the mentioned parameters are permanently removed from TR181-USGv2.XML
+    DISTRO_WAN_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','rdkb_wan_manager','true','false',d)}"
+if [ $DISTRO_WAN_ENABLED = 'true' ]; then
+if [ ! -f ${WORKDIR}/WanManager_XML_UPDATED ]; then
+   GREP_WORD=`cat -n ${S}/config-arm/TR181-USGv2.XML  | grep 9536 | cut -d '<' -f2 | cut -d  '>' -f2`
+   if [ "$GREP_WORD" = "ClientNumberOfEntries" ]; then
+        #for DHCPv4.Client.{i}.
+        sed -i '9534s/<parameter>/<!-- <parameter>/g' ${S}/config-arm/TR181-USGv2.XML
+        sed -i '9542s/<\/parameter>/<\/parameter>-->/g' ${S}/config-arm/TR181-USGv2.XML
+        sed -i '9642s/<object>/<!-- <object>/g' ${S}/config-arm/TR181-USGv2.XML
+        sed -i '10058s/<\/object>/<\/object>-->/g' ${S}/config-arm/TR181-USGv2.XML
+        #for DHCPv6.Client.{i}.
+        sed -i '10832s/<parameter>/<!-- <parameter>/g' ${S}/config-arm/TR181-USGv2.XML
+        sed -i '10836s/<\/parameter>/<\/parameter>-->/g' ${S}/config-arm/TR181-USGv2.XML
+        sed -i '10839s/<object>/<!-- <object>/g' ${S}/config-arm/TR181-USGv2.XML
+        sed -i '11138s/<\/object>/<\/object>-->/g' ${S}/config-arm/TR181-USGv2.XML
+   fi
+   touch ${WORKDIR}/WanManager_XML_UPDATED
+fi
+fi
+}
+
 do_install_append(){
     # Config files and scripts
     install -m 644 ${S}/config-arm/CcspDmLib.cfg ${D}/usr/ccsp/pam/CcspDmLib.cfg
