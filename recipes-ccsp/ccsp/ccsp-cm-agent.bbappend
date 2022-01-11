@@ -3,6 +3,8 @@ require ccsp_common_turris.inc
 DEPENDS_append_dunfell = " safec"
 LDFLAGS_append_dunfell = " -lsafec-3.5.1"
 
+EXTRA_OECONF_remove = " ${@bb.utils.contains('DISTRO_FEATURES', 'rdkb_wan_manager', '--enable-wanmgr', '', d)}"
+
 do_install_append() {
     # Config files and scripts
     install -m 644 ${S}/config-arm/CcspCMDM.cfg ${D}${prefix}/ccsp/cm/CcspCMDM.cfg
