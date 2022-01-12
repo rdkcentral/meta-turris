@@ -1,3 +1,9 @@
+SRC_URI_append = " \
+    ${CMF_GIT_ROOT}/rdkb/devices/raspberrypi/sysint;module=.;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_BRANCH};destsuffix=git/devicerpi;name=sysintdevicerpi \
+"
+SRCREV_sysintdevicerpi = "${AUTOREV}"
+SRCREV_FORMAT = "sysintgeneric_sysintdevicerpi"
+
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRCREV_FORMAT = "${AUTOREV}"
