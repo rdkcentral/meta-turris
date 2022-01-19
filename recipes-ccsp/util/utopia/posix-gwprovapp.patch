@@ -1,11 +1,13 @@
---- git/source/syscfg/lib/Makefile.am	2019-03-19 10:02:19.740772177 +0000
-+++ git1/source/syscfg/lib/Makefile.am	2019-03-19 10:03:47.412200730 +0000
-@@ -21,7 +21,7 @@
+diff --git a/source/syscfg/lib/Makefile.am b/source/syscfg/lib/Makefile.am
+index 50d14ea2..8bfc3789 100644
+--- a/source/syscfg/lib/Makefile.am
++++ b/source/syscfg/lib/Makefile.am
+@@ -20,7 +20,7 @@ AM_CFLAGS = -D_ANSC_LINUX
+ AM_CFLAGS += -D_ANSC_USER
  AM_CFLAGS += -D_ANSC_LITTLE_ENDIAN_
- AM_CFLAGS += -fPIC
  AM_CFLAGS += -D_GNU_SOURCE
 -AM_CFLAGS += -DSC_POSIX_SEM
 +AM_CFLAGS += -DSC_SYSV_SEM
- AM_LDFLAGS = -L/var/tmp/pc-rdkb/lib
- AM_LDFLAGS += -lpthread
- AM_LDFLAGS += -lz
+ 
+ ACLOCAL_AMFLAGS = -I m4
+ 
