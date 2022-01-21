@@ -1,0 +1,1 @@
+CFLAGS_append = " -DWIFI_HAL_VERSION_3 "
