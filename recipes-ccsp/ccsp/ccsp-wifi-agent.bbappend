@@ -5,7 +5,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 LDFLAGS += " \
 	-lutopiautil \
 	   "
-CFLAGS_append = " -Wno-error"
+CFLAGS_append = " -Wno-error -DWIFI_HAL_VERSION_3"
 
 #work around for wifi restart_flag=false, for meshagent synchroniztaion
 do_configure_prepend() {
@@ -20,6 +20,7 @@ SRC_URI_append = " \
     file://radio_param_def.cfg \
     file://synclease.sh \
     file://handle_mesh-rename-opensync.patch;apply=no \
+    file://avoid_gssidcount_error.patch;apply=no \
 "
 
 # we need to patch to code for ccsp-wifi-agent
@@ -28,6 +29,7 @@ do_turris_ccspwifiagent_patches() {
     if [ ! -e patch_applied ]; then
         bbnote "Patching handle_mesh-rename-opensync.patch"
         patch  -p1 < ${WORKDIR}/handle_mesh-rename-opensync.patch ${S}/scripts/handle_mesh
+        patch  -p1 < ${WORKDIR}/avoid_gssidcount_error.patch 
         touch patch_applied
     fi
 }

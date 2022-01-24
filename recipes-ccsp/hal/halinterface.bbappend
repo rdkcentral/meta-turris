@@ -10,3 +10,5 @@ do_turris_patches() {
         fi
 }
 addtask turris_patches after do_unpack before do_compile
+
+CFLAGS_append = " -DWIFI_HAL_VERSION_3"
