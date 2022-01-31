@@ -207,5 +207,8 @@ ifconfig lan2 up
 ifconfig lan3 up
 ifconfig lan4 up
 
+#workaround: creating /opt/secure folder for ssh service
+mkdir /opt/secure
+
 exit 0
 
