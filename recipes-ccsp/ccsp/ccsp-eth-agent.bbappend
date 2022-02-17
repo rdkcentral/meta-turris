@@ -10,7 +10,7 @@ SRC_URI_append = " file://include_platform_turris.patch;apply=no"
 do_turris_patches() {
     cd ${S}
     if [ ! -e patch_applied ]; then
-        patch -p1 < ${WORKDIR}/include_platform_turris.patch
+        patch -p1 < ${WORKDIR}/include_platform_turris.patch  || echo "ERROR or Patch already applied"
         touch patch_applied
     fi
 }

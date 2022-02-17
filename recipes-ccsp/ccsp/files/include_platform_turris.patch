@@ -1,11 +1,25 @@
-Signed-off-by: kaviya.kumaresan@ltts.com
-Subject: Including PLATFORM_TURRIS that supports the wan-manager integeration for Turris-Omnia
+From cc1e0853b73a8b7a4845add5e3eccabebfab33bc Mon Sep 17 00:00:00 2001
+From: KaviyaKumaresan <Kaviya.Kumaresan@ltts.com>
+Date: Thu, 6 Jan 2022 12:31:58 +0000
+Subject: [PATCH] REFPLTB-1505: Add necessary updates for WanManager support in
+ meta-turris layer
+
+Reason for change: Including the changes for wanmanager integeration
+Test Procedure: Build and test
+Risks: low
+
+Signed-off-by: KaviyaKumaresan <Kaviya.Kumaresan@ltts.com>
+Change-Id: I88c07335646cfeaa0e3ba0bc624644df307bbc6b
+---
+ source/TR-181/board_sbapi/cosa_ethernet_apis.c    | 9 +++------
+ source/TR-181/board_sbapi/cosa_ethernet_manager.c | 4 ++--
+ 2 files changed, 5 insertions(+), 8 deletions(-)
 
 diff --git a/source/TR-181/board_sbapi/cosa_ethernet_apis.c b/source/TR-181/board_sbapi/cosa_ethernet_apis.c
-index fd3d24b..dfa97b0 100644
+index 5f9554a..8c54329 100644
 --- a/source/TR-181/board_sbapi/cosa_ethernet_apis.c
 +++ b/source/TR-181/board_sbapi/cosa_ethernet_apis.c
-@@ -317,12 +317,14 @@ typedef enum WanMode
+@@ -317,15 +317,12 @@ typedef enum WanMode
  #define ETHWAN_DEF_INTF_NAME "eth5"
  #elif defined (INTEL_PUMA7)
  #define ETHWAN_DEF_INTF_NAME "nsgmii0"
@@ -15,14 +29,16 @@ index fd3d24b..dfa97b0 100644
  #define ETHWAN_DEF_INTF_NAME "eth0"
  #endif
  
- 
+-
 -#if defined(_PLATFORM_RASPBERRYPI_) || defined(_PLATFORM_TURRIS_)
-+#if defined(_PLATFORM_RASPBERRYPI_) 
- #define ETHWAN_DEF_INTF_NAME "eth0"
- #endif
+-#define ETHWAN_DEF_INTF_NAME "eth0"
+-#endif
+-
+ #define ETH_HOST_PARAMVALUE_TRUE "true"
+ #define ETH_HOST_PARAMVALUE_FALSE "false"
+ #define ETH_HOST_MAC_LENGTH 17
+@@ -1943,7 +1940,7 @@ CosaDmlEthInit(
  
-@@ -1601,7 +1603,7 @@ CosaDmlEthInit(
-         }
      }
  #else
 -    #if defined(_PLATFORM_RASPBERRYPI_)
@@ -31,7 +47,7 @@ index fd3d24b..dfa97b0 100644
  
      if (!syscfg_get(NULL, "wan_physical_ifname", out_value, sizeof(out_value)))
 diff --git a/source/TR-181/board_sbapi/cosa_ethernet_manager.c b/source/TR-181/board_sbapi/cosa_ethernet_manager.c
-index 3c70853..02e5b74 100644
+index 3c70853..d960f8f 100644
 --- a/source/TR-181/board_sbapi/cosa_ethernet_manager.c
 +++ b/source/TR-181/board_sbapi/cosa_ethernet_manager.c
 @@ -21,7 +21,7 @@
@@ -48,7 +64,10 @@ index 3c70853..02e5b74 100644
      if (ANSC_STATUS_SUCCESS != CosaDmlEthCreateEthLink(pstInfo->Name, stGlobalInfo.Path))
  #elif defined(FEATURE_RDKB_WAN_MANAGER)
 -    #if defined(_PLATFORM_RASPBERRYPI_)     
-+    #if defined(_PLATFORM_RASPBERRYPI_) || defined(_PLATFORM_TURRIS_)     
++    #if defined(_PLATFORM_RASPBERRYPI_) || defined(_PLATFORM_TURRIS_)    
      CHAR wanPhyName[20] = {0},out_value[20] = {0};
      if (!syscfg_get(NULL, "wan_physical_ifname", out_value, sizeof(out_value)))
      {
+-- 
+2.17.1
+
