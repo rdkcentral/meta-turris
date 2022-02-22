@@ -17,7 +17,6 @@ SRC_URI_append = " \
     file://checkturriswifisupport.path \
     file://wifi-initialized.target \
     file://utopia.service \
-    file://wanip.sh \
 "
 
 SRC_URI_remove_dunfell = "file://0001-DBusLoop-SSL_state-TLS_ST_OK.patch"
@@ -121,7 +120,6 @@ do_install_append_class-target(){
      install -D -m 0644 ${WORKDIR}/utopia.service ${D}${systemd_unitdir}/system/utopia.service
      install -D -m 0644 ${S}/systemd_units/RdkTelcoVoiceManager.service ${D}${systemd_unitdir}/system/RdkTelcoVoiceManager.service
      install -D -m 0644 ${S}/systemd_units/RdkVlanManager.service ${D}${systemd_unitdir}/system/RdkVlanManager.service
-     install -m 755 ${WORKDIR}/wanip.sh ${D}${base_libdir}/rdk/
     fi
 
     ##### erouter0 ip issue
@@ -165,7 +163,6 @@ FILES_${PN}_append = " \
     /usr/ccsp/utopiaInitCheck.sh \
     /usr/ccsp/ccspPAMCPCheck.sh \
     /usr/ccsp/ProcessResetCheck.sh \
-    ${base_libdir}/rdk/wanip.sh \
     ${systemd_unitdir}/system/ccspwifiagent.service \
     ${systemd_unitdir}/system/CcspCrSsp.service \
     ${systemd_unitdir}/system/CcspPandMSsp.service \

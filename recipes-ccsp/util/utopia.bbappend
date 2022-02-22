@@ -157,6 +157,17 @@ do_install_append() {
     #MSG_QUEUE  files are not present in turris
     sed -i '/TOT_MSG_MAX=\$/ s/^/#/g'  ${D}${sysconfdir}/utopia/utopia_init.sh    
 
+    echo "###TurrisOmnia specific lines###" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "#TODO: Need to replaced once the sky version 2 code is available" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "sysevent set lan-start 0" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "sysevent set bridge-stop 0" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "sysevent set bridge_mode 0" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "sysevent set dhcp_server-resync 0" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "sysevent set ethwan-initialized 1" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "syscfg set eth_wan_enabled true" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "syscfg commit" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "echo 1 > \/proc\/sys\/net\/ipv4\/ip_forward" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+
     echo "sysevent set bridge_mode \`syscfg get bridge_mode\`" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "sysevent set lan-status started" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
@@ -177,16 +188,6 @@ ln -s \/var\/spool\/cron\/crontabs \/ \
 mkdir -p \/var\/run\/firewall \
 touch \/nvram\/ETHWAN_ENABLE ' ${D}${sysconfdir}/utopia/utopia_init.sh
 
-    sed -i '/sshd-start/a \
-\#TODO: Need to replaced once the sky version 2 code is available \
-sysevent set lan-start 0 \
-sysevent set bridge-stop 0 \
-sysevent set bridge_mode 0 \
-sysevent set dhcp_server-resync 0 \
-sysevent set ethwan-initialized 1 \
-syscfg set eth_wan_enabled true \
-syscfg commit \
-echo 1 > \/proc\/sys\/net\/ipv4\/ip_forward ' ${D}${sysconfdir}/utopia/utopia_init.sh
 
     sed -i '/lan-status started/a \
 sysevent set wan-status started ' ${D}${sysconfdir}/utopia/utopia_init.sh

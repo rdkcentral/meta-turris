@@ -9,7 +9,7 @@ index 37019bc..aba7811 100644
                  }
              }
          }
-+#if 0 
++#ifndef WIFI_HAL_VERSION_3
  #if defined(_PLATFORM_RASPBERRYPI_) || defined(_PLATFORM_TURRIS_)
  	// Reset Band Steering parameters
  	int bsIndex = 0;
