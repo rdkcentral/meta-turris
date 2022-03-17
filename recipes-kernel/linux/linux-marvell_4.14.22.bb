@@ -17,7 +17,8 @@ SRC_URI_append_clearfog = " \
 "
 SRC_URI += " \
     file://ath-reg.cfg \
-    file://openvswitch.cfg \
+    file://conntrack.cfg \
+    file://gre-fix.cfg \
 "
 
 DEPENDS += " u-boot"
