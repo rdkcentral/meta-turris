@@ -36,6 +36,7 @@ do_install_append () {
                 sed -i "s/if((!strcmp(\$url, \$Wan_IPv4) || ((inet_pton(\$url)!=\"\") || (inet_pton(\$Wan_IPv6!==\"\"))) \&\&(inet_pton(\$url) == inet_pton(\$Wan_IPv6)))){/if((!strcmp(\$url, \$Wan_IPv4) || ((inet_pton(\$url)!=\"\") \&\& (inet_pton(\$Wan_IPv6!==\"\"))) \&\&(inet_pton(\$url) == inet_pton(\$Wan_IPv6)))){/g" ${D}/usr/www2/index.jst
                 sed -i "s/\$Wan_IPv4 = getStr(\"Device.X_CISCO_COM_CableModem.IPAddress\");/\$Wan_IPv4 = getStr(\"Device.DeviceInfo.X_COMCAST-COM_CM_IP\");/g" ${D}/usr/www2/captiveportal.jst
                 sed -i "s/if((!strcmp(\$url, \$Wan_IPv4) || ((inet_pton(\$url)!=\"\") || (inet_pton(\$Wan_IPv6!==\"\"))) \&\&(inet_pton(\$url) == inet_pton(\$Wan_IPv6)))){/if((!strcmp(\$url, \$Wan_IPv4) || ((inet_pton(\$url)!=\"\") \&\& (inet_pton(\$Wan_IPv6!==\"\"))) \&\&(inet_pton(\$url) == inet_pton(\$Wan_IPv6)))){/g" ${D}/usr/www2/captiveportal.jst
+                sed -i '/\/\/ setStr("Device.WiFi.Radio."+\$r+".X_CISCO_COM_ApplySetting", "true", true);/ s/\/\///' ${D}/usr/www2/actionHandler/ajaxSet_wireless_network_configuration_edit.jst
                 sed -i "s/\/usr\/www/\/usr\/www2/g" ${D}${systemd_unitdir}/system/CcspWebUI.service
 }
 
