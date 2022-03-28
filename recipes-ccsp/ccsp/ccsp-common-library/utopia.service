@@ -25,6 +25,7 @@ After=mount-nonvol.service
 Type=forking
 WorkingDirectory=/etc/utopia
 EnvironmentFile=/etc/device.properties
+ExecStartPre=/bin/sh -c '(/lib/rdk/wanip.sh &)'
 ExecStart=/bin/sh /etc/utopia/utopia_init.sh
 ExecStop=/bin/sh -c 'echo "Stopping/Restarting utopia_init.sh" >> ${PROCESS_RESTART_LOG}'
 
