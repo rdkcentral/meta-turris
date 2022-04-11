@@ -4,6 +4,7 @@ SRC_URI += "\
 file://enabling_dhcp_lease_resync.patch;apply=no \
 file://meshagent-enable-ovs-default.patch;apply=no \
 file://skip-apply-settings.patch;apply=no \
+file://noc_url.patch;apply=no \
 "
 
 DEPENDS_append_dunfell = " safec trower-base64"
@@ -21,6 +22,9 @@ do_turris_meshagent_patches() {
 
         bbnote "Patching skip-apply-settings.patch"
         patch  -p1 < ${WORKDIR}/skip-apply-settings.patch ${S}/source/MeshAgentSsp/cosa_mesh_apis.c
+
+        bbnote "Patching NOC-URL for Meshagent"
+        patch  -p1 < ${WORKDIR}/noc_url.patch ${S}/source/MeshAgentSsp/cosa_mesh_apis.c
 
         touch patch_applied
     fi
