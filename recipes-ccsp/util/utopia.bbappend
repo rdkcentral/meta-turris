@@ -16,7 +16,6 @@ SRC_URI_append_dunfell = "file://0001-Work-around-for-brlan0-issue.patch;apply=n
 SRC_URI += "file://posix-gwprovapp.patch;apply=no"
 #This patch will add dummy swctl api which is originally given by brcm for XB3.
 SRC_URI += "file://0002-fix-swctl-missing-api.patch;apply=no"
-SRC_URI += "file://firewall-secure-onboard.patch;apply=no"
 SRC_URI += "file://dhcp_script.sh"
 
 LDFLAGS_append = " \
@@ -41,9 +40,6 @@ do_turris_patches() {
 
         bbnote "Patching 0002-fix-swctl-missing-api.patch"
         patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
-
-        bbnote "Patching firewall-secure-onboard.patch"
-        patch -p1 < ${WORKDIR}/firewall-secure-onboard.patch || echo "ERROR or Patch already applied"
 
         touch turris_patch_applied
     fi
