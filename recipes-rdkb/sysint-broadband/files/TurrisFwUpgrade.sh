@@ -18,28 +18,30 @@ ls /tmp/zImage* >/dev/null
 check "No new image present in /tmp directory"
 
 BootPartition="/dev/mmcblk0p1"
-NewTurrisModel=1
+PrimaryPartition="/dev/mmcblk0p2"
+SecondaryPartition="/dev/mmcblk0p3"
+PrimaryPartitionLabel="primary"
+SecondaryPartitionLabel="secondary"
 
 ActiveRootPartition=`mount | grep "/" -w | cut -d' ' -f1`
-if [ $ActiveRootPartition == "/dev/mmcblk0p2" ]; then
-  TargetRootPartition="/dev/mmcblk0p3"
-elif [ $ActiveRootPartition == "/dev/mmcblk0p3" ]; then
-  TargetRootPartition="/dev/mmcblk0p2"
-elif [ $ActiveRootPartition == "/dev/mmcblk0p5" ]; then
-  TargetRootPartition="/dev/mmcblk0p7"
-  BootPartition="/dev/mmcblk0p3"
-  NewTurrisModel=0
-else ##if $ActiveRootPartition is "/dev/mmcblk0p7"
-  TargetRootPartition="/dev/mmcblk0p5"
-  BootPartition="/dev/mmcblk0p3"
-  NewTurrisMode=0
+if [ $ActiveRootPartition == $PrimaryPartition ]; then
+  TargetRootPartition=$SecondaryPartition
+  TargetRootPartitionLabel=$SecondaryPartitionLabel
+elif [ $ActiveRootPartition == $SecondaryPartition ]; then
+  TargetRootPartition=$PrimaryPartition
+  TargetRootPartitionLabel=$PrimaryPartitionLabel
+else
+  echo "ActiveRootPartition: $ActiveRootPartition."
+  echo "Usupported partition layout. Upgrade your Turris box via USB first."
+  exit 1
 fi
+
 echo "ActiveRootPartition: $ActiveRootPartition"
 echo "TargetRootPartition: $TargetRootPartition"
 echo "BootPartition: $BootPartition"
 
 umount /mnt 2>/dev/null
-echo y | mkfs.ext2 $TargetRootPartition
+echo y | mkfs.ext4 $TargetRootPartition -L $TargetRootPartitionLabel
 check "Error in formatting $TargetRootPartition"
 
 mount $TargetRootPartition /mnt
@@ -58,17 +60,14 @@ check "Error in mounting $BootPartition"
 mv /mnt/zImage /zImage_old
 cp /tmp/zImage* /mnt/zImage
 if [ $? != 0 ]; then
-echo "Error in copying zImage. Falling back."
-mv /zImage_old /mnt/zImage
-exit 1
+  echo "Error in copying zImage. Falling back."
+  mv /zImage_old /mnt/zImage
+  exit 1
 fi
 
-if [ $NewTurrisModel -eq 1 ]; then
-  if [ $TargetRootPartition == "/dev/mmcblk0p2" ]; then
-    cp /boot-main.scr /mnt/boot.scr
-  else
-    cp /boot-alt.scr /mnt/boot.scr
-  fi
+if [ $TargetRootPartition == $PrimaryPartition ]; then
+  cp /boot-main.scr /mnt/boot.scr
 else
-  fw_setenv yocto_bootargs earlyprintk console=ttyS0,115200 root=$TargetRootPartition rootfstype=ext2 rw rootwait
+  cp /boot-alt.scr /mnt/boot.scr
 fi
+umount /mnt

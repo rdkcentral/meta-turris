@@ -13,6 +13,7 @@ SRC_URI_remove = "${CMF_GIT_ROOT}/rdkb/devices/intel-x86-pc/emulator/sysint;modu
 SRC_URI += "file://TurrisFwUpgrade.sh"
 SRC_URI += "file://swupdate_utility.sh"
 SRC_URI += "file://swupdate.service"
+SRC_URI += "file://nvram.mount"
 SRC_URI += "file://commonUtils.sh \
             file://dcaSplunkUpload.sh \
             file://dca_utility.sh \
@@ -28,6 +29,7 @@ SRC_URI += "file://commonUtils.sh \
 
 SYSTEMD_SERVICE_${PN} = "swupdate.service"
 SYSTEMD_SERVICE_${PN} += "dcm-log.service"
+SYSTEMD_SERVICE_${PN} += "nvram.mount"
 
 do_install_append() {
     echo "BOX_TYPE=turris" >> ${D}${sysconfdir}/device.properties
@@ -37,6 +39,7 @@ do_install_append() {
     install -m 0755 ${WORKDIR}/TurrisFwUpgrade.sh ${D}${base_libdir}/rdk
     install -m 0755 ${WORKDIR}/swupdate_utility.sh ${D}${base_libdir}/rdk
     install -m 0644 ${WORKDIR}/swupdate.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${WORKDIR}/nvram.mount ${D}${systemd_unitdir}/system
     echo "CLOUDURL="http://35.155.171.121:9092/xconf/swu/stb?eStbMac="" >> ${D}${sysconfdir}/include.properties
 
     #DCM simulator Support
@@ -70,5 +73,6 @@ do_install_append() {
 
 FILES_${PN} += "${systemd_unitdir}/system/swupdate.service"
 FILES_${PN} += "${systemd_unitdir}/system/dcm-log.service"
+FILES_${PN} += "${systemd_unitdir}/system/nvram.mount"
 
 RDEPENDS_${PN}_append_dunfell = " bash"
