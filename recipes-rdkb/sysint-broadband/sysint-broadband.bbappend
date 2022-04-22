@@ -27,7 +27,7 @@ SRC_URI += "file://commonUtils.sh \
             file://dcm-log.service"
 
 SYSTEMD_SERVICE_${PN} = "swupdate.service"
-SYSTEMD_SERVICE_${PN} = "dcm-log.service"
+SYSTEMD_SERVICE_${PN} += "dcm-log.service"
 
 do_install_append() {
     echo "BOX_TYPE=turris" >> ${D}${sysconfdir}/device.properties
