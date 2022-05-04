@@ -17,3 +17,6 @@ DISTRO_FEATURES_append = " dlna"
 DISTRO_FEATURES_append = " meshwifi"
 DISTRO_FEATURES_append = " ipv6"
 DISTRO_FEATURES_append = " rdkb_wan_manager"
+
+# RDKBDEV-866: EasyMesh Controller support
+DISTRO_FEATURES_append = " easymesh-controller"
