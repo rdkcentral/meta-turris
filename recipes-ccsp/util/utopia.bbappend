@@ -110,8 +110,6 @@ do_install_append() {
     install -m 755 ${S}/source/scripts/init/service.d/service_bridge.sh ${D}${sysconfdir}/utopia/service.d/service_bridge.sh
 
     install -m 755 ${WORKDIR}/dhcp_script.sh ${D}${sysconfdir}/
-    #Removing service_dhcp_server.sh as dnsmasq is invoked by service_dhcp binary
-    rm ${D}${sysconfdir}/utopia/service.d/service_dhcp_server.sh
 
     # Creating symbolic links to install files in specific directory as in legacy builds
     ln -sf /usr/bin/10_firewall ${D}${sysconfdir}/utopia/post.d/10_firewall
