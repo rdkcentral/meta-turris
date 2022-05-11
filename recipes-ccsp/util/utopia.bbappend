@@ -195,11 +195,6 @@ sysevent set wan-status started ' ${D}${sysconfdir}/utopia/utopia_init.sh
 
 }
 
-do_install_append_dunfell() {
-   #Following line is for adding Backhaul interface entries in dnsmasq.conf
-    sed -i '/XB6/i \ \ \ \ \ \ \ elif [ "$BOX_TYPE" = "turris" ]; then\n\ \ \ \ \ \ \ \ \ \ \ echo "interface=wifi2" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ echo "dhcp-range=169.254.0.2,169.254.0.254,255.255.255.0,infinite" >> $LOCAL_DHCP_CONF\n\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if [ "1" == "$NAMESERVERENABLED" ] && [ "$WAN_DHCP_NS" != "" ]; then\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ echo "${PREFIX}""dhcp-option=wifi2,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fi\n\n\ \ \ \ \ \ \ \ \ \ \ echo "interface=wifi3" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ echo "dhcp-range=169.254.1.2,169.254.1.254,255.255.255.0,infinite" >> $LOCAL_DHCP_CONF\n\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if [ "1" == "$NAMESERVERENABLED" ] && [ "$WAN_DHCP_NS" != "" ]; then\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ echo "${PREFIX}""dhcp-option=wifi3,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fi\n\n\ \ \ \ \ \ \ \ \ \ \ echo "interface=br-home" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ echo "dhcp-range=192.168.1.2,192.168.1.253,255.255.255.0,7d" >> $LOCAL_DHCP_CONF\n\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if [ "1" == "$NAMESERVERENABLED" ] && [ "$WAN_DHCP_NS" != "" ]; then\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ echo "${PREFIX}""dhcp-option=br-home,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fi\n' ${D}${sysconfdir}/utopia/service.d/service_dhcp_server/dhcp_server_functions.sh
-}
-
 FILES_${PN} += " \
     /rdklogs/ \
     /fss/gw/bin/ \
