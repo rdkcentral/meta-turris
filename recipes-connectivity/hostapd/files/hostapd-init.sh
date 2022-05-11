@@ -80,7 +80,7 @@ fi
 
 if [ ! -f /nvram/hostapd4.conf ]
 then
-	cp /etc/hostapd-bhaul2G.conf /nvram/hostapd4.conf
+	cp /etc/hostapd-2G.conf /nvram/hostapd4.conf
 	#Set bssid for wifi4
         NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd4.conf
@@ -91,7 +91,7 @@ fi
 
 if [ ! -f /nvram/hostapd5.conf ]
 then
-	cp /etc/hostapd-bhaul5G.conf /nvram/hostapd5.conf
+	cp /etc/hostapd-5G.conf /nvram/hostapd5.conf
 	#Set bssid for wifi5
         NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd5.conf
@@ -102,9 +102,9 @@ fi
 
 if [ ! -f /nvram/hostapd6.conf ]
 then
-	cp /etc/hostapd-bhaul2G.conf /nvram/hostapd6.conf
+	cp /etc/hostapd-2G.conf /nvram/hostapd6.conf
 	#Set bssid for wifi6
-        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd6.conf
         sed -i "/^interface=/c\interface=wifi6" /nvram/hostapd6.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl6"  /nvram/hostapd6.conf
@@ -113,7 +113,7 @@ fi
 
 if [ ! -f /nvram/hostapd7.conf ]
 then
-	cp /etc/hostapd-bhaul5G.conf /nvram/hostapd7.conf
+	cp /etc/hostapd-5G.conf /nvram/hostapd7.conf
 	#Set bssid for wifi7
         NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd7.conf
@@ -122,8 +122,30 @@ then
         echo "wpa_psk_file=/tmp/hostapd7.psk" >> /nvram/hostapd7.conf
 fi
 
+if [ ! -f /nvram/hostapd8.conf ]
+then
+	cp /etc/hostapd-open2G.conf /nvram/hostapd8.conf
+	#Set bssid for wifi8
+        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+12, $2, $3, $4 ,$5, $6}')
+        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd8.conf
+        sed -i "/^interface=/c\interface=wifi8" /nvram/hostapd8.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl8"  /nvram/hostapd8.conf
+        echo "wpa_psk_file=/tmp/hostapd8.psk" >> /nvram/hostapd8.conf
+fi
+
+if [ ! -f /nvram/hostapd9.conf ]
+then
+	cp /etc/hostapd-open5G.conf /nvram/hostapd9.conf
+	#Set bssid for wifi9
+        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+12, $2, $3, $4 ,$5, $6}')
+        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd9.conf
+        sed -i "/^interface=/c\interface=wifi9" /nvram/hostapd9.conf
+        sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl9"  /nvram/hostapd9.conf
+        echo "wpa_psk_file=/tmp/hostapd9.psk" >> /nvram/hostapd9.conf
+fi
+
 #Setting up VAP status file
-echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0\nwifi4=0\nwifi5=0\nwifi6=0\nwifi7=0" >/tmp/vap-status
+echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0\nwifi4=0\nwifi5=0\nwifi6=0\nwifi7=0\nwifi8=0\nwifi9=0" >/tmp/vap-status
 
 #Creating files for tracking AssociatedDevices
 touch /tmp/AllAssociated_Devices_2G.txt
