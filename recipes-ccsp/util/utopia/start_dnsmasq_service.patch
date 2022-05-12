@@ -1,0 +1,90 @@
+From 262f70f766cfd40b3e44e83976bba3726c4dcef1 Mon Sep 17 00:00:00 2001
+From: Manigandan Gopalakrishnan <manigandan.gopalakrishnan@ltts.com>
+Date: Tue, 10 May 2022 23:18:40 +0530
+Subject: [PATCH] REFPLTB-1676: Dnsmasq can’t up automatically
+
+Reason for change: Taking script approach to start dnsmasq service
+Test procedure: Found that dnsmasq is running in Turris Omnia
+Risks: Low
+
+Signed-off-by: Manigandan Gopalakrishnan <manigandan.gopalakrishnan@ltts.com>
+Change-Id: Ieb11fb11e9b9bebba78d617dab23c88c3d1f2064
+---
+
+diff --git a/source/scripts/init/c_registration/15_dhcp_server.c b/source/scripts/init/c_registration/15_dhcp_server.c
+index f7dbdaf..3b3eeae 100644
+--- a/source/scripts/init/c_registration/15_dhcp_server.c
++++ b/source/scripts/init/c_registration/15_dhcp_server.c
+@@ -39,7 +39,7 @@
+ 
+ const char* SERVICE_NAME            = "dhcp_server";
+ const char* SERVICE_DEFAULT_HANDLER = "/etc/utopia/service.d/service_dhcp_server.sh";
+-#if defined(_COSA_INTEL_USG_ARM_) && !defined(INTEL_PUMA7) && !defined(_COSA_BCM_ARM_) && !defined(_PLATFORM_IPQ_)
++#if defined(_COSA_INTEL_USG_ARM_) && !defined(INTEL_PUMA7) && !defined(_COSA_BCM_ARM_) && !defined(_PLATFORM_IPQ_) && !defined(_PLATFORM_TURRIS_)
+ const char* SERVICE_CUSTOM_EVENTS[] = { 
+                                         "syslog-status|/etc/utopia/service.d/service_dhcp_server.sh",
+                                         "lan-status|/usr/bin/service_dhcp",
+diff --git a/source/scripts/init/service.d/service_dhcp_server.sh b/source/scripts/init/service.d/service_dhcp_server.sh
+index 0b92e45..55abad8 100755
+--- a/source/scripts/init/service.d/service_dhcp_server.sh
++++ b/source/scripts/init/service.d/service_dhcp_server.sh
+@@ -399,7 +399,7 @@
+ 	  return 0
+    fi
+   
+-  if [ "$BOX_TYPE" != "rpi" ]; then 
++  if [ "$BOX_TYPE" != "rpi" ] && [ "$BOX_TYPE" != "turris" ]; then
+    DHCP_STATE=`sysevent get lan_status-dhcp`
+    #if [ "started" != "$CURRENT_LAN_STATE" ] ; then
+    if [ "started" != "$DHCP_STATE" ] ; then
+@@ -537,7 +537,7 @@
+    if [ $? -eq 0 ]; then
+    	echo_t "$SERVER process started successfully"
+    else
+-   	if [ "$BOX_TYPE" = "XB6" ] || [ "$BOX_TYPE" = "PUMA7_CGP" ] || [ "$BOX_TYPE" = "rpi" ] ; then
++   	if [ "$BOX_TYPE" = "XB6" ] || [ "$BOX_TYPE" = "PUMA7_CGP" ] || [ "$BOX_TYPE" = "rpi" ] || [ "$BOX_TYPE" = "turris" ] ; then
+    
+         	COUNTER=0
+         	while [ $COUNTER -lt 5 ]; do
+diff --git a/source/scripts/init/service.d/service_dhcp_server/dhcp_server_functions.sh b/source/scripts/init/service.d/service_dhcp_server/dhcp_server_functions.sh
+index 2a076fc..5963a18 100755
+--- a/source/scripts/init/service.d/service_dhcp_server/dhcp_server_functions.sh
++++ b/source/scripts/init/service.d/service_dhcp_server/dhcp_server_functions.sh
+@@ -1008,7 +1008,7 @@
+       fi
+    fi
+   
+-   if [ "$BOX_TYPE" = "rpi" ]; then                                       
++   if [ "$BOX_TYPE" = "rpi" ] || [ "$BOX_TYPE" = "turris" ]; then
+ 	   LAN_STATUS=`sysevent get lan-status`
+ 	   BRIDGE_MODE=`syscfg get bridge_mode`
+ 	   if [ "$LAN_STATUS" = "stopped" ] && [ $BRIDGE_MODE == 0 ]; then                
+@@ -1137,6 +1137,28 @@
+                 echo "${PREFIX}""dhcp-option=br403,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF
+             fi
+ 
++       elif [ "$BOX_TYPE" = "turris" ]; then
++           echo "interface=wifi2" >> $LOCAL_DHCP_CONF
++           echo "dhcp-range=169.254.0.5,169.254.0.126,255.255.255.128,infinite" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=wifi2,3" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=wifi2,6" >> $LOCAL_DHCP_CONF
++
++           echo "interface=wifi3" >> $LOCAL_DHCP_CONF
++           echo "dhcp-range=169.254.1.5,169.254.1.126,255.255.255.128,infinite" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=wifi3,3" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=wifi3,6" >> $LOCAL_DHCP_CONF
++
++           echo "interface=wifi6" >> $LOCAL_DHCP_CONF
++           echo "dhcp-range=169.254.0.130,169.254.0.252,255.255.255.128,infinite" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=wifi6,3" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=wifi6,6" >> $LOCAL_DHCP_CONF
++
++           echo "interface=wifi7" >> $LOCAL_DHCP_CONF
++           echo "dhcp-range=169.254.1.130,169.254.1.252,255.255.255.128,infinite" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=wifi7,3" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=wifi7,6" >> $LOCAL_DHCP_CONF
++           echo "dhcp-script=/etc/dhcp_script.sh" >> $LOCAL_DHCP_CONF
++
+        elif [ "$BOX_TYPE" = "XB6" ]; then
+            echo "interface=ath12" >> $LOCAL_DHCP_CONF
+            echo "dhcp-range=169.254.0.5,169.254.0.253,255.255.255.0,infinite" >> $LOCAL_DHCP_CONF

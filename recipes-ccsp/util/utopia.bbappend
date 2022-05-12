@@ -41,6 +41,8 @@ do_turris_patches() {
         bbnote "Patching 0002-fix-swctl-missing-api.patch"
         patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
 
+        patch -p1 < ${WORKDIR}/start_dnsmasq_service.patch || echo "ERROR or Patch already applied"
+
         touch turris_patch_applied
     fi
 }
