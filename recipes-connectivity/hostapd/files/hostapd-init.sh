@@ -130,7 +130,6 @@ then
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd8.conf
         sed -i "/^interface=/c\interface=wifi8" /nvram/hostapd8.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl8"  /nvram/hostapd8.conf
-        echo "wpa_psk_file=/tmp/hostapd8.psk" >> /nvram/hostapd8.conf
 fi
 
 if [ ! -f /nvram/hostapd9.conf ]
@@ -141,7 +140,6 @@ then
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd9.conf
         sed -i "/^interface=/c\interface=wifi9" /nvram/hostapd9.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl9"  /nvram/hostapd9.conf
-        echo "wpa_psk_file=/tmp/hostapd9.psk" >> /nvram/hostapd9.conf
 fi
 
 #Setting up VAP status file
@@ -150,6 +148,9 @@ echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0\nwifi4=0\nwifi5=0\nwifi6=0\nwifi7=0\
 #Creating files for tracking AssociatedDevices
 touch /tmp/AllAssociated_Devices_2G.txt
 touch /tmp/AllAssociated_Devices_5G.txt
+
+#workaround: creating /opt/secure folder for ssh service
+mkdir /opt/secure
 
 if [ $device_type == "extender" ];
 then
@@ -236,9 +237,6 @@ ifconfig lan1 up
 ifconfig lan2 up
 ifconfig lan3 up
 ifconfig lan4 up
-
-#workaround: creating /opt/secure folder for ssh service
-mkdir /opt/secure
 
 exit 0
 

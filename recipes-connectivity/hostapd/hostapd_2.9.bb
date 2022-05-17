@@ -16,6 +16,8 @@ SRC_URI = " \
     file://defconfig \
     file://hostapd-2G.conf \
     file://hostapd-5G.conf \
+    file://hostapd-open2G.conf \
+    file://hostapd-open5G.conf \
     file://hostapd-bhaul2G.conf \
     file://hostapd-bhaul5G.conf \
     file://hostapd.service \
@@ -52,6 +54,8 @@ do_install() {
          install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
          install -m 0644 ${WORKDIR}/hostapd-2G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-5G.conf ${D}${sysconfdir}
+         install -m 0644 ${WORKDIR}/hostapd-open2G.conf ${D}${sysconfdir}
+         install -m 0644 ${WORKDIR}/hostapd-open5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-bhaul2G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-bhaul5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
@@ -66,6 +70,8 @@ do_install_turris-extender() {
          sed -i '/^ExecStart=/c\ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid' ${WORKDIR}/hostapd.service
          install -m 0644 ${WORKDIR}/hostapd-2G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-5G.conf ${D}${sysconfdir}
+         install -m 0644 ${WORKDIR}/hostapd-open2G.conf ${D}${sysconfdir}
+         install -m 0644 ${WORKDIR}/hostapd-open5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-bhaul2G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-bhaul5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
@@ -76,6 +82,8 @@ FILES_${PN} += " \
                 ${systemd_unitdir}/system/hostapd.service \
                 ${sysconfdir}/hostapd-2G.conf \
                 ${sysconfdir}/hostapd-5G.conf \
+                ${sysconfdir}/hostapd-open2G.conf \
+                ${sysconfdir}/hostapd-open5G.conf \
                 ${sysconfdir}/hostapd-bhaul2G.conf \
                 ${sysconfdir}/hostapd-bhaul5G.conf \
                 ${base_libdir}/rdk/hostapd-init.sh \
