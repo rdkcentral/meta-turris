@@ -6,6 +6,7 @@ BBMASK .= "|meta-rdk/recipes-support/base64/base64_git.bb"
 
 BBMASK .= "|meta-rdk-ext/recipes-common/rtmessage"
 BBMASK .= "|meta-rdk-ext/recipes-kernel/linux/linux-libc-headers_%.bbappend"
+BBMASK .= "|meta-rdk-ext/recipes-support/lvm2"
 
 BBMASK .= "|meta-browser/*"
 BBMASK .= "|openembedded-core/meta/recipes-bsp/u-boot/libubootenv_0.2.bb"
