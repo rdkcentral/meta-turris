@@ -1,0 +1,41 @@
+From d61928354b0ed84fadbab6f513b71c3d641e5e28 Mon Sep 17 00:00:00 2001
+From: Cyprian Lech <clech@plume.com>
+Date: Thu, 31 Mar 2022 07:48:43 +0000
+Subject: [PATCH] RDKB-41318: Add support for opensync.service
+
+Reason for change: Better integration OpenSync into Systemd
+Test Procedure: Check if OpenSync is running correctly
+Risks: Low
+
+Change-Id: I1bc7b45813c1fbb0c69ba9f617a1ffd3c6884c81
+Signed-off-by: Cyprian Lech <clech@plume.com>
+---
+
+diff --git a/scripts/OvsAgent_ovsdb-server_check.sh b/scripts/OvsAgent_ovsdb-server_check.sh
+index 1b45d1e..1c18d86 100644
+--- a/scripts/OvsAgent_ovsdb-server_check.sh
++++ b/scripts/OvsAgent_ovsdb-server_check.sh
+@@ -17,6 +17,10 @@
+ # SPDX-License-Identifier: Apache-2.0
+ #
+ 
++is_opensync_service()
++{
++    systemctl list-unit-files opensync.service | grep -q opensync.service
++}
+ 
+ OPENSYNC_ENABLE=`syscfg get opensync_enable`
+ if [ $# -eq 0 ]; then
+@@ -24,7 +28,11 @@
+  exit 0
+ else
+  if [ "$OPENSYNC_ENABLE" == "true" ];then
+-  /usr/opensync/scripts/managers.init $@
++  if is_opensync_service; then
++   /usr/opensync/scripts/ovs.init $@
++  else
++   /usr/opensync/scripts/managers.init $@
++  fi
+  else
+   /usr/plume/scripts/managers.init $@
+  fi
