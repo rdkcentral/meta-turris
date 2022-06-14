@@ -5,9 +5,6 @@ file://enabling_dhcp_lease_resync.patch;apply=no \
 file://meshagent-enable-ovs-default.patch;apply=no \
 "
 
-DEPENDS_append_dunfell = " safec trower-base64"
-RDEPENDS_${PN}_append_dunfell = " bash"
-
 # we need to patch to code for mesh-agent
 do_turris_meshagent_patches() {
     cd ${S}
@@ -30,7 +27,3 @@ do_install_append () {
 FILES_${PN}_append = "${systemd_unitdir}/system/meshAgent.service"
 
 CFLAGS_append = " -D_PLATFORM_TURRIS_"
-
-LDFLAGS_append_dunfell = " -lsyscfg -lsysevent -lbreakpadwrapper -lsafec-3.5.1"
-
-LDFLAGS_remove_dunfell = "-lsafec-3.5"
