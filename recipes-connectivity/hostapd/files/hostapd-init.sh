@@ -149,9 +149,6 @@ echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0\nwifi4=0\nwifi5=0\nwifi6=0\nwifi7=0\
 touch /tmp/AllAssociated_Devices_2G.txt
 touch /tmp/AllAssociated_Devices_5G.txt
 
-#workaround: creating /opt/secure folder for ssh service
-mkdir /opt/secure
-
 if [ $device_type == "extender" ];
 then
         ifconfig wlan0 down                                     
