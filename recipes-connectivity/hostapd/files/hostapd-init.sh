@@ -21,6 +21,7 @@ device_type=`cat /version.txt | grep imagename | cut -d':' -f2 | cut -d'-' -f3`
 echo "device_type: $device_type"
 if [ $device_type == "extender" ];
 then
+modprobe ip_gre
 #Workaround: allowing devices initialization
 sleep 5;
 fi
