@@ -21,6 +21,7 @@ device_type=`cat /version.txt | grep imagename | cut -d':' -f2 | cut -d'-' -f3`
 echo "device_type: $device_type"
 if [ $device_type == "extender" ];
 then
+modprobe ip_gre
 #Workaround: allowing devices initialization
 sleep 5;
 fi
@@ -148,9 +149,6 @@ echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0\nwifi4=0\nwifi5=0\nwifi6=0\nwifi7=0\
 #Creating files for tracking AssociatedDevices
 touch /tmp/AllAssociated_Devices_2G.txt
 touch /tmp/AllAssociated_Devices_5G.txt
-
-#workaround: creating /opt/secure folder for ssh service
-mkdir /opt/secure
 
 if [ $device_type == "extender" ];
 then
