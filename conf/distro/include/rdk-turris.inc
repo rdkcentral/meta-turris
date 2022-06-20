@@ -17,3 +17,6 @@ DISTRO_FEATURES_append = " dlna"
 DISTRO_FEATURES_append = " meshwifi"
 DISTRO_FEATURES_append = " ipv6"
 DISTRO_FEATURES_append = " rdkb_wan_manager"
+
+# RDKB-40900: RDKB support extender/nonrouter profile
+DISTRO_FEATURES_append = " rdkb_extender"
