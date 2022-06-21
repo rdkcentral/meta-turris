@@ -20,3 +20,6 @@ DISTRO_FEATURES_append = " rdkb_wan_manager"
 
 # RDKB-40900: RDKB support extender/nonrouter profile
 DISTRO_FEATURES_append = " rdkb_extender"
+
+# RDKB-40485: Firewall changes for EXT device. device mode support
+DISTRO_FEATURES_append = " WanFailOverSupportEnable"
