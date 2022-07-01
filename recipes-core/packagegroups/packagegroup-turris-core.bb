@@ -45,6 +45,7 @@ RDEPENDS_packagegroup-turris-core = " \
    dnsmasq \
    dt \
    u-boot-fw-utils \
+   turris-flash \
     "
 RDEPENDS_packagegroup-turris-core_remove = "\
 dt \
