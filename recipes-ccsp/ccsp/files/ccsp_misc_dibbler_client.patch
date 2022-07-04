@@ -1,0 +1,35 @@
+diff --git a/source/dhcp_client_utils/dibbler_client_utils.c b/source/dhcp_client_utils/dibbler_client_utils.c
+index da28c53..73d7f16 100644
+--- a/source/dhcp_client_utils/dibbler_client_utils.c
++++ b/source/dhcp_client_utils/dibbler_client_utils.c
+@@ -334,17 +334,14 @@ pid_t start_dibbler (dhcp_params * params, dhcp_opt_list * req_opt_list, dhcp_op
+     client_info.req_opt_list = req_opt_list;
+     client_info.send_opt_list = send_opt_list;
+ 
+-    if ((dibbler_client_prepare_config(&client_info) != SUCCESS) && (client_info.config_path != NULL))
+-    {
+-        DBG_PRINT("%s %d: Unable to get DHCPv6 REQ OPT.\n", __FUNCTION__, __LINE__);
+-        return FAILURE;
+-    }
+ 
+-    DBG_PRINT("%s %d: Starting dibbler with config %s\n", __FUNCTION__, __LINE__, client_info.config_path);
+-    
++    DBG_PRINT("%s %d: Running /lib/rdk/dibbler-init.sh\n", __FUNCTION__, __LINE__);
++    system("/lib/rdk/dibbler-init.sh");
++    DBG_PRINT("%s %d: Starting Dibbler Client\n", __FUNCTION__, __LINE__);
++
+     char cmd_args[BUFLEN_256] = {0};
+-    snprintf(cmd_args, sizeof(cmd_args), "%s -w %s", DIBBLER_CLIENT_RUN_CMD, client_info.config_path);
+ 
++    snprintf(cmd_args, sizeof(cmd_args), "%s -w %s", DIBBLER_CLIENT_RUN_CMD, DIBBLER_DFT_PATH);
+     pid_t ret = start_exe(DIBBLER_CLIENT_PATH, cmd_args);
+     if (ret <= 0)
+     {
+@@ -352,6 +349,7 @@ pid_t start_dibbler (dhcp_params * params, dhcp_opt_list * req_opt_list, dhcp_op
+         return FAILURE;
+     }
+ 
++
+     //dibbler-client will demonize a child thread during start, so we need to collect the exited main thread
+     if (collect_waiting_process(ret, DIBBLER_CLIENT_TERMINATE_TIMEOUT) != SUCCESS)
+     {
