@@ -37,8 +37,21 @@ SRC_URI += " file://defconfig \
              file://315-armada-xp-linksys-mamba-resize-kernel.patch \
              file://316-armada-370-dts-fix-crypto-engine.patch \
              file://700-mvneta-tx-queue-workaround.patch \
+             file://701-v5.14-net-ethernet-marvell-mvnetaMQPrio.patch \
+             file://702-net-next-ethernet-marvell-mvnetaMQPrioOffload.patch \
+             file://703-net-next-ethernet-marvell-mvnetaMQPrioFlag.patch \
+             file://704-net-next-ethernet-marvell-mvnetaMQPrioQueue.patch \
+             file://705-net-next-ethernet-marvell-mvnetaMQPrioTCOffload.patch \
              file://800-cpuidle-mvebu-indicate-failure-to-enter-deeper-sleep.patch \
              file://801-pci-mvebu-time-out-reset-on-link-up.patch \
+             file://901-dt-bindings-Add-IEI-vendor-prefix-and-IEI-WT61P803-P.patch \
+             file://902-drivers-mfd-Add-a-driver-for-IEI-WT61P803-PUZZLE-MCU.patch \
+             file://903-drivers-hwmon-Add-the-IEI-WT61P803-PUZZLE-HWMON-driv.patch \
+             file://904-drivers-leds-Add-the-IEI-WT61P803-PUZZLE-LED-driver.patch \
+             file://905-Documentation-ABI-Add-iei-wt61p803-puzzle-driver-sys.patch \
+             file://906-Documentation-hwmon-Add-iei-wt61p803-puzzle-hwmon-dr.patch \
+             file://907-MAINTAINERS-Add-an-entry-for-the-IEI-WT61P803-PUZZLE.patch \
+             file://910-drivers-leds-wt61p803-puzzle-improvements.patch \
 " 
 
 SRC_URI_remove += "file://0001-add-support-for-http-host-headers-cookie-url-netfilt.patch \
