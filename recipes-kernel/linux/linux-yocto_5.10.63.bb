@@ -56,6 +56,7 @@ SRC_URI += " file://defconfig \
 
 SRC_URI_remove += "file://0001-add-support-for-http-host-headers-cookie-url-netfilt.patch \
                    file://0001-selinux-update-netlink-socket-classes.patch \
+                   file://nfsdisable.cfg \
 "
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
