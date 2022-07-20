@@ -4,6 +4,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/linux-yocto-5.4:"
 
 SRC_URI_remove += "file://0001-add-support-for-http-host-headers-cookie-url-netfilt.patch"
 SRC_URI_remove += "file://0001-selinux-update-netlink-socket-classes.patch"
+SRC_URI_remove += "file://nfsdisable.cfg"
+
 
 SRC_URI += " file://defconfig \
              file://000-v5.5-arm64-dts-marvell-Add-support-for-Marvell-CN9130-SoC.patch \
@@ -42,7 +44,6 @@ SRC_URI += " file://defconfig \
              file://024-PCI-aardvark-Don-t-touch-PCIe-registers-if-no-card-c.patch \
              file://025-power-reset-add-driver-for-LinkStation-power-off.patch \
              file://026-PCI-aardvark-Fix-initialization-with-old-Marvell-s-A.patch \
-             file://027-arm64-dts-marvell-espressobin-Add-ethernet-switch-al.patch \
              file://028-arm64-dts-mcbin-singleshot-add-heartbeat-LED.patch \
              file://029-ARM-dts-turris-omnia-enable-HW-buffer-management.patch \
              file://030-ARM-dts-turris-omnia-add-comphy-handle-to-eth2.patch \
@@ -69,10 +70,10 @@ SRC_URI += " file://defconfig \
              file://316-arm64-dts-uDPU-switch-PHY-operation-mode-to-2500base.patch \
              file://318-armada-xp-linksys-mamba-resize-kernel.patch \
              file://320-armada-370-dts-fix-crypto-engine.patch \
-             file://400-find_active_root.patch \
              file://700-mvneta-tx-queue-workaround.patch \
              file://800-cpuidle-mvebu-indicate-failure-to-enter-deeper-sleep.patch \
              file://801-pci-mvebu-time-out-reset-on-link-up.patch \
+             file://0001-ath10k-increase-rx-buffer-size-to-2048.patch \
              "
 
 PACKAGES += "kernel-autoconf"
