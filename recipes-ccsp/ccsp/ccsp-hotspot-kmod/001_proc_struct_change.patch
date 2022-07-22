@@ -1,3 +1,9 @@
+Source: Comcast
+From: Vineet Seth <vineet_seth@comcast.com>
+Date: Thrusday, 21 July 2022 11:14:09 +0100
+Subject : Change in struct for procfs from kernel 2.6 onwards.
+  Now it uses struct proc_ops instead of struct file_operations
+
 diff -Naupr a/mtu_mod_proc.c b/mtu_mod_proc.c
 --- a/mtu_mod_proc.c	2022-07-10 17:07:51.947031719 +0100
 +++ b/mtu_mod_proc.c	2022-07-10 18:12:49.636290051 +0100
