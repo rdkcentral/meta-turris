@@ -22,6 +22,9 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     opensync \
     openvswitch \
     "
+#Temporarily removing opensync and ovs from build with 5.10 kernel
+IMAGE_INSTALL_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel5.x', 'opensync', '', d)}"
+IMAGE_INSTALL_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel5.x', 'openvswitch', '', d)}"
 
 BB_HASH_IGNORE_MISMATCH = "1"
 IMAGE_NAME[vardepsexclude] = "DATETIME"
