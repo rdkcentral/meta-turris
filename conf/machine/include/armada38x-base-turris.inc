@@ -10,7 +10,7 @@ MACHINE_ESSENTIAL_EXTRA_RDEPENDS += " \
 "
 IMAGE_FSTYPES += "tar.bz2 ext2 wic.bz2"
 SERIAL_CONSOLE = "115200 ttyS0"
-PREFERRED_PROVIDER_virtual/kernel ?= "linux-marvell"
+#PREFERRED_PROVIDER_virtual/kernel ?= "linux-marvell"
 KERNEL_IMAGETYPE = "zImage"
 PREFERRED_PROVIDER_u-boot ??= "u-boot-turris"
 PREFERRED_PROVIDER_u-boot-fw-utils ??= "u-boot-fw-utils-turris"

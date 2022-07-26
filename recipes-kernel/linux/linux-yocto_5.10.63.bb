@@ -2,7 +2,7 @@ KBRANCH ?= "v5.10/standard/base"
 
 require recipes-kernel/linux/linux-yocto.inc
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/linux-yocto-5.10:${THISDIR}/files:"
 
 SRCREV_machine = "e07f317d5a289f06b7eb9025d2ada744cf22c940"
 SRCREV_meta = "a19886b00ea7d874fdd60d8e3435894bb16e6434"
