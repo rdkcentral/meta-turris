@@ -10,6 +10,7 @@ S = "${WORKDIR}/"
 inherit deploy
 
 BOOTSCRIPT = "${S}/bootscript"
+BOOTSCRIPTALT = "${BOOTSCRIPT}-alt"
 FILES_${PN} += "/boot.scr"
 FILES_${PN} += "/boot-main.scr"
 FILES_${PN} += "/boot-alt.scr"
@@ -18,9 +19,9 @@ do_mkimage () {
     uboot-mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
                   -n "boot script" -d ${BOOTSCRIPT} ${S}/boot.scr
     cp ${S}/boot.scr ${S}/boot-main.scr
-    sed -i 's|/dev/mmcblk0p2|/dev/mmcblk0p3|' ${BOOTSCRIPT}
+    sed 's|/dev/mmcblk0p2|/dev/mmcblk0p3|' ${BOOTSCRIPT} > ${BOOTSCRIPTALT}
     uboot-mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
-                  -n "boot script" -d ${BOOTSCRIPT} ${S}/boot-alt.scr
+                  -n "boot script" -d ${BOOTSCRIPTALT} ${S}/boot-alt.scr
 }
 
 addtask mkimage after do_compile before do_install
