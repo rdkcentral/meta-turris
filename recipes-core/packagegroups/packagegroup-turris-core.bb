@@ -20,6 +20,7 @@ RDEPENDS_packagegroup-turris-core = " \
    btrfs-tools \
    util-linux-readprofile \
    wireless-tools \
+   crda \
    trace-cmd \
    cryptsetup \
    coreutils \
