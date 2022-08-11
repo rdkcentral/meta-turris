@@ -9,8 +9,8 @@ DEPENDS = "virtual/kernel"
 
 PV = "git${SRCPV}"
 
-SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git;protocol=https;branch=master"
-SRCREV = "1884732e01bec25affbd5d3366b187b757b095db"
+SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git;protocol=https;branch=main"
+SRCREV = "${AUTOREV}"
 
 S = "${WORKDIR}/git"
 
