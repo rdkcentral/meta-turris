@@ -36,6 +36,8 @@ SRC_URI += " file://defconfig \
              file://314-arm64-dts-uDPU-switch-PHY-operation-mode-to-2500base.patch \
              file://315-armada-xp-linksys-mamba-resize-kernel.patch \
              file://316-armada-370-dts-fix-crypto-engine.patch \
+             file://402-ath_regd_optional.patch \
+             file://450-ath10k-increase-rx-buffer-size-to-2048.patch \
              file://700-mvneta-tx-queue-workaround.patch \
              file://701-v5.14-net-ethernet-marvell-mvnetaMQPrio.patch \
              file://702-net-next-ethernet-marvell-mvnetaMQPrioOffload.patch \
