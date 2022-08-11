@@ -47,6 +47,7 @@ RDEPENDS_packagegroup-turris-core = " \
    dt \
    u-boot-fw-utils \
    turris-flash \
+   iproute2-tc \
     "
 RDEPENDS_packagegroup-turris-core_remove = "\
 dt \
