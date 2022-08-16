@@ -63,12 +63,22 @@ mv /zImage_old /mnt/zImage
 exit 1
 fi
 
+mv /mnt/armada-385-turris-omnia.dtb /mnt/armada-385-turris-omnia.dtb_old
+cp /tmp/armada-385-turris-omnia.dtb /mnt/
+if [ $? != 0 ]; then
+echo "Error in copying dtb file. Falling back."
+mv /mnt/armada-385-turris-omnia.dtb_old /mnt/armada-385-turris-omnia.dtb
+exit 1
+fi
+
 if [ $NewTurrisModel -eq 1 ]; then
+  echo "Updating boot script for newer model of turris omnia"
   if [ $TargetRootPartition == "/dev/mmcblk0p2" ]; then
     cp /boot-main.scr /mnt/boot.scr
   else
     cp /boot-alt.scr /mnt/boot.scr
   fi
 else
+  echo "Updating U-Boot environment variables for older model of turris omnia"
   fw_setenv yocto_bootargs earlyprintk console=ttyS0,115200 root=$TargetRootPartition rootfstype=ext2 rw rootwait
 fi
