@@ -1,0 +1,13 @@
+Signed-off-by: Rui Salvaterra <rsalvaterra@gmail.com>
+Subject: mvebu: copy 5.4 patches/kconfigs to 5.10
+
+--- a/arch/arm/boot/dts/armada-xp-linksys-mamba.dts
++++ b/arch/arm/boot/dts/armada-xp-linksys-mamba.dts
+@@ -485,3 +485,7 @@
+ 		};
+ 	};
+ };
++
++&coherencyfab {
++	broken-idle;
++};
