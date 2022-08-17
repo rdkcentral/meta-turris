@@ -180,6 +180,7 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/dibbler-server.conf ${D}${sysconfdir}/dibbler/server.conf
     install -m 0644 ${WORKDIR}/dibbler-client.conf ${D}${sysconfdir}/dibbler/client.conf
     echo "echo_t '[utopia][init] Triggering ipv6-start'" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "mkdir -p /tmp/dibbler" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "/etc/utopia/service.d/service_ipv6.sh ipv6-start &" >> ${D}${sysconfdir}/utopia/utopia_init.sh
 
     echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
