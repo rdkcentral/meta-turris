@@ -32,7 +32,7 @@ elif [ $ActiveRootPartition == "/dev/mmcblk0p5" ]; then
 else ##if $ActiveRootPartition is "/dev/mmcblk0p7"
   TargetRootPartition="/dev/mmcblk0p5"
   BootPartition="/dev/mmcblk0p3"
-  NewTurrisMode=0
+  NewTurrisModel=0
 fi
 echo "ActiveRootPartition: $ActiveRootPartition"
 echo "TargetRootPartition: $TargetRootPartition"
