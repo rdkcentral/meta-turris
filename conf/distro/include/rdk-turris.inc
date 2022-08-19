@@ -22,4 +22,4 @@ DISTRO_FEATURES_append = " rdkb_wan_manager"
 DISTRO_FEATURES_append = " rdkb_extender"
 
 #Kernel upgrade
-#DISTRO_FEATURES_append = " kernel5.x"
+DISTRO_FEATURES_append = " kernel5.x"
