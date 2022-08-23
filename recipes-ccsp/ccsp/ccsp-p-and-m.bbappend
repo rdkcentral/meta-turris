@@ -21,7 +21,7 @@ CFLAGS_remove = "-Werror"
 
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
-SRC_URI += "file://resolve_error_with_Get_Device_Mode_API.patch"
+SRC_URI += "file://resolve_error_with_Get_Device_Mode_API.patch;apply=no"
 do_turris_patches() {
     cd ${S}
     if [ ! -e turris_patch_applied ]; then
