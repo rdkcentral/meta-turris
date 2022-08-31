@@ -119,6 +119,7 @@ do_install_append() {
 
     # Creating symbolic links to install files in specific directory as in legacy builds
     ln -sf /usr/bin/10_firewall ${D}${sysconfdir}/utopia/post.d/10_firewall
+    ln -sf /usr/bin/10_firewall ${D}${sysconfdir}/utopia/registration.d/10_firewall
     ln -sf /usr/bin/service_multinet_exec ${D}${sysconfdir}/utopia/service.d/service_multinet_exec
     ln -sf /usr/bin/10_mcastproxy ${D}${sysconfdir}/utopia/post.d/10_mcastproxy
     ln -sf /usr/bin/10_mldproxy ${D}${sysconfdir}/utopia/post.d/10_mldproxy
