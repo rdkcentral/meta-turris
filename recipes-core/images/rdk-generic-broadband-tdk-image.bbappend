@@ -12,7 +12,6 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     network-hotplug \
     libmcrypt \
     bzip2 \
-    nmap \
     libpcap \
     tcpdump \
     ebtables \
@@ -47,6 +46,8 @@ require image-exclude-files.inc
 
 remove_unused_file() {
    for i in ${REMOVED_FILE_LIST} ; do rm -rf ${IMAGE_ROOTFS}/$i ; done
+   #Creating /opt/secure folder for ssh service
+   mkdir ${IMAGE_ROOTFS}/opt/secure
 }
 
 ROOTFS_POSTPROCESS_COMMAND_append = "remove_unused_file; "

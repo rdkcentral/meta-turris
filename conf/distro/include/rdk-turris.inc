@@ -20,3 +20,6 @@ DISTRO_FEATURES_append = " rdkb_wan_manager"
 
 # RDKB-40900: RDKB support extender/nonrouter profile
 DISTRO_FEATURES_append = " rdkb_extender"
+
+#Kernel upgrade
+DISTRO_FEATURES_append = " kernel5.x"

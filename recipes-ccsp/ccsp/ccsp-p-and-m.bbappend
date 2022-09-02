@@ -21,6 +21,17 @@ CFLAGS_remove = "-Werror"
 
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
+SRC_URI += "file://resolve_error_with_Get_Device_Mode_API.patch;apply=no"
+do_turris_patches() {
+    cd ${S}
+    if [ ! -e turris_patch_applied ]; then
+        bbnote "Applying resolve_error_with_Get_Device_Mode_API.patch"
+        patch -p1 < ${WORKDIR}/resolve_error_with_Get_Device_Mode_API.patch || echo "ERROR or Patch already applied"
+        touch turris_patch_applied
+    fi
+}
+
+addtask turris_patches after do_unpack before do_compile
 do_configure_prepend () {
    #for WanManager support
    #Below lines of code needs to be removed , once (Device.DHCPv4.Client.{i} and Device.DhCPv6,CLient.{i}) the mentioned parameters are permanently removed from TR181-USGv2.XML

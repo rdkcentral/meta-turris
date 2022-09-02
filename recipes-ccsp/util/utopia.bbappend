@@ -18,6 +18,8 @@ SRC_URI += "file://posix-gwprovapp.patch;apply=no"
 SRC_URI += "file://0002-fix-swctl-missing-api.patch;apply=no"
 SRC_URI += "file://start_dnsmasq_service.patch;apply=no"
 SRC_URI += "file://dhcp_script.sh"
+SRC_URI += "file://dibbler-server.conf"
+SRC_URI += "file://dibbler-client.conf"
 
 LDFLAGS_append = " \
     -lsecure_wrapper \
@@ -117,6 +119,7 @@ do_install_append() {
 
     # Creating symbolic links to install files in specific directory as in legacy builds
     ln -sf /usr/bin/10_firewall ${D}${sysconfdir}/utopia/post.d/10_firewall
+    ln -sf /usr/bin/10_firewall ${D}${sysconfdir}/utopia/registration.d/10_firewall
     ln -sf /usr/bin/service_multinet_exec ${D}${sysconfdir}/utopia/service.d/service_multinet_exec
     ln -sf /usr/bin/10_mcastproxy ${D}${sysconfdir}/utopia/post.d/10_mcastproxy
     ln -sf /usr/bin/10_mldproxy ${D}${sysconfdir}/utopia/post.d/10_mldproxy
@@ -172,6 +175,15 @@ do_install_append() {
 
     echo "sysevent set bridge_mode \`syscfg get bridge_mode\`" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "sysevent set lan-status started" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+
+#IPv6 support: starting dibbler-server
+    install -d ${D}${sysconfdir}/dibbler
+    install -m 0644 ${WORKDIR}/dibbler-server.conf ${D}${sysconfdir}/dibbler/server.conf
+    install -m 0644 ${WORKDIR}/dibbler-client.conf ${D}${sysconfdir}/dibbler/client.conf
+    echo "echo_t '[utopia][init] Triggering ipv6-start'" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "mkdir -p /tmp/dibbler" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "/etc/utopia/service.d/service_ipv6.sh ipv6-start &" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+
     echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
 
 #WanManager Feature

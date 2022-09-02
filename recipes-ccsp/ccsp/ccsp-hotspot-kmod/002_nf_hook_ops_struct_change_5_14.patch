@@ -1,0 +1,17 @@
+Source: Comcast
+From: Vineet Seth <vineet_seth@comcast.com>
+Date: Thrusday, 21 July 2022 11:14:09 +0100
+Subject : Change in struct for nf_hook_ops from 5.14 onwards
+
+--- a/mtu_mod_br.c	2022-08-16 18:09:02.110728689 +0100
++++ b/mtu_mod_br.c	2022-08-19 13:02:47.091183045 +0100
+@@ -63,6 +63,9 @@ static struct nf_hook_ops mtu_mod_ops={
+         NULL,
+         THIS_MODULE,
+         PF_BRIDGE,
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,14,0)
++	NF_HOOK_OP_UNDEFINED,
++#endif
+         NF_BR_FORWARD, /*before deliver a SKB to the destination port*/
+         NF_BR_PRI_FIRST
+ };
