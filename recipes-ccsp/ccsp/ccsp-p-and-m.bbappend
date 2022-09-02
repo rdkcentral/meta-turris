@@ -21,12 +21,12 @@ CFLAGS_remove = "-Werror"
 
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
-SRC_URI += "file://resolve_error_with_Get_Device_Mode_API.patch;apply=no"
+SRC_URI += "file://Get_Device_Mode_impl_for_turris.patch;apply=no"
 do_turris_patches() {
     cd ${S}
     if [ ! -e turris_patch_applied ]; then
-        bbnote "Applying resolve_error_with_Get_Device_Mode_API.patch"
-        patch -p1 < ${WORKDIR}/resolve_error_with_Get_Device_Mode_API.patch || echo "ERROR or Patch already applied"
+        bbnote "Applying Get_Device_Mode_impl_for_turris.patch"
+        patch -p1 < ${WORKDIR}/Get_Device_Mode_impl_for_turris.patch || echo "ERROR or Patch already applied"
         touch turris_patch_applied
     fi
 }
