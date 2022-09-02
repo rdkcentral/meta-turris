@@ -32,7 +32,7 @@ do_turris_patches() {
     if [ ! -e patch_applied ]; then
         bbnote "Patching 0003-add-dependency-to-pandm.patch"
         patch -p1 < ${WORKDIR}/0003-add-dependency-to-pandm.patch
-        patch -p1 < ${WORKDIR}/0004-remove-psm-db-reference.patch
+
         if [ "${@bb.utils.contains('DISTRO_CODENAME', 'dunfell', 'dunfell', '', d)}" = "dunfell" ] ; then
             bbnote "Patching 0001-DBusLoop-SSL_state-TLS_ST_OK.patch"
             patch -p1 < ${WORKDIR}/0001-DBusLoop-SSL_state-TLS_ST_OK.patch
