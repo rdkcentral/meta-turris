@@ -15,8 +15,6 @@ do_install_append() {
        install -m 0644 ${WORKDIR}/lighttpd_php.conf.broadband ${D}${sysconfdir}/lighttpd.conf
     fi
 
-    sed -i '/mod_redirect/a \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \"mod_openssl\",' ${D}/${sysconfdir}/lighttpd.conf
-    echo "include_shell \"sh /etc/webgui_config.sh\"" >> ${D}/${sysconfdir}/lighttpd.conf
 }
 
 FILES_${PN}_append_morty = " /usr/lib/mod_fastcgi.so"
