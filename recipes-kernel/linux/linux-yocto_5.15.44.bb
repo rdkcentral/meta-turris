@@ -31,6 +31,7 @@ SRC_URI += " file://defconfig \
              file://400-find_active_root.patch \
              file://402-ath_regd_optional.patch \
              file://700-mvneta-tx-queue-workaround_5.15.patch \
+	     file://701-net-ethernet-mtk_eth_soc-add-support-for-Wireless-Et-for-mt79.patch \
              file://702-net-next-ethernet-marvell-mvnetaMQPrioOffload.patch \
              file://703-net-next-ethernet-marvell-mvnetaMQPrioFlag.patch \
              file://704-net-next-ethernet-marvell-mvnetaMQPrioQueue.patch \

@@ -1,0 +1,133 @@
+source :hareesha.lagidi <hareesha.lagidi@ltts.com>
+subject : Source file chnages to support and install mt79* modules 
+ 
+diff --git a/Makefile b/Makefile
+index 98115c66..6fb5243b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,13 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-EXTRA_CFLAGS += -Werror -DCONFIG_MT76_LEDS
++#EXTRA_CFLAGS += -Werror -DCONFIG_MT76_LEDS
++EXTRA_CFLAGS += -Werror
++CONFIG_MT7921_COMMON := m
++CONFIG_MT7921E := m
++CONFIG_MT76_CONNAC_LIB := m
++CONFIG_MT7915E := m
++CONFIG_MT7921U := m
++CONFIG_MT76_USB := m
++
+ obj-m := mt76.o
+ obj-$(CONFIG_MT76_USB) += mt76-usb.o
+ obj-$(CONFIG_MT76_SDIO) += mt76-sdio.o
+@@ -36,3 +44,21 @@ obj-$(CONFIG_MT7603E) += mt7603/
+ obj-$(CONFIG_MT7615_COMMON) += mt7615/
+ obj-$(CONFIG_MT7915E) += mt7915/
+ obj-$(CONFIG_MT7921_COMMON) += mt7921/
++
++EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
++EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
++ARCH ?= $(SUBARCH)
++CROSS_COMPILE ?=
++KVER  := $(shell uname -r)
++KSRC := /lib/modules/$(KVER)/build
++MODDESTDIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/
++INSTALL_PREFIX :=
++STAGINGMODDIR := /lib/modules/$(KVER)/kernel/drivers/staging
++
++all: modules
++
++modules:
++	$(MAKE) ARCH="$(ARCH)" CROSS_COMPILE="$(CROSS_COMPILE)" -C $(KSRC) M="$(shell pwd)" modules
++
++clean:
++	rm -rf `find -name *.o`
+diff --git a/mt76x02_util.c b/mt76x02_util.c
+index 5bd0a0ba..2120ea1a 100644
+--- a/mt76x02_util.c
++++ b/mt76x02_util.c
+@@ -51,7 +51,7 @@ static const struct ieee80211_iface_limit mt76x02u_if_limits[] = {
+ 		.max = 1,
+ 		.types = BIT(NL80211_IFTYPE_ADHOC)
+ 	}, {
+-		.max = 2,
++		.max = 3,
+ 		.types = BIT(NL80211_IFTYPE_STATION) |
+ #ifdef CONFIG_MAC80211_MESH
+ 			 BIT(NL80211_IFTYPE_MESH_POINT) |
+@@ -80,7 +80,7 @@ static const struct ieee80211_iface_combination mt76x02u_if_comb[] = {
+ 	{
+ 		.limits = mt76x02u_if_limits,
+ 		.n_limits = ARRAY_SIZE(mt76x02u_if_limits),
+-		.max_interfaces = 2,
++		.max_interfaces = 3,
+ 		.num_different_channels = 1,
+ 		.beacon_int_infra_match = true,
+ 	}
+diff --git a/mt7915/Makefile b/mt7915/Makefile
+index b794ceb7..5a5f5c19 100644
+--- a/mt7915/Makefile
++++ b/mt7915/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: ISC
++CONFIG_MT7915E := m
+ 
+ obj-$(CONFIG_MT7915E) += mt7915e.o
+ 
+@@ -6,4 +7,4 @@ mt7915e-y := pci.o init.o dma.o eeprom.o main.o mcu.o mac.o \
+ 	     debugfs.o mmio.o
+ 
+ mt7915e-$(CONFIG_NL80211_TESTMODE) += testmode.o
+-mt7915e-$(CONFIG_MT7986_WMAC) += soc.o
+\ No newline at end of file
++mt7915e-$(CONFIG_MT7986_WMAC) += soc.o
+diff --git a/mt7915/init.c b/mt7915/init.c
+index 489f6e77..f66f3ff7 100644
+--- a/mt7915/init.c
++++ b/mt7915/init.c
+@@ -358,7 +358,7 @@ mt7915_init_wiphy(struct ieee80211_hw *hw)
+ 	    !of_property_read_bool(mdev->dev->of_node,
+ 				   "mediatek,disable-radar-background"))
+ 		wiphy_ext_feature_set(wiphy,
+-				      NL80211_EXT_FEATURE_RADAR_BACKGROUND);
++				      NL80211_EXT_FEATURE_VLAN_OFFLOAD);
+ 
+ 	ieee80211_hw_set(hw, HAS_RATE_CONTROL);
+ 	ieee80211_hw_set(hw, SUPPORTS_TX_ENCAP_OFFLOAD);
+diff --git a/mt7915/main.c b/mt7915/main.c
+index 36faefb3..6244f86b 100644
+--- a/mt7915/main.c
++++ b/mt7915/main.c
+@@ -1468,7 +1468,6 @@ const struct ieee80211_ops mt7915_ops = {
+ #ifdef CONFIG_MAC80211_DEBUGFS
+ 	.sta_add_debugfs = mt7915_sta_add_debugfs,
+ #endif
+-	.set_radar_background = mt7915_set_radar_background,
+ #ifdef CONFIG_NET_MEDIATEK_SOC_WED
+ 	.net_fill_forward_path = mt7915_net_fill_forward_path,
+ #endif
+diff --git a/mt7915/mcu.c b/mt7915/mcu.c
+index 7767bfec..4211bb05 100644
+--- a/mt7915/mcu.c
++++ b/mt7915/mcu.c
+@@ -266,7 +266,7 @@ mt7915_mcu_rx_radar_detected(struct mt7915_dev *dev, struct sk_buff *skb)
+ 		mphy = dev->mt76.phys[MT_BAND1];
+ 
+ 	if (r->band_idx == MT_RX_SEL2)
+-		cfg80211_background_radar_event(mphy->hw->wiphy,
++		cfg80211_radar_event(mphy->hw->wiphy,
+ 						&dev->rdd2_chandef,
+ 						GFP_ATOMIC);
+ 	else
+diff --git a/mt7921/Makefile b/mt7921/Makefile
+index e5d2d2e1..68748c24 100644
+--- a/mt7921/Makefile
++++ b/mt7921/Makefile
+@@ -1,4 +1,7 @@
+ # SPDX-License-Identifier: ISC
++CONFIG_MT7921_COMMON := m
++CONFIG_MT7921E := m
++CONFIG_MT7921U := m
+ 
+ obj-$(CONFIG_MT7921_COMMON) += mt7921-common.o
+ obj-$(CONFIG_MT7921E) += mt7921e.o

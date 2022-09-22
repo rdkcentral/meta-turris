@@ -21,6 +21,7 @@ IMAGE_INSTALL += " packagegroup-turris-core \
     mesh-agent \
     opensync \
     openvswitch \
+    mt79 \
     "
 
 BB_HASH_IGNORE_MISMATCH = "1"
