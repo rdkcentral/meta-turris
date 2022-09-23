@@ -170,6 +170,7 @@ do_install_append() {
     echo "sysevent set dhcp_server-resync 0" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "sysevent set ethwan-initialized 1" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "syscfg set eth_wan_enabled true" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "syscfg set PartnerID RDKM" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "syscfg commit" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "echo 1 > \/proc\/sys\/net\/ipv4\/ip_forward" >> ${D}${sysconfdir}/utopia/utopia_init.sh
 
