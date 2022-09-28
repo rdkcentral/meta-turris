@@ -1,6 +1,7 @@
 [Unit]
 Description=Hostapd IEEE 802.11n AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
-After=CcspPandMSsp.service
+After=CcspPandMSsp.service nvram.mount
+Wants=nvram.mount
 StartLimitIntervalSec=120
 
 [Service]

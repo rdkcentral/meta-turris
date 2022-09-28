@@ -1,0 +1,12 @@
+[Unit]
+Before=local-fs.target
+
+[Mount]
+Where=/nvram
+What=/dev/disk/by-label/nvram1
+
+[Service]
+TimeoutSec=5
+
+[Install]
+WantedBy=local-fs.target
