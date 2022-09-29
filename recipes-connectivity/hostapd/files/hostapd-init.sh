@@ -38,16 +38,42 @@ if [ $nvram_mounted == 0 ]; then
 	fi
 fi
 
-WIFI0_MAC=`cat /sys/class/net/wlan0/address`
-WIFI1_MAC=`cat /sys/class/net/wlan1/address`
-echo "2.4GHz Radio MAC: $WIFI0_MAC"
-echo "5GHz   Radio MAC: $WIFI1_MAC"
+WLAN24G="wlan0"
+WLAN5G="wlan1"
+
+iw dev del ${WLAN24G}
+iw dev del ${WLAN5G}
+
+PHY0_HAS24G=$(iw phy phy0 info | grep "Band 1")
+PHY0_HAS5G=$(iw phy phy0 info | grep "Band 2")
+PHY0_HAS6G=$(iw phy phy0 info | grep "Band 4")
+
+PHY1_HAS24G=$(iw phy phy1 info | grep "Band 1")
+PHY1_HAS5G=$(iw phy phy1 info | grep "Band 2")
+PHY1_HAS6G=$(iw phy phy1 info | grep "Band 4")
+
+if [ -n "${PHY0_HAS24G}" ] && [ -n "${PHY1_HAS5G}" ]; then
+	iw phy phy0 interface add ${WLAN24G} type managed
+	iw phy phy1 interface add ${WLAN5G} type managed
+elif [ -n "${PHY1_HAS24G}" ] && [ -n "${PHY0_HAS5G}" ]; then
+	iw phy phy1 interface add ${WLAN24G} type managed
+	iw phy phy0 interface add ${WLAN5G} type managed
+else
+	echo "No valid capabilities detected!"
+	exit 1
+fi
+
+WIFI24G_MAC=`cat "/sys/class/net/${WLAN24G}/address"`
+WIFI5G_MAC=`cat "/sys/class/net/${WLAN5G}/address"`
+
+echo "2.4GHz Radio MAC: ${WIFI24G_MAC}"
+echo "5GHz   Radio MAC: ${WIFI5G_MAC}"
 
 if [ ! -f /nvram/hostapd0.conf ]
 then
 	cp /etc/hostapd-2G.conf /nvram/hostapd0.conf
 	#Set bssid for wifi0
-        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI24G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
 	sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd0.conf
         echo "wpa_psk_file=/tmp/hostapd0.psk" >> /nvram/hostapd0.conf
 fi
@@ -56,7 +82,7 @@ if [ ! -f /nvram/hostapd1.conf ]
 then
 	cp /etc/hostapd-5G.conf /nvram/hostapd1.conf
 	#Set bssid for wifi1
-        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI5G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd1.conf
         echo "wpa_psk_file=/tmp/hostapd1.psk" >> /nvram/hostapd1.conf
 fi
@@ -65,7 +91,7 @@ if [ ! -f /nvram/hostapd2.conf ]
 then
 	cp /etc/hostapd-bhaul2G.conf /nvram/hostapd2.conf
 	#Set bssid for wifi2
-        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+4, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI24G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+4, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd2.conf
         echo "wpa_psk_file=/tmp/hostapd2.psk" >> /nvram/hostapd2.conf
 fi
@@ -74,7 +100,7 @@ if [ ! -f /nvram/hostapd3.conf ]
 then
 	cp /etc/hostapd-bhaul5G.conf /nvram/hostapd3.conf
 	#Set bssid for wifi3
-        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+4, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI5G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+4, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd3.conf
         echo "wpa_psk_file=/tmp/hostapd3.psk" >> /nvram/hostapd3.conf
 fi
@@ -83,7 +109,7 @@ if [ ! -f /nvram/hostapd4.conf ]
 then
 	cp /etc/hostapd-2G.conf /nvram/hostapd4.conf
 	#Set bssid for wifi4
-        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI24G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd4.conf
         sed -i "/^interface=/c\interface=wifi4" /nvram/hostapd4.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl4"  /nvram/hostapd4.conf
@@ -94,7 +120,7 @@ if [ ! -f /nvram/hostapd5.conf ]
 then
 	cp /etc/hostapd-5G.conf /nvram/hostapd5.conf
 	#Set bssid for wifi5
-        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI5G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd5.conf
         sed -i "/^interface=/c\interface=wifi5" /nvram/hostapd5.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl5" /nvram/hostapd5.conf
@@ -105,7 +131,7 @@ if [ ! -f /nvram/hostapd6.conf ]
 then
 	cp /etc/hostapd-2G.conf /nvram/hostapd6.conf
 	#Set bssid for wifi6
-        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI24G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd6.conf
         sed -i "/^interface=/c\interface=wifi6" /nvram/hostapd6.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl6"  /nvram/hostapd6.conf
@@ -116,7 +142,7 @@ if [ ! -f /nvram/hostapd7.conf ]
 then
 	cp /etc/hostapd-5G.conf /nvram/hostapd7.conf
 	#Set bssid for wifi7
-        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI5G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd7.conf
         sed -i "/^interface=/c\interface=wifi7" /nvram/hostapd7.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl7"  /nvram/hostapd7.conf
@@ -127,7 +153,7 @@ if [ ! -f /nvram/hostapd8.conf ]
 then
 	cp /etc/hostapd-open2G.conf /nvram/hostapd8.conf
 	#Set bssid for wifi8
-        NEW_MAC=$(echo 0x$WIFI0_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+12, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI24G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+12, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd8.conf
         sed -i "/^interface=/c\interface=wifi8" /nvram/hostapd8.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl8"  /nvram/hostapd8.conf
@@ -137,7 +163,7 @@ if [ ! -f /nvram/hostapd9.conf ]
 then
 	cp /etc/hostapd-open5G.conf /nvram/hostapd9.conf
 	#Set bssid for wifi9
-        NEW_MAC=$(echo 0x$WIFI1_MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+12, $2, $3, $4 ,$5, $6}')
+        NEW_MAC=$(echo 0x${WIFI5G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+12, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd9.conf
         sed -i "/^interface=/c\interface=wifi9" /nvram/hostapd9.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl9"  /nvram/hostapd9.conf
@@ -152,42 +178,42 @@ touch /tmp/AllAssociated_Devices_5G.txt
 
 if [ $device_type == "extender" ];
 then
-        ifconfig wlan0 down                                     
-        ifconfig wlan1 down 
+        ifconfig ${WLAN5G} down
+        ifconfig ${WLAN24G} down
         exit 0;
 fi
 
 #Creating virtual interfaces wifi0 and wifi1 for Home APs
-iw dev wlan0 interface add wifi0 type __ap
-iw dev wlan1 interface add wifi1 type __ap
+iw dev ${WLAN24G} interface add wifi0 type __ap
+iw dev ${WLAN5G} interface add wifi1 type __ap
 
 #2.4GHz Virtual Access Points for backhaul connection
-iw dev wlan0 interface add wifi2 type __ap
+iw dev ${WLAN24G} interface add wifi2 type __ap
 ip addr add 169.254.0.1/25 dev wifi2
 ifconfig wifi2 mtu 1600
 
 #5GHz Virtual Access Points for backhaul connection
-iw dev wlan1 interface add wifi3 type __ap
+iw dev ${WLAN5G} interface add wifi3 type __ap
 ip addr add 169.254.1.1/25 dev wifi3
 ifconfig wifi3 mtu 1600
 
 #Creating virtual interfaces wifi4 and wifi5 for Guest APs
-iw dev wlan0 interface add wifi4 type __ap
-iw dev wlan1 interface add wifi5 type __ap
+iw dev ${WLAN24G} interface add wifi4 type __ap
+iw dev ${WLAN5G} interface add wifi5 type __ap
 
 #2.4GHz Virtual Access Points for Secure Onboard connection
-iw dev wlan0 interface add wifi6 type __ap
+iw dev ${WLAN24G} interface add wifi6 type __ap
 ip addr add 169.254.0.129/25 dev wifi6
 ifconfig wifi6 mtu 1600
 
 #5GHz Virtual Access Points for onboard connection
-iw dev wlan1 interface add wifi7 type __ap
+iw dev ${WLAN5G} interface add wifi7 type __ap
 ip addr add 169.254.1.129/25 dev wifi7
 ifconfig wifi7 mtu 1600
 
 #Creating virtual interfaces wifi8 and wifi9 for Service APs
-iw dev wlan0 interface add wifi8 type __ap
-iw dev wlan1 interface add wifi9 type __ap
+iw dev ${WLAN24G} interface add wifi8 type __ap
+iw dev ${WLAN5G} interface add wifi9 type __ap
 
 #Create empty acl list for hostapd
 touch /tmp/hostapd-acl0
