@@ -1,15 +1,15 @@
-From 0523cb83f94e416e6904b91d22be7892f95a3673 Mon Sep 17 00:00:00 2001
+From 568828d04bba3e39692064a03cf02965babedc70 Mon Sep 17 00:00:00 2001
 From: Simon Chung <simon.chung@rdkcentral.com>
-Date: Fri, 30 Sep 2022 16:09:12 +0100
+Date: Tue, 4 Oct 2022 11:12:12 +0100
 Subject: [PATCH] handle_mesh-rename-opensync
 
-Change-Id: I7825cda344d7ed1a838821fb64cd83befbd036e3
+Change-Id: I8a984d859c6347e3cb6447e8b39cb900c3dbb6f7
 ---
- scripts/handle_mesh | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ scripts/handle_mesh | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
 diff --git a/scripts/handle_mesh b/scripts/handle_mesh
-index a634249..9c7b1a3 100644
+index a634249..0c9f7a3 100644
 --- a/scripts/handle_mesh
 +++ b/scripts/handle_mesh
 @@ -57,11 +57,19 @@ is_opensync_name()
@@ -32,7 +32,7 @@ index a634249..9c7b1a3 100644
   if [ "$OPENSYNC_ENABLE" == "true" ] && [ -d "/sys/module/openvswitch" ];then
      if [ -z "$(pidof ovsdb-server)" ]
      then
-@@ -71,9 +79,9 @@ else
+@@ -71,9 +79,10 @@ else
          /usr/opensync/scripts/managers.init $1
      else
          echo "Opensync will be effective only after reboot"
@@ -42,6 +42,7 @@ index a634249..9c7b1a3 100644
   else
 -  /usr/plume/scripts/managers.init $1
 +  /usr/opensync/scripts/managers.init $1
++ fi
   fi
  fi
 -- 
