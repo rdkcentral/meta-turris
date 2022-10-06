@@ -1,5 +1,15 @@
+From 568828d04bba3e39692064a03cf02965babedc70 Mon Sep 17 00:00:00 2001
+From: Simon Chung <simon.chung@rdkcentral.com>
+Date: Tue, 4 Oct 2022 11:12:12 +0100
+Subject: [PATCH] handle_mesh-rename-opensync
+
+Change-Id: I8a984d859c6347e3cb6447e8b39cb900c3dbb6f7
+---
+ scripts/handle_mesh | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
 diff --git a/scripts/handle_mesh b/scripts/handle_mesh
-index 5031842..7cc6eee 100644
+index a634249..0c9f7a3 100644
 --- a/scripts/handle_mesh
 +++ b/scripts/handle_mesh
 @@ -57,11 +57,19 @@ is_opensync_name()
@@ -19,7 +29,7 @@ index 5031842..7cc6eee 100644
 + if is_opensync_service; then
 +        systemctl $1 opensync.service
 + else
-  if [ "$OPENSYNC_ENABLE" == "true" ];then
+  if [ "$OPENSYNC_ENABLE" == "true" ] && [ -d "/sys/module/openvswitch" ];then
      if [ -z "$(pidof ovsdb-server)" ]
      then
 @@ -71,9 +79,10 @@ else
@@ -35,4 +45,6 @@ index 5031842..7cc6eee 100644
 + fi
   fi
  fi
+-- 
+2.37.2
 

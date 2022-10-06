@@ -53,7 +53,7 @@ SSL_CERT_PATH=/etc/ssl/certs/ca-certificates.crt
 
 echo "Framing command for parodus"
 #command="/usr/bin/parodus --hw-model=$ModelName --hw-serial-number=$SerialNumber --hw-manufacturer=$Manufacturer --hw-mac=$HW_MAC --hw-last-reboot-reason=$LastRebootReason --fw-name=$FirmwareName --boot-time=$BootTime --webpa-ping-time=$MaxPingWaitTimeInSec --webpa-inteface-used=$DeviceNetworkInterface --webpa-url=$ServerURL --webpa-backoff-max=$BackOffMax"
-command="/usr/bin/parodus --hw-model=$ModelName --hw-serial-number=$SerialNumber --hw-manufacturer=$Manufacturer --hw-mac=$HW_MAC --hw-last-reboot-reason=$LastRebootReason --fw-name=$FirmwareName --boot-time=$BootTime --webpa-ping-time=$MaxPingWaitTimeInSec --webpa-interface-used=$DeviceNetworkInterface --webpa-url=$ServerURL --webpa-backoff-max=$BackOffMax  --parodus-local-url=$PARODUS_URL --partner-id=comcast --ssl-cert-path=$SSL_CERT_PATH --force-ipv4 "
+command="/usr/bin/parodus --hw-model=$ModelName --hw-serial-number=$SerialNumber --hw-manufacturer=$Manufacturer --hw-mac=$HW_MAC --hw-last-reboot-reason=$LastRebootReason --fw-name=$FirmwareName --boot-time=$BootTime --webpa-ping-time=$MaxPingWaitTimeInSec --webpa-interface-used=$DeviceNetworkInterface --webpa-url=$ServerURL --webpa-backoff-max=$BackOffMax  --parodus-local-url=$PARODUS_URL --partner-id=RDKM --ssl-cert-path=$SSL_CERT_PATH --force-ipv4 "
 
 echo "Starting parodus with the following arguments"
 echo "$command"
