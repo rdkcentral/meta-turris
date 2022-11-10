@@ -14,6 +14,7 @@ do_install_append() {
     else       
        install -m 0644 ${WORKDIR}/lighttpd_php.conf.broadband ${D}${sysconfdir}/lighttpd.conf
     fi
+
 }
 
 FILES_${PN}_append_morty = " /usr/lib/mod_fastcgi.so"

@@ -1,0 +1,17 @@
+# short-description: Create mmc image for Turris Omnia
+# long-description: Creates a partitioned mmc image for use with
+# Turris Omnia. Boot files are located in the first vfat partition.
+# Make the partitions as big as possible so that future software upgrades
+# that don't modify the partition sizes (using TurrisFwUpgrade.sh) can be
+# performed without issues even if rootfs increases in the future.
+# Sizes of all partitions sum up to be less then 1000MB, so that the
+# resulting image fits into tmpfs of medkit image that does the flasing.
+
+# boot
+part --source bootimg-partition --ondisk mmcblk0 --fstype=vfat --label boot --active --align 1024 --system-id 0x0c --fixed-size 40M
+# rootfs
+part / --source rootfs --ondisk mmcblk0 --fstype=ext4 --label primary --align 1024 --fixed-size 316M
+# secondary rootfs
+part --source rootfs --ondisk mmcblk0 --fstype=ext4 --label secondary --align 1024 --fixed-size 316M
+# nvram
+part --ondisk mmcblk0 --fstype=ext4 --label nvram1 --align 1024 --fixed-size 316M

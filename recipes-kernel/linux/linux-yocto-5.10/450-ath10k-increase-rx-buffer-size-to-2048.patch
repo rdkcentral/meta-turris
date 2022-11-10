@@ -1,0 +1,49 @@
+From 3e6b9cf534caa355f569c7cdde7cddd981331433 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>
+Date: Mon, 11 Jan 2021 19:49:29 +0200
+Subject: [PATCH] ath10k: increase rx buffer size to 2048
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Before, only frames with a maximum size of 1528 bytes could be
+transmitted between two 802.11s nodes.
+
+For batman-adv for instance, which adds its own header to each frame,
+we typically need an MTU of at least 1532 bytes to be able to transmit
+without fragmentation.
+
+This patch now increases the maxmimum frame size from 1528 to 1656
+bytes.
+
+Tested with two ath10k devices in 802.11s mode, as well as with
+batman-adv on top of 802.11s with forwarding disabled.
+
+Fix originally found and developed by Ben Greear.
+
+Link: https://github.com/greearb/ath10k-ct/issues/89
+Link: https://github.com/greearb/ath10k-ct/commit/9e5ab25027e0971fa24ccf93373324c08c4e992d
+Cc: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200205191043.21913-1-linus.luessing@c0d3.blue
+---
+ drivers/net/wireless/ath/ath10k/htt.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
+index cad59494f175..956157946106 100644
+--- a/drivers/net/wireless/ath/ath10k/htt.h
++++ b/drivers/net/wireless/ath/ath10k/htt.h
+@@ -2241,7 +2241,7 @@ struct htt_rx_chan_info {
+  * Should be: sizeof(struct htt_host_rx_desc) + max rx MSDU size,
+  * rounded up to a cache line size.
+  */
+-#define HTT_RX_BUF_SIZE 1920
++#define HTT_RX_BUF_SIZE 2048
+ #define HTT_RX_MSDU_SIZE (HTT_RX_BUF_SIZE - (int)sizeof(struct htt_rx_desc))
+ 
+ /* Refill a bunch of RX buffers for each refill round so that FW/HW can handle
+-- 
+2.32.0
+

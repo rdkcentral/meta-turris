@@ -1,0 +1,28 @@
+diff --git a/source-arm/TR-181/board_sbapi/cosa_dhcpv6_apis.c b/source-arm/TR-181/board_sbapi/cosa_dhcpv6_apis.c
+index 079e9571..e91aec1a 100755
+--- a/source-arm/TR-181/board_sbapi/cosa_dhcpv6_apis.c
++++ b/source-arm/TR-181/board_sbapi/cosa_dhcpv6_apis.c
+@@ -7441,6 +7441,23 @@ static token_t sysevent_token_1;
+ #define ULA_ROUTE_SET "/tmp/.ula_route_set"
+ #define DEF_ULA_PREF_LEN 64
+ 
++#if (defined(_PLATFORM_RASPBERRYPI_) || defined(_PLATFORM_TURRIS_)) && !defined (WAN_FAILOVER_SUPPORTED)
++//For RPI & Turris platform, adding Get_Device_Mode implementation when only RDKB_EXTENDER_ENABLED is enabled.
++int Get_Device_Mode()
++{
++    int deviceMode = 0;
++    char buf[8]= {0};
++    memset(buf,0,sizeof(buf));
++    if ( 0 == syscfg_get(NULL, "Device_Mode", buf, sizeof(buf)))
++    {
++        if (buf[0] != '\0' && strlen(buf) != 0 )
++            deviceMode = atoi(buf);
++    }
++    return deviceMode;
++
++}
++#endif
++
+ void enable_Ula_IPv6(char* ifname)
+ {
+     CcspTraceInfo(("%s : ENTRY\n",__FUNCTION__));

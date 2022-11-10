@@ -10,7 +10,6 @@ SRCREV_FORMAT = "${AUTOREV}"
 
 SRC_URI_remove = "${CMF_GIT_ROOT}/rdkb/devices/intel-x86-pc/emulator/sysint;module=.;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_BRANCH};destsuffix=git/device;name=sysintdevice"
 
-SRC_URI += "file://TurrisFwUpgrade.sh"
 SRC_URI += "file://swupdate_utility.sh"
 SRC_URI += "file://swupdate.service"
 SRC_URI += "file://commonUtils.sh \
@@ -34,7 +33,6 @@ do_install_append() {
     echo "ARM_INTERFACE=erouter0" >> ${D}${sysconfdir}/device.properties
     install -d ${D}${base_libdir}/rdk
     install -d ${D}${systemd_unitdir}/system
-    install -m 0755 ${WORKDIR}/TurrisFwUpgrade.sh ${D}${base_libdir}/rdk
     install -m 0755 ${WORKDIR}/swupdate_utility.sh ${D}${base_libdir}/rdk
     install -m 0644 ${WORKDIR}/swupdate.service ${D}${systemd_unitdir}/system
     echo "CLOUDURL="http://35.155.171.121:9092/xconf/swu/stb?eStbMac="" >> ${D}${sysconfdir}/include.properties
@@ -71,4 +69,5 @@ do_install_append() {
 FILES_${PN} += "${systemd_unitdir}/system/swupdate.service"
 FILES_${PN} += "${systemd_unitdir}/system/dcm-log.service"
 
+RDEPENDS_${PN} += " turris-flash"
 RDEPENDS_${PN}_append_dunfell = " bash"

@@ -16,7 +16,10 @@ SRC_URI_append_dunfell = "file://0001-Work-around-for-brlan0-issue.patch;apply=n
 SRC_URI += "file://posix-gwprovapp.patch;apply=no"
 #This patch will add dummy swctl api which is originally given by brcm for XB3.
 SRC_URI += "file://0002-fix-swctl-missing-api.patch;apply=no"
+SRC_URI += "file://start_dnsmasq_service.patch;apply=no"
 SRC_URI += "file://dhcp_script.sh"
+SRC_URI += "file://dibbler-server.conf"
+SRC_URI += "file://dibbler-client.conf"
 
 LDFLAGS_append = " \
     -lsecure_wrapper \
@@ -24,6 +27,7 @@ LDFLAGS_append = " \
 
 CFLAGS_append = " -Wno-format-extra-args -Wno-error "
 CFLAGS_append += "${@bb.utils.contains('DISTRO_FEATURES', 'rdkb_wan_manager', ' -D_WAN_MANAGER_ENABLED_', '', d)}"
+CFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'bci', '', '-DWAN_FAILOVER_SUPPORTED', d)} "
 
 # we need to patch to code for Turris
 do_turris_patches() {
@@ -40,6 +44,8 @@ do_turris_patches() {
 
         bbnote "Patching 0002-fix-swctl-missing-api.patch"
         patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
+
+        patch -p1 < ${WORKDIR}/start_dnsmasq_service.patch || echo "ERROR or Patch already applied"
 
         touch turris_patch_applied
     fi
@@ -110,11 +116,10 @@ do_install_append() {
     install -m 755 ${S}/source/scripts/init/service.d/service_bridge.sh ${D}${sysconfdir}/utopia/service.d/service_bridge.sh
 
     install -m 755 ${WORKDIR}/dhcp_script.sh ${D}${sysconfdir}/
-    #Removing service_dhcp_server.sh as dnsmasq is invoked by service_dhcp binary
-    rm ${D}${sysconfdir}/utopia/service.d/service_dhcp_server.sh
 
     # Creating symbolic links to install files in specific directory as in legacy builds
     ln -sf /usr/bin/10_firewall ${D}${sysconfdir}/utopia/post.d/10_firewall
+    ln -sf /usr/bin/10_firewall ${D}${sysconfdir}/utopia/registration.d/10_firewall
     ln -sf /usr/bin/service_multinet_exec ${D}${sysconfdir}/utopia/service.d/service_multinet_exec
     ln -sf /usr/bin/10_mcastproxy ${D}${sysconfdir}/utopia/post.d/10_mcastproxy
     ln -sf /usr/bin/10_mldproxy ${D}${sysconfdir}/utopia/post.d/10_mldproxy
@@ -165,11 +170,21 @@ do_install_append() {
     echo "sysevent set dhcp_server-resync 0" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "sysevent set ethwan-initialized 1" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "syscfg set eth_wan_enabled true" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "syscfg set PartnerID RDKM" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "syscfg commit" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "echo 1 > \/proc\/sys\/net\/ipv4\/ip_forward" >> ${D}${sysconfdir}/utopia/utopia_init.sh
 
     echo "sysevent set bridge_mode \`syscfg get bridge_mode\`" >> ${D}${sysconfdir}/utopia/utopia_init.sh
     echo "sysevent set lan-status started" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+
+#IPv6 support: starting dibbler-server
+    install -d ${D}${sysconfdir}/dibbler
+    install -m 0644 ${WORKDIR}/dibbler-server.conf ${D}${sysconfdir}/dibbler/server.conf
+    install -m 0644 ${WORKDIR}/dibbler-client.conf ${D}${sysconfdir}/dibbler/client.conf
+    echo "echo_t '[utopia][init] Triggering ipv6-start'" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "mkdir -p /tmp/dibbler" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+    echo "/etc/utopia/service.d/service_ipv6.sh ipv6-start &" >> ${D}${sysconfdir}/utopia/utopia_init.sh
+
     echo 'echo_t "[utopia][init] completed creating utopia_inited flag"' >> ${D}${sysconfdir}/utopia/utopia_init.sh
 
 #WanManager Feature
@@ -195,11 +210,6 @@ sysevent set wan-status started ' ${D}${sysconfdir}/utopia/utopia_init.sh
 
     echo "touch -f /tmp/utopia_inited" >> ${D}${sysconfdir}/utopia/utopia_init.sh
 
-}
-
-do_install_append_dunfell() {
-   #Following line is for adding Backhaul interface entries in dnsmasq.conf
-    sed -i '/XB6/i \ \ \ \ \ \ \ elif [ "$BOX_TYPE" = "turris" ]; then\n\ \ \ \ \ \ \ \ \ \ \ echo "interface=wifi2" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ echo "dhcp-range=169.254.0.2,169.254.0.254,255.255.255.0,infinite" >> $LOCAL_DHCP_CONF\n\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if [ "1" == "$NAMESERVERENABLED" ] && [ "$WAN_DHCP_NS" != "" ]; then\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ echo "${PREFIX}""dhcp-option=wifi2,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fi\n\n\ \ \ \ \ \ \ \ \ \ \ echo "interface=wifi3" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ echo "dhcp-range=169.254.1.2,169.254.1.254,255.255.255.0,infinite" >> $LOCAL_DHCP_CONF\n\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if [ "1" == "$NAMESERVERENABLED" ] && [ "$WAN_DHCP_NS" != "" ]; then\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ echo "${PREFIX}""dhcp-option=wifi3,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fi\n\n\ \ \ \ \ \ \ \ \ \ \ echo "interface=br-home" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ echo "dhcp-range=192.168.1.2,192.168.1.253,255.255.255.0,7d" >> $LOCAL_DHCP_CONF\n\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if [ "1" == "$NAMESERVERENABLED" ] && [ "$WAN_DHCP_NS" != "" ]; then\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ echo "${PREFIX}""dhcp-option=br-home,6,$WAN_DHCP_NS" >> $LOCAL_DHCP_CONF\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fi\n' ${D}${sysconfdir}/utopia/service.d/service_dhcp_server/dhcp_server_functions.sh
 }
 
 FILES_${PN} += " \

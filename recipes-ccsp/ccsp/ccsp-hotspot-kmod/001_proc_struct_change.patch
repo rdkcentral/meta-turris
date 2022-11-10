@@ -1,0 +1,36 @@
+Source: Comcast
+From: Vineet Seth <vineet_seth@comcast.com>
+Date: Thrusday, 21 July 2022 11:14:09 +0100
+Subject : Change in struct for procfs from kernel 2.6 onwards.
+  Now it uses struct proc_ops instead of struct file_operations
+
+diff -Naupr a/mtu_mod_proc.c b/mtu_mod_proc.c
+--- a/mtu_mod_proc.c	2022-07-10 17:07:51.947031719 +0100
++++ b/mtu_mod_proc.c	2022-07-10 18:12:49.636290051 +0100
+@@ -22,6 +22,7 @@
+ * Licensed under the GNU General Public License, version 2
+ **********************************************************************/
+ 
++#include <linux/version.h>
+ #include <linux/kernel.h>	
+ #include <linux/module.h>
+ #include <linux/proc_fs.h>	
+@@ -121,11 +122,18 @@ static ssize_t mtu_mod_write_proc(struct
+ 	return(count);
+ }
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
++static const struct proc_ops mtu_mod_proc_file_fops = {
++  .proc_write = mtu_mod_write_proc,
++  .proc_read = mtu_mod_read_proc,
++};
++#else
+ static const struct file_operations mtu_mod_proc_file_fops = {
+  .owner = THIS_MODULE,
+  .write = mtu_mod_write_proc,
+  .read  = mtu_mod_read_proc,
+ };
++#endif
+ 
+ int init_mtu_mod_proc(void)
+ {

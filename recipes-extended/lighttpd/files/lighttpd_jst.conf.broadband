@@ -18,6 +18,7 @@ server.modules              = (
 			        "mod_setenv", 	
                                 "mod_rewrite",  
                                 "mod_redirect",
+                                "mod_openssl",
 #                                "mod_proxy_core",
 #                                "mod_proxy_backend_fastcgi",
 #                                "mod_proxy_backend_http",
@@ -336,3 +337,4 @@ cgi.assign                = (
 ## the above is same as:
 #var.a=1
 server.http-parseopts = ( "url-path-2f-decode" => "disable" )
+include_shell "sh /etc/webgui_config.sh"
