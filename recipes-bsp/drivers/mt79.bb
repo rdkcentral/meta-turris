@@ -7,7 +7,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI = "git://github.com/openwrt/mt76;branch=master;protocol=https"
 SRC_URI += " file://mt76_mt7921_mt7915_MK.patch "
-SRCREV = "${AUTOREV}"
+
+# Commits on Oct 5, 2022, wifi: mt76: fix rx checksum offload on mt7615/mt7915/mt7921
+SRCREV = "269df4b01f27518e9bdbf12dca15baa1cd899030"
 
 S = "${WORKDIR}/git"
 DEPENDS = "virtual/kernel"
