@@ -33,9 +33,12 @@ SYSTEMD_TOOLS_remove_libc-musl = "systemd-bootchart"
 do_rootfs[nostamp] = "1"
 
 remove_unused_file() {
- rm -rf ${IMAGE_ROOTFS}/usr/lib/python* ;
- #Creating /opt/secure folder for ssh service
- mkdir -p ${IMAGE_ROOTFS}/opt/secure
+    rm -rf ${IMAGE_ROOTFS}/usr/lib/python* ;
 }
 
-ROOTFS_POSTPROCESS_COMMAND_append = "remove_unused_file; "
+ssh_workaround_opt_secure() {
+    #Creating /opt/secure folder for ssh service
+    install -d ${IMAGE_ROOTFS}/opt/secure
+}
+
+ROOTFS_POSTPROCESS_COMMAND_append = " remove_unused_file; ssh_workaround_opt_secure; "
