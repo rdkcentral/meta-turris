@@ -48,9 +48,12 @@ BUILDHISTORY_COMMIT = "1"
 require image-exclude-files.inc
 
 remove_unused_file() {
-   for i in ${REMOVED_FILE_LIST} ; do rm -rf ${IMAGE_ROOTFS}/$i ; done
-   #Creating /opt/secure folder for ssh service
-   mkdir ${IMAGE_ROOTFS}/opt/secure
+    for i in ${REMOVED_FILE_LIST} ; do rm -rf ${IMAGE_ROOTFS}/$i ; done
 }
 
-ROOTFS_POSTPROCESS_COMMAND_append = "remove_unused_file; "
+ssh_workaround_opt_secure() {
+    #Creating /opt/secure folder for ssh service
+    install -d ${IMAGE_ROOTFS}/opt/secure
+}
+
+ROOTFS_POSTPROCESS_COMMAND_append = " remove_unused_file; ssh_workaround_opt_secure; "
