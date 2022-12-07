@@ -1,0 +1,16 @@
+diff --git a/source/scripts/init/service.d/service_dhcp_server/dhcp_server_functions.sh b/source/scripts/init/service.d/service_dhcp_server/dhcp_server_functions.sh
+index 40d6e5b3..0652c104 100755
+--- a/source/scripts/init/service.d/service_dhcp_server/dhcp_server_functions.sh
++++ b/source/scripts/init/service.d/service_dhcp_server/dhcp_server_functions.sh
+@@ -1225,6 +1225,11 @@ fi
+            echo "dhcp-option=wifi7,6" >> $LOCAL_DHCP_CONF
+            echo "dhcp-script=/etc/dhcp_script.sh" >> $LOCAL_DHCP_CONF
+ 
++           echo "interface=brlan0.cportal" >> $LOCAL_DHCP_CONF
++           echo "dhcp-range=172.16.0.2,172.16.255.254,255.255.0.0,infinite" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=brlan0.cportal,3,172.16.0.1" >> $LOCAL_DHCP_CONF
++           echo "dhcp-option=brlan0.cportal,6,172.16.0.1" >> $LOCAL_DHCP_CONF
++
+        elif [ "$BOX_TYPE" = "XB6" ]; then
+            echo "interface=ath12" >> $LOCAL_DHCP_CONF
+            echo "dhcp-range=169.254.0.5,169.254.0.253,255.255.255.0,infinite" >> $LOCAL_DHCP_CONF

@@ -19,6 +19,8 @@ SRC_URI += "file://start_dnsmasq_service.patch;apply=no"
 SRC_URI += "file://dhcp_script.sh"
 SRC_URI += "file://dibbler-server.conf"
 SRC_URI += "file://dibbler-client.conf"
+SRC_URI += "file://dhcp-cportal.patch;apply=no"
+SRC_URI += "file://firewall-cportal.patch;apply=no"
 
 LDFLAGS_append = " \
     -lsecure_wrapper \
@@ -42,6 +44,10 @@ do_turris_patches() {
         patch -p1 < ${WORKDIR}/0002-fix-swctl-missing-api.patch
 
         patch -p1 < ${WORKDIR}/start_dnsmasq_service.patch || echo "ERROR or Patch already applied"
+
+        patch -p1 < ${WORKDIR}/dhcp-cportal.patch || echo "ERROR or Patch dhcp-cportal.patch already applied"
+
+        patch -p1 < ${WORKDIR}/firewall-cportal.patch || echo "ERROR or Patch firewall-cportal.patch already applied"
 
         touch turris_patch_applied
     fi

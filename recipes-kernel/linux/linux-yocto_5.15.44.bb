@@ -46,6 +46,7 @@ SRC_URI += " file://defconfig \
              file://906-Documentation-hwmon-Add-iei-wt61p803-puzzle-hwmon-dr.patch \
              file://907-MAINTAINERS-Add-an-entry-for-the-IEI-WT61P803-PUZZLE.patch \
              file://910-drivers-leds-wt61p803-puzzle-improvements.patch \
+             file://add-bandwidth-sharing-option-to-the-HTB-qdisk.patch \
 "
 
 SRC_URI_remove += "file://0001-add-support-for-http-host-headers-cookie-url-netfilt.patch \

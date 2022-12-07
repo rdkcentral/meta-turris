@@ -1,0 +1,22 @@
+diff --git a/source/TR-181/sbapi/cosa_wifi_apis.c b/source/TR-181/sbapi/cosa_wifi_apis.c
+index c5f2f08..2d01deb 100644
+--- a/source/TR-181/sbapi/cosa_wifi_apis.c
++++ b/source/TR-181/sbapi/cosa_wifi_apis.c
+@@ -7429,7 +7429,7 @@ void Delete_Hotspot_MacFilt_Entries() {
+ 	    CcspTraceError(("%s MAC_FILTER : Create Delete_MacFilt_Entries_Thread failed for %d \n",__FUNCTION__,res));
+ 	}
+ }
+-#if !defined(_XF3_PRODUCT_REQ_)
++#if !defined(_XF3_PRODUCT_REQ_) && !defined(_PLATFORM_TURRIS_)
+ static ANSC_STATUS
+ CosaDmlWiFiCheckPreferPrivateFeature
+ 
+@@ -9017,7 +9017,7 @@ printf("%s: Reset FactoryReset to 0 \n",__FUNCTION__);
+ 	wifi_handle_sysevent_async();
+ #endif
+ 	CosaDmlWiFi_startHealthMonitorThread();
+-#if !defined(_XF3_PRODUCT_REQ_)
++#if !defined(_XF3_PRODUCT_REQ_) && !defined(_PLATFORM_TURRIS_)
+     CosaDmlWiFiCheckPreferPrivateFeature(&(pMyObject->bPreferPrivateEnabled));
+ #endif
+ #if defined (FEATURE_SUPPORT_RADIUSGREYLIST)

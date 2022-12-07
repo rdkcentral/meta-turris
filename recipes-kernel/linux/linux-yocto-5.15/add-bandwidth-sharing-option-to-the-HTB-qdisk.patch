@@ -1,0 +1,159 @@
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index ec88590b3198..36b9b33e201e 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -414,6 +414,7 @@ struct tc_htb_opt {
+ 	__u32	quantum;
+ 	__u32	level;		/* out only */
+ 	__u32	prio;
++	__u32 shared;
+ };
+ struct tc_htb_glob {
+ 	__u32 version;		/* to match HTB/TC */
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index 5cbc32fee867..a4ae5253de56 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -120,6 +120,10 @@ struct htb_class {
+ 	/* token bucket parameters */
+ 	s64			tokens, ctokens;/* current number of tokens */
+ 	s64			t_c;		/* checkpoint time */
++    u32			qlen;
++	unsigned int		*qdisc_qlen;
++	int			rate_set_once;
++	u32			shared;
+ 
+ 	union {
+ 		struct htb_class_leaf {
+@@ -183,6 +187,9 @@ struct htb_sched {
+ 	bool			offload;
+ };
+ 
++#define SHARED_GROUPS 16
++atomic_t rate_multiplier[SHARED_GROUPS] = ATOMIC_INIT(0);
++
+ /* find class in global hash table using given handle */
+ static inline struct htb_class *htb_find(u32 handle, struct Qdisc *sch)
+ {
+@@ -641,6 +648,12 @@ static int htb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		return ret;
+ 	} else {
+ 		htb_activate(q, cl);
++
++        cl->qlen++;
++		if (cl->rate_set_once == false) {
++			cl->rate_set_once = true;
++			atomic_inc(&rate_multiplier[cl->shared]);
++		}
+ 	}
+ 
+ 	sch->qstats.backlog += len;
+@@ -695,7 +708,23 @@ static void htb_charge_class(struct htb_sched *q, struct htb_class *cl,
+ 	int bytes = qdisc_pkt_len(skb);
+ 	enum htb_cmode old_mode;
+ 	s64 diff;
++    int mult;
++
++    if (cl->shared == 0)
++		goto skip_shared;
++
++	mult = atomic_read(&rate_multiplier[cl->shared]);
++	if (mult > 0) {
++		bytes *= mult;
++		if (bytes <= 0) {
++			bytes = qdisc_pkt_len(skb);
++			printk("HTB error: bytes less then 0 after multiply\n");
++		}
++	} else {
++		printk("HTB error: multiplier not within bounds: %d\n", mult);
++	}
+ 
++skip_shared:
+ 	while (cl) {
+ 		diff = min_t(s64, q->now - cl->t_c, cl->mbuffer);
+ 		if (cl->level >= level) {
+@@ -869,6 +898,7 @@ static struct sk_buff *htb_dequeue_tree(struct htb_sched *q, const int prio,
+ 	struct htb_class *cl, *start;
+ 	struct htb_level *hlevel = &q->hlevel[level];
+ 	struct htb_prio *hprio = &hlevel->hprio[prio];
++    unsigned int qlen_tmp;
+ 
+ 	/* look initial class up in the row */
+ 	start = cl = htb_lookup_leaf(hprio, prio);
+@@ -899,9 +929,15 @@ static struct sk_buff *htb_dequeue_tree(struct htb_sched *q, const int prio,
+ 			goto next;
+ 		}
+ 
++        qlen_tmp = *cl->qdisc_qlen;
+ 		skb = cl->leaf.q->dequeue(cl->leaf.q);
+-		if (likely(skb != NULL))
++		if (likely(skb != NULL)) {
++            // the dequeue above sometimes also decreases sch->q.qlen by 1
++			// (cl->qdisc_qlen points to it), without any obvious reason when
++			// that happens, so qlen for this class should be decreased as well
++			cl->qlen -= qlen_tmp - *cl->qdisc_qlen;
+ 			break;
++        }
+ 
+ 		qdisc_warn_nonwc("htb", cl->leaf.q);
+ 		htb_next_rb_node(level ? &cl->parent->inner.clprio[prio].ptr:
+@@ -924,6 +960,13 @@ static struct sk_buff *htb_dequeue_tree(struct htb_sched *q, const int prio,
+ 		if (!cl->leaf.q->q.qlen)
+ 			htb_deactivate(q, cl);
+ 		htb_charge_class(q, cl, level, skb);
++
++        cl->qlen--;
++		if (cl->qlen < 1 && cl->rate_set_once == true) {
++			// one less qdisc that needs bandwidth
++			cl->rate_set_once = false;
++			atomic_dec(&rate_multiplier[cl->shared]);
++		}
+ 	}
+ 	return skb;
+ }
+@@ -1004,6 +1047,13 @@ static void htb_reset(struct Qdisc *sch)
+ 			}
+ 			cl->prio_activity = 0;
+ 			cl->cmode = HTB_CAN_SEND;
++
++			cl->qlen = 0;
++			if (cl->qlen < 1 && cl->rate_set_once == true) {
++				// one less qdisc that needs bandwidth
++				cl->rate_set_once = false;
++				atomic_dec(&rate_multiplier[cl->shared]);
++			}
+ 		}
+ 	}
+ 	qdisc_watchdog_cancel(&q->watchdog);
+@@ -1285,6 +1335,7 @@ static int htb_dump_class(struct Qdisc *sch, unsigned long arg,
+ 	opt.quantum = cl->quantum;
+ 	opt.prio = cl->prio;
+ 	opt.level = cl->level;
++    opt.shared = cl->shared;
+ 	if (nla_put(skb, TCA_HTB_PARMS, sizeof(opt), &opt))
+ 		goto nla_put_failure;
+ 	if (q->offload && nla_put_flag(skb, TCA_HTB_OFFLOAD))
+@@ -1616,6 +1667,10 @@ static void htb_destroy_class(struct Qdisc *sch, struct htb_class *cl)
+ 		WARN_ON(!cl->leaf.q);
+ 		qdisc_put(cl->leaf.q);
+ 	}
++    if (cl->rate_set_once == true) {
++		cl->rate_set_once = false;
++		atomic_dec(&rate_multiplier[cl->shared]);
++	}
+ 	gen_kill_estimator(&cl->rate_est);
+ 	tcf_block_put(cl->block);
+ 	kfree(cl);
+@@ -2061,6 +2116,12 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+ 
+ 	cl->buffer = PSCHED_TICKS2NS(hopt->buffer);
+ 	cl->cbuffer = PSCHED_TICKS2NS(hopt->cbuffer);
++	cl->qdisc_qlen = &sch->q.qlen;
++	if (cl->rate_set_once == true) {
++		atomic_dec(&rate_multiplier[cl->shared]);
++		atomic_inc(&rate_multiplier[hopt->shared]);
++	}
++	cl->shared = hopt->shared;
+ 
+ 	sch_tree_unlock(sch);
+ 	qdisc_put(parent_qdisc);

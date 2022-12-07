@@ -22,6 +22,7 @@ SRC_URI_append = " \
     file://synclease.sh \
     file://handle_mesh-rename-opensync.patch;apply=no \
     file://avoid_gssidcount_error.patch;apply=no \
+    file://cportal-support.patch;apply=no \
 "
 
 # we need to patch to code for ccsp-wifi-agent
@@ -31,6 +32,7 @@ do_turris_ccspwifiagent_patches() {
         bbnote "Patching handle_mesh-rename-opensync.patch"
         patch  -p1 < ${WORKDIR}/handle_mesh-rename-opensync.patch ${S}/scripts/handle_mesh
         patch  -p1 < ${WORKDIR}/avoid_gssidcount_error.patch || echo "ERROR or Patch already applied"
+        patch -p1 < ${WORKDIR}/cportal-support.patch || echo "ERROR or Patch cportal-support.patch already applied"
         touch patch_applied
     fi
 }

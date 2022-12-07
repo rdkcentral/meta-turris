@@ -237,6 +237,8 @@ touch /tmp/hostapd0.psk
 touch /tmp/hostapd1.psk
 touch /tmp/hostapd2.psk
 touch /tmp/hostapd3.psk
+touch /tmp/hostapd4.psk
+touch /tmp/hostapd5.psk
 touch /tmp/hostapd6.psk
 touch /tmp/hostapd7.psk
 touch /tmp/hostapd8.psk
