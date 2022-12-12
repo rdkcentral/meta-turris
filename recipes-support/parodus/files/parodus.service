@@ -18,7 +18,7 @@
 ##########################################################################
 [Unit]
 Description=Parodus
-After=PsmSsp.service CcspPandMSsp.service ccspwifiagent.service
+After=PsmSsp.service CcspPandMSsp.service ccspwifiagent.service CcspLMLite.service
 
 [Service]
 ExecStart=/bin/sh -c '/lib/rdk/parodus_start.sh;'
