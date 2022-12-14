@@ -1,0 +1,11 @@
+diff --git a/build/vendor-arch.mk b/build/vendor-arch.mk
+index e708308..d6e8de4 100644
+--- a/build/vendor-arch.mk
++++ b/build/vendor-arch.mk
+@@ -1,5 +1,5 @@
+ # To customize: add actual devices/targets
+-RDK_TARGETS = turris turris-extender
++RDK_TARGETS = turris turris-extender turris-bci
+ 
+ ifneq ($(filter $(TARGET),$(RDK_TARGETS)),)
+ 
