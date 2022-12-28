@@ -8,7 +8,6 @@ to SSL_state(ssl) for openssl > 1.1 and SSL_get_state(ssl) for openssl >
 1.1.1
 
 Source: COMCAST
-License: Apache-2.0
 Upstream-Status: Pending
 Signed-off-by: Jaga <jagadheesan_duraisamy@comcast.com>
 ---

@@ -1,0 +1,26 @@
+diff --git a/rootfs/model/omnia/usr/opensync/scripts/platform.funcs b/rootfs/model/omnia/usr/opensync/scripts/platform.funcs
+index 54609f2..8340ab6 100644
+--- a/rootfs/model/omnia/usr/opensync/scripts/platform.funcs
++++ b/rootfs/model/omnia/usr/opensync/scripts/platform.funcs
+@@ -29,7 +29,7 @@ platform_start() {
+         hostapd_cli -i wifi1 enable
+         if [ -f /nvram/debugnet_enable ]; then
+             ip link add link erouter0 name erouter0.4 type vlan id 4
+-            udhcpc -s /usr/opensync/scripts/udhcpc.debugnet.sh -S -i erouter0.4 -C -o -O subnet
++            udhcpc -s /usr/opensync/scripts/udhcpc.debugnet.sh -S -i erouter0.4 -C -o -O subnet -b
+             cp /usr/opensync/scripts/enable_ssh.sh /tmp/mac_filter.sh
+             firewall
+         fi
+@@ -47,8 +47,10 @@ platform_start() {
+ 
+     ovs-vsctl add-br br-wan -- set bridge br-wan other-config:hwaddr=\"$(cat /sys/class/net/eth2/address)\"
+     ifconfig eth2 up
+-    ip link add link eth2 name eth2.4 type vlan id 4
+-    udhcpc -s /usr/opensync/scripts/udhcpc.debugnet.sh -S -i eth2.4 -C -o -O subnet
++    if [ -f /nvram/debugnet_enable ]; then
++        ip link add link eth2 name eth2.4 type vlan id 4
++        udhcpc -s /usr/opensync/scripts/udhcpc.debugnet.sh -S -i eth2.4 -C -o -O subnet -b
++    fi
+ 
+     # == LAN ==
+     if [ $device_type == "broadband" ]; then
