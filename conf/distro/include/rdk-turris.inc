@@ -14,6 +14,8 @@ DISTRO_FEATURES_append = " dslite"
 # REFPLTV-1137: DLNA support for xupnp
 DISTRO_FEATURES_append = " dlna"
 
+DISTRO_FEATURES_append = " webconfig_bin"
+
 DISTRO_FEATURES_append = " meshwifi"
 DISTRO_FEATURES_append = " ipv6"
 DISTRO_FEATURES_append = " rdkb_cellular_manager"
