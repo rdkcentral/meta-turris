@@ -8,7 +8,6 @@ EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
 
 SRC_URI_append = " \
     file://0001-fix-lan-handler-for-turris.patch;apply=no \
-    file://0003-remove-autoconf.patch;apply=no \
     file://system_defaults \
 "
 SRC_URI_append_dunfell = "file://0001-Work-around-for-brlan0-issue.patch;apply=no"
@@ -35,9 +34,6 @@ do_turris_patches() {
     if [ ! -e turris_patch_applied ]; then
         bbnote "Patching 0001-fix-lan-handler-for-turris.patch"
         patch -p1 < ${WORKDIR}/0001-fix-lan-handler-for-turris.patch
-
-        bbnote "Patching 0003-remove-autoconf.patch"
-        patch -p1 < ${WORKDIR}/0003-remove-autoconf.patch
 
         bbnote "Patching posix-gwprovapp.patch"
         patch -p1 < ${WORKDIR}/posix-gwprovapp.patch
