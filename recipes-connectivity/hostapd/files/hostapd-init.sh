@@ -69,6 +69,11 @@ WIFI5G_MAC=`cat "/sys/class/net/${WLAN5G}/address"`
 echo "2.4GHz Radio MAC: ${WIFI24G_MAC}"
 echo "5GHz   Radio MAC: ${WIFI5G_MAC}"
 
+SYSTEM_DEFAULT=/etc/utopia/system_defaults
+COUNTRY_CODE_DEFAULT=US
+
+COUNTRY_CODE=`cat $SYSTEM_DEFAULT | grep country_code |  cut -d"=" -f2-`
+
 if [ ! -f /nvram/hostapd0.conf ]
 then
 	cp /etc/hostapd-2G.conf /nvram/hostapd0.conf
@@ -76,6 +81,9 @@ then
         NEW_MAC=$(echo 0x${WIFI24G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
 	sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd0.conf
         echo "wpa_psk_file=/tmp/hostapd0.psk" >> /nvram/hostapd0.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd0.conf
 fi
 
 if [ ! -f /nvram/hostapd1.conf ]
@@ -85,6 +93,9 @@ then
         NEW_MAC=$(echo 0x${WIFI5G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd1.conf
         echo "wpa_psk_file=/tmp/hostapd1.psk" >> /nvram/hostapd1.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd1.conf
 fi
 
 if [ ! -f /nvram/hostapd2.conf ]
@@ -94,6 +105,9 @@ then
         NEW_MAC=$(echo 0x${WIFI24G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+4, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd2.conf
         echo "wpa_psk_file=/tmp/hostapd2.psk" >> /nvram/hostapd2.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd2.conf
 fi
 
 if [ ! -f /nvram/hostapd3.conf ]
@@ -103,6 +117,9 @@ then
         NEW_MAC=$(echo 0x${WIFI5G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+4, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd3.conf
         echo "wpa_psk_file=/tmp/hostapd3.psk" >> /nvram/hostapd3.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd3.conf
 fi
 
 if [ ! -f /nvram/hostapd4.conf ]
@@ -114,6 +131,9 @@ then
         sed -i "/^interface=/c\interface=wifi4" /nvram/hostapd4.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl4"  /nvram/hostapd4.conf
         echo "wpa_psk_file=/tmp/hostapd4.psk" >> /nvram/hostapd4.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd4.conf
 fi
 
 if [ ! -f /nvram/hostapd5.conf ]
@@ -125,6 +145,9 @@ then
         sed -i "/^interface=/c\interface=wifi5" /nvram/hostapd5.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl5" /nvram/hostapd5.conf
         echo "wpa_psk_file=/tmp/hostapd5.psk" >> /nvram/hostapd5.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd5.conf
 fi
 
 if [ ! -f /nvram/hostapd6.conf ]
@@ -136,6 +159,9 @@ then
         sed -i "/^interface=/c\interface=wifi6" /nvram/hostapd6.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl6"  /nvram/hostapd6.conf
         echo "wpa_psk_file=/tmp/hostapd6.psk" >> /nvram/hostapd6.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd6.conf
 fi
 
 if [ ! -f /nvram/hostapd7.conf ]
@@ -147,6 +173,9 @@ then
         sed -i "/^interface=/c\interface=wifi7" /nvram/hostapd7.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl7"  /nvram/hostapd7.conf
         echo "wpa_psk_file=/tmp/hostapd7.psk" >> /nvram/hostapd7.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd7.conf
 fi
 
 if [ ! -f /nvram/hostapd8.conf ]
@@ -157,6 +186,9 @@ then
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd8.conf
         sed -i "/^interface=/c\interface=wifi8" /nvram/hostapd8.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl8"  /nvram/hostapd8.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd8.conf
 fi
 
 if [ ! -f /nvram/hostapd9.conf ]
@@ -167,6 +199,9 @@ then
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd9.conf
         sed -i "/^interface=/c\interface=wifi9" /nvram/hostapd9.conf
         sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl9"  /nvram/hostapd9.conf
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE_DEFAULT'/g' $SYSTEM_DEFAULT            
+else
+	sed -i 's/country_code=.*/country_code='$COUNTRY_CODE'/g' /nvram/hostapd9.conf
 fi
 
 #Setting up VAP status file
@@ -214,6 +249,11 @@ ifconfig wifi7 mtu 1600
 #Creating virtual interfaces wifi8 and wifi9 for Service APs
 iw dev ${WLAN24G} interface add wifi8 type __ap
 iw dev ${WLAN5G} interface add wifi9 type __ap
+
+#update mac from hostapd config
+for i in $(seq 9); do
+        ifconfig wifi$i hw ether $(cat /nvram/hostapd${i}.conf |grep bssid | cut -d = -f 2)
+done
 
 #Create empty acl list for hostapd
 touch /tmp/hostapd-acl0

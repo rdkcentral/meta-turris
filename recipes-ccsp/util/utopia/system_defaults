@@ -982,3 +982,6 @@ $tr_dhcpv6c_enabled=1
 $tr_dhcpv6c_iana_enabled=1
 $tr_dhcpv6c_iapd_enabled=1
 
+#setCountryCode
+$country_code=US
+
