@@ -215,6 +215,11 @@ ifconfig wifi7 mtu 1600
 iw dev ${WLAN24G} interface add wifi8 type __ap
 iw dev ${WLAN5G} interface add wifi9 type __ap
 
+#update mac from hostapd config
+for i in $(seq 9); do
+        ifconfig wifi$i hw ether $(cat /nvram/hostapd${i}.conf |grep bssid | cut -d = -f 2)
+done
+
 #Create empty acl list for hostapd
 touch /tmp/hostapd-acl0
 touch /tmp/hostapd-acl1
