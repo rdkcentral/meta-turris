@@ -129,7 +129,7 @@ fi
 
 if [ ! -f /nvram/hostapd6.conf ]
 then
-	cp /etc/hostapd-2G.conf /nvram/hostapd6.conf
+        cp /etc/hostapd-bhaul2G.conf /nvram/hostapd6.conf
 	#Set bssid for wifi6
         NEW_MAC=$(echo 0x${WIFI24G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd6.conf
@@ -140,7 +140,7 @@ fi
 
 if [ ! -f /nvram/hostapd7.conf ]
 then
-	cp /etc/hostapd-5G.conf /nvram/hostapd7.conf
+        cp /etc/hostapd-bhaul5G.conf /nvram/hostapd7.conf
 	#Set bssid for wifi7
         NEW_MAC=$(echo 0x${WIFI5G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd7.conf
