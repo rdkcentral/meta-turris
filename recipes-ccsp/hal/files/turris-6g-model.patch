@@ -1,0 +1,17 @@
+diff --git a/platform_hal.c b/platform_hal.c
+index 1e6c17a..d0ae569 100644
+--- a/platform_hal.c
++++ b/platform_hal.c
+@@ -108,7 +108,11 @@ INT platform_hal_GetModelName(CHAR* pValue)
+     {
+         const char *src = (getDeviceType() == DEVICE_TYPE_EXTENDER)
+             ? "RTROM01-2G-EX"
++#ifndef RDK_BAND_6G
+             : "RTROM01-2G";
++#else
++            : "RTROM01-6G";
++#endif
+
+        strcpy(pValue, src);
+         return RETURN_OK;
+

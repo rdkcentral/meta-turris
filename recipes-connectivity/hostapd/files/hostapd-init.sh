@@ -40,34 +40,43 @@ fi
 
 WLAN24G="wlan0"
 WLAN5G="wlan1"
+WLAN6G="wlan2"
 
 iw dev del ${WLAN24G}
 iw dev del ${WLAN5G}
+iw dev del ${WLAN6G}
 
-PHY0_HAS24G=$(iw phy phy0 info | grep "Band 1")
-PHY0_HAS5G=$(iw phy phy0 info | grep "Band 2")
-PHY0_HAS6G=$(iw phy phy0 info | grep "Band 4")
+PHY_CAPABILITIES=$(iw phy | grep -E "Wiphy|Band" | awk 'BEGIN{RS="Wiphy "} {print $0}' | tr -d ' \t\n:' | sed 's/phy/\n&/g' | grep phy | awk '{ print length(), $0 | "sort -n" }' | awk '{$1=""; print $0}')
+WLAN_SET=(0 0 0)
 
-PHY1_HAS24G=$(iw phy phy1 info | grep "Band 1")
-PHY1_HAS5G=$(iw phy phy1 info | grep "Band 2")
-PHY1_HAS6G=$(iw phy phy1 info | grep "Band 4")
+for PHY in $PHY_CAPABILITIES; do
+    PHY_HAS_24G=$(echo "$PHY" | grep "Band1")
+    PHY_HAS_5G=$(echo "$PHY" | grep "Band2")
+    PHY_HAS_6G=$(echo "$PHY" | grep "Band4")
+    PHY=$(echo "$PHY" | grep -oE "phy[0-9]+")
 
-if [ -n "${PHY0_HAS24G}" ] && [ -n "${PHY1_HAS5G}" ]; then
-	iw phy phy0 interface add ${WLAN24G} type managed
-	iw phy phy1 interface add ${WLAN5G} type managed
-elif [ -n "${PHY1_HAS24G}" ] && [ -n "${PHY0_HAS5G}" ]; then
-	iw phy phy1 interface add ${WLAN24G} type managed
-	iw phy phy0 interface add ${WLAN5G} type managed
-else
-	echo "No valid capabilities detected!"
-	exit 1
-fi
+    if [ -n "${PHY_HAS_6G}" ] && ! $WLAN_SET[2]; then
+        iw phy $PHY interface add ${WLAN6G} type managed
+        $WLAN_SET[2]=1
+    elif [ -n "${PHY_HAS_5G}" ] && ! $WLAN_SET[1]; then
+        iw phy $PHY interface add ${WLAN5G} type managed
+        $WLAN_SET[1]=1
+    elif [ -n "${PHY_HAS_24G}" ] && ! $WLAN_SET[0]; then
+        iw phy $PHY interface add ${WLAN24G} type managed
+        $WLAN_SET[0]=1
+    else
+        echo "No valid capabilities detected!"
+        exit 1
+    fi
+done
 
 WIFI24G_MAC=`cat "/sys/class/net/${WLAN24G}/address"`
 WIFI5G_MAC=`cat "/sys/class/net/${WLAN5G}/address"`
+WIFI6G_MAC=`cat "/sys/class/net/${WLAN6G}/address"`
 
 echo "2.4GHz Radio MAC: ${WIFI24G_MAC}"
 echo "5GHz   Radio MAC: ${WIFI5G_MAC}"
+echo "6GHz   Radio MAC: ${WIFI6G_MAC}"
 
 if [ ! -f /nvram/hostapd0.conf ]
 then
@@ -178,6 +187,7 @@ touch /tmp/AllAssociated_Devices_5G.txt
 
 if [ $device_type == "extender" ];
 then
+        ifconfig ${WLAN6G} down
         ifconfig ${WLAN5G} down
         ifconfig ${WLAN24G} down
         exit 0;
@@ -216,7 +226,7 @@ iw dev ${WLAN24G} interface add wifi8 type __ap
 iw dev ${WLAN5G} interface add wifi9 type __ap
 
 #update mac from hostapd config
-for i in $(seq 9); do
+for i in $(echo "{0..9}"); do
         ifconfig wifi$i hw ether $(cat /nvram/hostapd${i}.conf |grep bssid | cut -d = -f 2)
 done
 
@@ -241,6 +251,84 @@ touch /tmp/hostapd6.psk
 touch /tmp/hostapd7.psk
 touch /tmp/hostapd8.psk
 touch /tmp/hostapd9.psk
+
+#6GHz configs
+if [ -n $WIFI_6G_MAC ]
+then
+    if [ ! -f /nvram/hostapd10.conf ]
+    then
+        cp /etc/hostapd-6G.conf /nvram/hostapd10.conf
+        #Set bssid for wifi10
+            NEW_MAC=$(echo 0x${WIFI6G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
+            sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd10.conf
+            echo "wpa_psk_file=/tmp/hostapd10.psk" >> /nvram/hostapd10.conf
+    fi
+
+    if [ ! -f /nvram/hostapd11.conf ]
+    then
+        cp /etc/hostapd-bhaul6G.conf /nvram/hostapd11.conf
+        #Set bssid for wifi11
+            NEW_MAC=$(echo 0x${WIFI6G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+4, $2, $3, $4 ,$5, $6}')
+            sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd11.conf
+            echo "wpa_psk_file=/tmp/hostapd11.psk" >> /nvram/hostapd11.conf
+    fi
+
+    if [ ! -f /nvram/hostapd12.conf ]
+    then
+        cp /etc/hostapd-6G.conf /nvram/hostapd12.conf
+        #Set bssid for wifi12
+            NEW_MAC=$(echo 0x${WIFI6G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+6, $2, $3, $4 ,$5, $6}')
+            sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd12.conf
+            sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl12"  /nvram/hostapd12.conf
+            echo "wpa_psk_file=/tmp/hostapd12.psk" >> /nvram/hostapd12.conf
+    fi
+
+    if [ ! -f /nvram/hostapd13.conf ]
+    then
+        cp /etc/hostapd-6G.conf /nvram/hostapd13.conf
+        #Set bssid for wifi13
+            NEW_MAC=$(echo 0x${WIFI6G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+8, $2, $3, $4 ,$5, $6}')
+            sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd13.conf
+            sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl13"  /nvram/hostapd13.conf
+            echo "wpa_psk_file=/tmp/hostapd13.psk" >> /nvram/hostapd13.conf
+    fi
+
+    if [ ! -f /nvram/hostapd14.conf ]
+    then
+        cp /etc/hostapd-6G.conf /nvram/hostapd14.conf
+        #Set bssid for wifi14
+            NEW_MAC=$(echo 0x${WIFI6G_MAC}| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+12, $2, $3, $4 ,$5, $6}')
+            sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd14.conf
+            sed -i "/^accept_mac/c\accept_mac_file=/tmp/hostapd-acl14"  /nvram/hostapd14.conf
+    fi
+
+    echo -e "wifi10=1\nwifi11=0\nwifi12=0\nwifi13=0\nwifi14=0" >> /tmp/vap-status
+    touch /tmp/AllAssociated_Devices_6G.txt
+
+    iw dev ${WLAN6G} interface add wifi10 type __ap
+    iw dev ${WLAN6G} interface add wifi11 type __ap
+    ip addr add 169.254.2.1/24 dev wifi11
+    ifconfig wifi11 mtu 1600
+    iw dev ${WLAN6G} interface add wifi12 type __ap
+    iw dev ${WLAN6G} interface add wifi13 type __ap
+    iw dev ${WLAN6G} interface add wifi14 type __ap
+
+    for i in $(echo "{10..14}"); do
+        ifconfig wifi$i hw ether $(cat /nvram/hostapd${i}.conf |grep bssid | cut -d = -f 2)
+    done
+
+    touch /tmp/hostapd-acl10
+    touch /tmp/hostapd-acl11
+    touch /tmp/hostapd-acl12
+    touch /tmp/hostapd-acl13
+    touch /tmp/hostapd-acl14
+
+    touch /tmp/hostapd10.psk
+    touch /tmp/hostapd11.psk
+    touch /tmp/hostapd12.psk
+    touch /tmp/hostapd13.psk
+    touch /tmp/hostapd14.psk
+fi
 
 #Create wps pin request log file
 touch /var/run/hostapd_wps_pin_requests.log
@@ -268,4 +356,3 @@ ifconfig lan3 up
 ifconfig lan4 up
 
 exit 0
-

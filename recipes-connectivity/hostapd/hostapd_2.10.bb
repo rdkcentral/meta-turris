@@ -2,7 +2,7 @@ SUMMARY = "User space daemon for extended IEEE 802.11 management"
 HOMEPAGE = "http://w1.fi/hostapd/"
 SECTION = "kernel/userland"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://hostapd/README;md5=1ec986bec88070e2a59c68c95d763f89"
+LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
 
 DEPENDS = "libnl openssl"
 DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
@@ -11,8 +11,6 @@ LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -lt
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI = " \
     http://w1.fi/releases/hostapd-${PV}.tar.gz \
-    file://hostapd-enable-80211ac.patch;patchdir=${WORKDIR}/ \
-    file://hostapd_turris.patch \
     file://defconfig \
     file://hostapd-2G.conf \
     file://hostapd-5G.conf \
@@ -24,10 +22,11 @@ SRC_URI = " \
     file://hostapd-init.sh \
 "
 
-SRC_URI += "file://nl80211-relax-bridge-setup.patch"
+SRC_URI[md5sum] = "0be43e9e09ab94a7ebf82de0d1c57761"
+SRC_URI[sha256sum] = "206e7c799b678572c2e3d12030238784bc4a9f82323b0156b4c9466f1498915d"
 
-SRC_URI[md5sum] = "f188fc53a495fe7af3b6d77d3c31dee8"
-SRC_URI[sha256sum] = "881d7d6a90b2428479288d64233151448f8990ab4958e0ecaca7eeb3c9db2bd7"
+SRC_URI_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'triband-6g-capable', 'file://hostapd-6G.conf', '', d)}"
+SRC_URI_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'triband-6g-capable', 'file://hostapd-bhaul6G.conf', '', d)}"
 
 S = "${WORKDIR}/hostapd-${PV}"
 B = "${WORKDIR}/hostapd-${PV}/hostapd"
@@ -60,6 +59,10 @@ do_install() {
          install -m 0644 ${WORKDIR}/hostapd-bhaul5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
          install -m 0755 ${WORKDIR}/hostapd-init.sh ${D}${base_libdir}/rdk
+         if ${@bb.utils.contains('DISTRO_FEATURES', 'triband-6g-capable', 'true', 'false', d)}; then
+            install -m 0644 ${WORKDIR}/hostapd-6G.conf ${D}${sysconfdir}
+            install -m 0644 ${WORKDIR}/hostapd-bhaul6G.conf ${D}${sysconfdir}
+         fi
 }
 
 do_install_turris-extender() {
@@ -76,6 +79,10 @@ do_install_turris-extender() {
          install -m 0644 ${WORKDIR}/hostapd-bhaul5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
          install -m 0755 ${WORKDIR}/hostapd-init.sh ${D}${base_libdir}/rdk
+         if ${@bb.utils.contains('DISTRO_FEATURES', 'triband-6g-capable', 'true', 'false', d)}; then
+            install -m 0644 ${WORKDIR}/hostapd-6G.conf ${D}${sysconfdir}
+            install -m 0644 ${WORKDIR}/hostapd-bhaul6G.conf ${D}${sysconfdir}
+         fi
 }
 
 FILES_${PN} += " \
@@ -87,4 +94,9 @@ FILES_${PN} += " \
                 ${sysconfdir}/hostapd-bhaul2G.conf \
                 ${sysconfdir}/hostapd-bhaul5G.conf \
                 ${base_libdir}/rdk/hostapd-init.sh \
+"
+
+FILES_${PN}_append = " \
+                ${@bb.utils.contains('DISTRO_FEATURES', 'triband-6g-capable', '${sysconfdir}/hostapd-6G.conf', '', d)} \
+                ${@bb.utils.contains('DISTRO_FEATURES', 'triband-6g-capable', '${sysconfdir}/hostapd-bhaul6G.conf', '', d)} \
 "

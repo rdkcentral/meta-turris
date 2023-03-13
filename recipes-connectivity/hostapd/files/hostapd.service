@@ -10,6 +10,7 @@ PIDFile=/var/run/hostapd-global.pid
 ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid
 ExecStartPost=hostapd_cli -i global raw ADD bss_config=phy0:/nvram/hostapd0.conf
 ExecStartPost=hostapd_cli -i global raw ADD bss_config=phy1:/nvram/hostapd1.conf
+ExecStartPost=hostapd_cli -i global raw ADD bss_config=phy2:/nvram/hostapd10.conf
 Restart=always
 
 [Install]
