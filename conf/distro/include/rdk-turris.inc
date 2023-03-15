@@ -30,3 +30,6 @@ DISTRO_FEATURES_append = " core-net-lib"
 
 #Kernel upgrade
 DISTRO_FEATURES_append = " kernel5.x"
+
+# Fix RDK Cellular Manager build errors
+DISTRO_FEATURES_append = " RbusBuildFlagEnable"
