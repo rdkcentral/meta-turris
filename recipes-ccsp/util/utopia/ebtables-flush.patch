@@ -1,0 +1,30 @@
+--- a/source/scripts/init/service.d/ebtable_rules.sh
++++ b/source/scripts/init/service.d/ebtable_rules.sh
+@@ -88,8 +88,9 @@ set_ebtable_rules() {
+
+     # flush all rules first
+     echo "[EBTABLE] flush all rules"
+-    ebtables -F
+-
++    ebtables -L | grep 'chain' | awk '{print $3}' | grep -v '^NFM_' | grep -v '^CPORTAL_' | tr -d "," \
++    | xargs -I {} ebtables -F {}
++
+     echo 0 > /proc/sys/net/ipv4/conf/all/arp_ignore
+     echo 2 > /proc/sys/net/ipv4/conf/wan0/arp_ignore
+     echo 2 > /proc/sys/net/ipv4/conf/lan0/arp_ignore
+@@ -143,6 +144,15 @@ set_ebtable_rules() {
+     fi
+
+     ip link set lbr0 up
++    if [ `syscfg get mesh_enable` ]; then
++        ebtables -t filter -N NFM_INPUT -P RETURN 2>/dev/null
++        ebtables -t filter -N NFM_FORWARD -P RETURN 2>/dev/null
++        ebtables -t broute -N NFM_BROUTING -P RETURN 2>/dev/null
++
++        ebtables -t filter -A INPUT -j NFM_INPUT
++        ebtables -t filter -A FORWARD -j NFM_FORWARD
++        ebtables -t broute -A BROUTING -j NFM_BROUTING
++    fi
+ }
+
+ set_ebtable_rules
