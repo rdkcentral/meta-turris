@@ -23,7 +23,7 @@ DISTRO_FEATURES_append = " rdkb_wan_manager"
 DISTRO_FEATURES_append = " rdkb_inter_device_manager"
 
 # RDKB-40900: RDKB support extender/nonrouter profile
-DISTRO_FEATURES_append = " rdkb_extender"
+DISTRO_FEATURES_append_extender = " rdkb_extender"
 
 # RDKB-44824: CoreNetLib move bb file location
 DISTRO_FEATURES_append = " core-net-lib"
