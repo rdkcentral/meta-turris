@@ -5,6 +5,7 @@ DEPENDS_append = " kernel-autoconf utopia-headers libsyswrapper telemetry"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 EXTRA_OECONF_append  = " --with-ccsp-arch=arm"
+EXTRA_OECONF_remove  = "--with-ccsp-platform=bcm"
 
 SRC_URI_append = " \
     file://0001-fix-lan-handler-for-turris.patch;apply=no \
