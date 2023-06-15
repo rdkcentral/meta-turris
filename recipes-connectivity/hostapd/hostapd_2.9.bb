@@ -68,6 +68,8 @@ do_install_turris-extender() {
          install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
          sed -i '/^After=CcspPandMSsp.service/d' ${WORKDIR}/hostapd.service
          sed -i '/^ExecStart=/c\ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid' ${WORKDIR}/hostapd.service
+         #Workaround Fix
+         sed -i '/^StartLimitIntervalSec=120/a Requires=opensync.service' ${WORKDIR}/hostapd.service
          install -m 0644 ${WORKDIR}/hostapd-2G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-open2G.conf ${D}${sysconfdir}
