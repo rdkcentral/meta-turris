@@ -14,6 +14,7 @@ SRC_URI_remove_turris5.x = "file://python-switch-remaining-scripts-to-use-python
 SRC_URI_remove_turris5.x = "file://systemd-update-tool-paths.patch"
 SRC_URI_remove_turris5.x = "file://systemd-create-runtime-dirs.patch"
 SRC_URI_remove_turris5.x = "file://CVE-2021-3905.patch"
+SRC_URI_remove_turris5.x = "file://CVE-2021-36980_fix.patch"
 SRC_URI_remove_turris5.x = "git://github.com/openvswitch/ovs.git;protocol=https;branch=branch-2.13 "
 SRC_URI_append_turris5.x += "git://github.com/openvswitch/ovs.git;protocol=https;branch=branch-2.17"
 SRCREV_turris5.x = "${AUTOREV}"
