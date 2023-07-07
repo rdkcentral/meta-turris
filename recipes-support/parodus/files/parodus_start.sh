@@ -23,7 +23,7 @@ GET="dmcli eRT getv"
 SET=""
 
 echo "Fetching PAM Health status "
-
+sleep 10
 while [ 1 ]
 do
    pamState=`$GET com.cisco.spvtg.ccsp.pam.Health | grep value| tr -s ' ' |cut -f5 -d" "`
