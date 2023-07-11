@@ -538,7 +538,8 @@ $mgmt_https_enable=0
 $mgmt_wifi_access=1
 
 $mgmt_wan_access=1
-$mgmt_wan_httpaccess=1
+$mgmt_wan_httpaccess_ert=1
+$mgmt_wan_httpaccess=0
 $mgmt_wan_httpsaccess=0
 $mgmt_wan_sshaccess=1
 $mgmt_wan_telnetaccess=0

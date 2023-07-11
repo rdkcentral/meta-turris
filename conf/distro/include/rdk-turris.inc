@@ -33,3 +33,6 @@ DISTRO_FEATURES_append = " kernel5.x"
 
 # Fix RDK Cellular Manager build errors
 DISTRO_FEATURES_append = " RbusBuildFlagEnable"
+
+# Fix MeshAgent build errors
+DISTRO_FEATURES_append = " WanFailOverSupportEnable"
