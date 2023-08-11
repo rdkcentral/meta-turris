@@ -1,26 +1,25 @@
-From 16156054db922b7ec3cba2c4e7cd2bdbea8d4c01 Mon Sep 17 00:00:00 2001
-From: Simon Chung <simon.chung@rdkcentral.com>
-Date: Tue, 7 Mar 2023 10:15:47 +0000
+From 820c4cb8acb58ad2a32bbfbc369524bef4eb6e75 Mon Sep 17 00:00:00 2001
+From: Jenkins Slave <jenkins@code.rdkcentral.com>
+Date: Fri, 11 Aug 2023 12:45:27 +0100
 Subject: [PATCH] handle_mesh-rename-opensync
 
-Change-Id: I8fd1150a767e9751d467a2c5c013d254e4ba510b
+Change-Id: I58040961157424a4e1783cdfad6ad8a19a63479e
 ---
- scripts/handle_mesh | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ scripts/handle_mesh | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/scripts/handle_mesh b/scripts/handle_mesh
-index d8fe0a73..b25f0635 100644
+index ddb600e..64c4e54 100644
 --- a/scripts/handle_mesh
 +++ b/scripts/handle_mesh
-@@ -57,11 +57,19 @@ is_opensync_name()
+@@ -51,11 +51,18 @@ is_opensync_name()
+     done
      return 1
  }
- 
 +is_opensync_service()
 +{
 +    systemctl list-unit-files opensync.service | grep -q opensync.service
 +}
-+
  if [ $# -eq 0 ]; then
   echo "No arguments passed"
   exit 0
@@ -29,11 +28,11 @@ index d8fe0a73..b25f0635 100644
 + if is_opensync_service; then
 +        systemctl $1 opensync.service
 + else
-  if [ -f /etc/WFO_enabled ] || [ "$OPENSYNC_ENABLE" == "true" ] && [ -d "/sys/module/openvswitch" ];then
-     if [ -z "$(pidof ovsdb-server)" ]
-     then
-@@ -71,9 +79,10 @@ else
-         /usr/opensync/scripts/managers.init $1
+  if [ "$OPENSYNC_44_ENABLE" == "true" ]
+  then
+     echo "OPENSYNC_44_ENABLE is true"
+@@ -70,9 +77,10 @@ else
+         $OPENSYNC_SCRIPTS_PATH/managers.init $1
      else
          echo "Opensync will be effective only after reboot"
 -        /usr/plume/scripts/managers.init $1
@@ -46,5 +45,5 @@ index d8fe0a73..b25f0635 100644
   fi
  fi
 -- 
-2.37.2
+2.37.3
 
