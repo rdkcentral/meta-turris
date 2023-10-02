@@ -36,3 +36,6 @@ DISTRO_FEATURES_append = " RbusBuildFlagEnable"
 
 # Fix MeshAgent build errors
 DISTRO_FEATURES_append = " WanFailOverSupportEnable"
+
+# RDKB-50999: WebConfig blob handler
+DISTRO_FEATURES_append = " lld_support"
