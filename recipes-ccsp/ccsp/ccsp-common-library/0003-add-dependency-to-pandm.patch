@@ -8,6 +8,6 @@ index 192724d5..fe49033f 100644
  
 -After=PsmSsp.service
 +After=gwprovethwan.service PsmSsp.service
+ Requires=ApplySystemDefaults.service
  
  [Service]
- Type=forking
